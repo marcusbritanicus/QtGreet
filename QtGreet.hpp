@@ -1,8 +1,8 @@
 /*
 	*
-	* Copyright 2019 Britanicus <marcusbritanicus@gmail.com>
+	* Copyright 2020 Britanicus <marcusbritanicus@gmail.com>
 	*
-	* This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/qtgreet)
+	* This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/QtGreet)
 	*
 
 	*

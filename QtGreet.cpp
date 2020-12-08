@@ -1,8 +1,8 @@
 /*
 	*
-	* Copyright 2019 Britanicus <marcusbritanicus@gmail.com>
+	* Copyright 2020 Britanicus <marcusbritanicus@gmail.com>
 	*
-	* This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/qtgreet)
+	* This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/QtGreet)
 	*
 
 	*
@@ -92,7 +92,8 @@ void QtGreet::createUI() {
     setWindowFlags( Qt::FramelessWindowHint );
     setAttribute( Qt::WA_TranslucentBackground );
 
-    background = QImage( "/usr/share/desq/resources/screenlock.jpg" ).scaled( size(), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+    QSettings settings( "/etc/qtgreet/config.ini", QSettings::IniFormat );
+    background = QImage( settings.value( "Background" ).toString() ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 
     /* Layer 1 */
     userIcon = new QLabel();
@@ -420,13 +421,15 @@ void QtGreet::paintEvent( QPaintEvent *pEvent ) {
 
     QPainter painter( this );
 
+    painter.save();
+    painter.setOpacity( 0.5 );
     painter.drawImage( QPointF( 0, 0 ), background );
+    painter.setOpacity( 1.0 );
+    painter.restore();
 
     painter.save();
     painter.setPen( Qt::NoPen );
-    QColor shade = palette().color( QPalette::Window );
-    shade.setAlphaF( 0.7 );
-    painter.setBrush( shade );
+    painter.setBrush( QColor( 0, 0, 0, 180 ) );
     painter.drawRect( rect() );
     painter.restore();
 

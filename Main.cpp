@@ -1,8 +1,8 @@
 /*
 	*
-	* Copyright 2019 Britanicus <marcusbritanicus@gmail.com>
+	* Copyright 2020 Britanicus <marcusbritanicus@gmail.com>
 	*
-	* This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/qtgreet)
+	* This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/QtGreet)
 	*
 
 	*
@@ -46,10 +46,8 @@ QtGreet *qtgreet;
 
 uint32_t layer = ZWLR_LAYER_SHELL_V1_LAYER_TOP;
 
-uint32_t anchor = ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT |
-					ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT |
-					ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP |
-					ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM;
+uint32_t anchor = ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT | ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT |
+					ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP | ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM;
 
 static void handle_global(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version) {
 	if ( strcmp( interface, zwlr_layer_shell_v1_interface.name ) == 0 ) {
@@ -101,7 +99,7 @@ static void show() {
 	wl_display_roundtrip( display );
 
 	/* Hack to disable wayland integration */
-	// qunsetenv( "QT_WAYLAND_SHELL_INTEGRATION" );
+	qunsetenv( "QT_WAYLAND_SHELL_INTEGRATION" );
 }
 
 int main( int argc, char **argv ) {

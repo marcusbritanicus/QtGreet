@@ -1,0 +1,5 @@
+Version 1.0
+
+- Wayland sessions run smoothly, Custom sessions can be easily started.
+- We still do not have a way to start a new session when an existing session is running.
+- We cannot launch an X11 Session.
