@@ -23,10 +23,10 @@ enum request_type {
 	request_type_create_session = 1,
 	request_type_start_session = 2,
 	request_type_post_auth_message_response = 3,
-	request_type_cancel_session = 4,	
+	request_type_cancel_session = 4,
 };
 
-struct request {
+typedef struct request_t {
 	enum request_type request_type;
 	union {
 		struct request_create_session request_create_session;
@@ -34,7 +34,7 @@ struct request {
 		struct request_post_auth_message_response request_post_auth_message_response;
 		struct request_cancel_session request_cancel_session;
 	} body;
-};
+} request;
 
 //
 // Response types
@@ -71,15 +71,15 @@ enum response_type {
 	response_type_auth_message = 3,
 };
 
-struct response {
+typedef struct response_ {
 	enum response_type response_type;
 	union {
 		struct response_success response_success;
 		struct response_error response_error;
 		struct response_auth_message response_auth_message;
 	} body;
-};
+} response;
 
-struct response roundtrip(struct request req);
+response roundtrip(request req);
 
 #endif

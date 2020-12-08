@@ -31,7 +31,6 @@
 #include "Global.hpp"
 #include "QtGreet.hpp"
 
-#include <QtDBus>
 #include <qpa/qplatformnativeinterface.h>
 
 #include "wayland-wlr-layer-shell-unstable-v1-client-protocol.h"
@@ -102,7 +101,7 @@ static void show() {
 	wl_display_roundtrip( display );
 
 	/* Hack to disable wayland integration */
-	qunsetenv( "QT_WAYLAND_SHELL_INTEGRATION" );
+	// qunsetenv( "QT_WAYLAND_SHELL_INTEGRATION" );
 }
 
 int main( int argc, char **argv ) {
