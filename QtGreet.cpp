@@ -65,6 +65,8 @@ QListWidget* getListWidget() {
     QListWidget *lw = new QListWidget();
     lw->setIconSize( QSize( 36, 36 ) );
     lw->setFont( QFont( "Quicksand", 12 ) );
+    lw->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    lw->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     return lw;
 };
@@ -202,23 +204,10 @@ void QtGreet::createUI() {
     lyr6Lyt->addWidget( sessionCmd );
     lyr6Lyt->addStretch();
 
-    QToolButton *close = new QToolButton();
-    close->setIcon( QIcon::fromTheme( "application-exit" ) );
-    close->setAutoRaise( true );
-    close->setFocusPolicy( Qt::NoFocus );
-    connect( close, &QToolButton::clicked, this, &QtGreet::close );
-
-    QHBoxLayout *cLyt = new QHBoxLayout();
-    cLyt->addStretch();
-    cLyt->addWidget( close );
-
     /* Final Layout */
     QVBoxLayout *lyt = new QVBoxLayout();
     lyt->setContentsMargins( QMargins() );
     lyt->setSpacing( 20 );
-
-    /* CloseBtn */
-    lyt->addLayout( cLyt );
 
     lyt->addStretch();
 
