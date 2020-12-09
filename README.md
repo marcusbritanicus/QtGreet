@@ -1,6 +1,8 @@
 # QtGreet
 Qt based greeter for [greetd](https://git.sr.ht/~kennylevinsen/greetd), to be run under wayfire or similar wlr-based compositors.
 
+![image](Screenshots/Greeter.webp)
+
 ### Dependencies:
 - Qt5 (duh...)
 - wlroots
@@ -37,6 +39,16 @@ Qt based greeter for [greetd](https://git.sr.ht/~kennylevinsen/greetd), to be ru
     vheight = 1
     vwidth = 1
     ```
+
+### Configuration of QtGreet
+
+- We first paint a base color over the entire screen over which the wallpaper is draw with 50% opacity. This is to improve the legibility.
+- You can set the base color and the wallpaper in /etc/qtgreet/config.ini file.
+- `BaseColor` key defines the base color to be painted. It takes RGB hex values as single continuous string (HTML format without the leading #).
+  * Ex: ffffff (white), ff0000 (red), 008080 (teal), and so on.
+- `Background` key defines the background image. All image formats supported by Qt on your system are supported by QtGreet. Typically
+jpg/png/svg files should be fine. Some default background files can be found in /usr/share/qtgreet/backgrounds. The path should be absolute.
+- If you wish not to use a background image, you may set `Background = none`, in which case only the base color will be painted on the screen.
 
 ### Tips and tricks
 

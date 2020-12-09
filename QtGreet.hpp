@@ -98,7 +98,9 @@ class QtGreet : public QMainWindow {
 
         QPushButton *loginBtn;
 
+        QColor baseColor;
         QImage background;
+        bool noBG = false;
 
         QBasicTimer *clockTimer;
 

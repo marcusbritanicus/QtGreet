@@ -44,7 +44,8 @@ static bool IsExec( QString exec ) {
     /* Otherwise (ex: plasmashell) */
     for( QString path : qgetenv( "PATH" ).split( ':' ) ) {
         int ret = access( QString( path + "/" + exec ).toUtf8().constData(), R_OK | X_OK );
-        return ( ret == 0 );
+        if ( ret == 0 )
+            return true;
     }
 
     return false;
@@ -93,7 +94,14 @@ void QtGreet::createUI() {
     setAttribute( Qt::WA_TranslucentBackground );
 
     QSettings settings( "/etc/qtgreet/config.ini", QSettings::IniFormat );
-    background = QImage( settings.value( "Background" ).toString() ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
+    baseColor = QColor( "#" + settings.value( "BaseColor" ).toString() );
+
+    QString bgStr( settings.value( "Background" ).toString() );
+    if ( bgStr != "none" )
+        background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
+
+    else
+        noBG = true;
 
     /* Layer 1 */
     userIcon = new QLabel();
@@ -359,7 +367,6 @@ void QtGreet::getLoginSessions() {
     QDir wlSessDir( "/usr/share/wayland-sessions" );
     for( QString sess: wlSessDir.entryList( { "*.desktop" } ) ) {
         QSettings session( wlSessDir.filePath( sess ), QSettings::IniFormat );
-        // qDebug() << session.fileName();
         if ( IsExec( session.value( "Desktop Entry/TryExec" ).toString() ) ) {
             Session s = Session{
                 session.value( "Desktop Entry/Name" ).toString(),
@@ -367,9 +374,6 @@ void QtGreet::getLoginSessions() {
                 "wayland",
                 session.value( "Desktop Entry/Exec" ).toString()
             };
-
-            // qDebug() << session.allKeys();
-            // qDebug() << session.value( "Desktop Entry/Name" ).toString() << session.value( "Desktop Entry/Exec" ).toString();
 
             if ( not s.name.contains( "wayland", Qt::CaseInsensitive ) )
                 s.name += " (Wayland)";
@@ -421,11 +425,21 @@ void QtGreet::paintEvent( QPaintEvent *pEvent ) {
 
     QPainter painter( this );
 
+    /* Base color */
     painter.save();
-    painter.setOpacity( 0.5 );
-    painter.drawImage( QPointF( 0, 0 ), background );
-    painter.setOpacity( 1.0 );
+    painter.setPen( Qt::NoPen );
+    painter.setBrush( baseColor );
+    painter.drawRect( rect() );
     painter.restore();
+
+    if ( not noBG ) {
+        /* Background Image */
+        painter.save();
+        painter.setOpacity( 0.5 );
+        painter.drawImage( QPointF( 0, 0 ), background );
+        painter.setOpacity( 1.0 );
+        painter.restore();
+    }
 
     painter.save();
     painter.setPen( Qt::NoPen );
