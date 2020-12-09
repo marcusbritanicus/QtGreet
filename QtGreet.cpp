@@ -409,7 +409,7 @@ void QtGreet::updateUser() {
 
 void QtGreet::updateSess() {
 
-    session->setIcon( QIcon::fromTheme( mSessions.at( curSess ).icon ) );
+    session->setIcon( QIcon::fromTheme( mSessions.at( curSess ).icon, QIcon( ":/icons/session.png" ) ) );
 
     session->setText( mSessions.at( curSess ).name );
     sessionCmd->setText( mSessions.at( curSess ).exec );
@@ -532,7 +532,7 @@ void QtGreet::showSessionSelection() {
 
     for( int i = 0; i < mSessions.count(); i++ ) {
         Session sess = mSessions.at( i );
-        QListWidgetItem *item = new QListWidgetItem( QIcon::fromTheme( sess.icon ), sess.name );
+        QListWidgetItem *item = new QListWidgetItem( QIcon::fromTheme( sess.icon, QIcon( ":/icons/session.png" ) ), sess.name );
         item->setData( Qt::UserRole + 1, i );
 
         sessionLW->addItem( item );
