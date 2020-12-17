@@ -57,8 +57,9 @@ install( TARGETS qtgreet DESTINATION bin )
 # SVG Backgrounds
 install( DIRECTORY backgrounds DESTINATION share/qtgreet )
 
-# SVG Backgrounds
+# Configuration
 install( FILES config.ini DESTINATION /etc/qtgreet )
+install( FILES wayfire.ini DESTINATION /etc/qtgreet )
 
 # Data files
 install( FILES README.md Changelog ReleaseNotes DESTINATION share/qtgreet )

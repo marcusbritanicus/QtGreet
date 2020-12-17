@@ -23,22 +23,12 @@ Qt based greeter for [greetd](https://git.sr.ht/~kennylevinsen/greetd), to be ru
 
 ### Configure greetd to run QtGreet using wayfire
 
-- Firstly, set the command `greetd` should run as `wayfire --config /etc/greetd/wayfire.ini`
+- Firstly, set the command `greetd` should run as `wayfire --config /etc/qtgreet/wayfire.ini`
   * To do this, you'll need to edit `/etc/greetd/config.toml`.
-  * Under `[default_session]`, set `command = "wayfire --config /etc/greetd/wayfire.ini"`
+  * Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
 
-- Then, you'll need a configuration file `wayfire.ini` which is supplied to wayfire.
-  * Create a file `/etc/greetd/wayfire.ini` and set the contents to:
-    ```
-    [autostart]
-    autostart_wf_shell = false
-    dm = qtgreet && wayland-logout
-
-    [core]
-    plugins = autostart
-    vheight = 1
-    vwidth = 1
-    ```
+- Then, you'll need a configuration file `wayfire.ini` which is supplied to wayfire. This will be
+  installed automatically when you install the project.
 
 ### Configuration of QtGreet
 

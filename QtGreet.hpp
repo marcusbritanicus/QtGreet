@@ -77,6 +77,9 @@ class QtGreet : public QMainWindow {
         /* Show the validating message */
         void showValidating();
 
+        /* Get the command to launch an X session */
+        QString getXSessionCommand();
+
         Users mUserList;
         Sessions mSessions;
 

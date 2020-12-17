@@ -10,7 +10,7 @@ struct request_create_session {
 };
 
 struct request_start_session {
-	char cmd[128];
+	char cmd[257];
 };
 
 struct request_post_auth_message_response {

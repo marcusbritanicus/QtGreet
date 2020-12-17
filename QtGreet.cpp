@@ -572,6 +572,36 @@ void QtGreet::showValidating() {
     base->show();
 };
 
+QString QtGreet::getXSessionCommand() {
+
+    QString xinit( "xinit %1 -- /etc/X11/xinit/xserverrc :%2 vt%3 -keeptty -noreset -novtswitch -auth /tmp/Xauth.%4" );
+
+    /* Arg1: Session command */
+    QString sessCmd = mSessions.at( curSess ).exec;
+
+    /* Arg2: Get the display */
+    int display;
+    for( display = 0; display < 64; display++ ) {
+        QString x1 = QString( "/tmp/.X%1-lock" ).arg( display );
+        QString x2 = QString( "/tmp/.X11-unix/X%1" ).arg( display );
+
+        if ( QFile::exists( x1 ) or QFile::exists( x2 ) )
+            continue;
+
+        else
+            break;
+    }
+
+    /* Arg3: Get the vt from config.toml */
+    QSettings toml( "/etc/greetd/config.toml", QSettings::IniFormat );
+    int vt = toml.value( "terminal/vt" ).toInt();
+
+    /* Arg4: Random strings for server auth file */
+    QString hash = QCryptographicHash::hash( QDateTime::currentDateTime().toString().toUtf8(), QCryptographicHash::Md5 ).toHex().left( 10 );
+
+    return xinit.arg( sessCmd ).arg( display ).arg( vt ).arg( hash );
+};
+
 void QtGreet::tryLogin() {
 
     showValidating();
@@ -607,7 +637,14 @@ void QtGreet::tryLogin() {
                 .request_type = request_type_start_session,
             };
 
-            strncpy( req.body.request_start_session.cmd, sessionCmd->text().toUtf8().constData(), 127 );
+            QString cmd;
+            if ( mSessions.at( curSess ).type == "wayland" )
+                cmd = mSessions.at( curSess ).exec;
+
+            else
+                cmd = getXSessionCommand();
+
+            strncpy( req.body.request_start_session.cmd, cmd.toUtf8().constData(), 256 );
             resp = roundtrip( req );
 
             if ( resp.response_type == response_type_success )
@@ -632,9 +669,6 @@ void QtGreet::tryLogin() {
             .request_type = request_type_cancel_session,
         };
         roundtrip( req_cancel_sess );
-
-        /* Sleep for 2s */
-        // sleep( 2 );
 
         /* Enable the dialog */
         setEnabled( true );
