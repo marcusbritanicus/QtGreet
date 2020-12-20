@@ -9,36 +9,44 @@ Qt based greeter for [greetd](https://git.sr.ht/~kennylevinsen/greetd), to be ru
 - WLR based compositor (wayfire, sway etc..)
 - CMake (to build this project)
 - Make (to compile this project)
+- Cargo (to build greetd)
+- Rust (to compile greetd)
 
 ### Compiling and installing
 
-- Get the sources
+- Get the sources of QtGreet
   * Git: `git clone https://gitlab.com/marcusbritanicus/QtGreet.git`
-- Enter the `QtGreet` and create and enter `build`.
-  * `cd QtGreet && mkdir build && cd build`
-- Configure the project - we use cmake for project management
-  * `cmake ..`
-- Compile and install - we use make
-  * `make -kj$(nproc) && sudo make install`
+- Enter the `QtGreet` folder
+  * `cd QtGreet`
+- Now you can simply type to update and build QtGreet and greetd
+  * `./setup.py prepare && ./setup.py build`
+  * In case you want to disable `greetd`, use the `--no-greetd` switch,
+    - `./setup.py prepare --no-greetd && ./setup.py build --no-greetd`
+- Install the project (again, use `--no-greetd` to avoid greetd installation)
+  * `sudo ./setup.py install`
 
 ### Configure greetd to run QtGreet using wayfire
 
-- Firstly, set the command `greetd` should run as `wayfire --config /etc/qtgreet/wayfire.ini`
-  * To do this, you'll need to edit `/etc/greetd/config.toml`.
-  * Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
-
-- Then, you'll need a configuration file `wayfire.ini` which is supplied to wayfire. This will be
-  installed automatically when you install the project.
+In case greetd was not installed as a part of QtGreet, then you will have to configure it to use QtGreet.
+You can skip this if greetd was installed as a part of QtGreet installation.
+To do that, you'll have to set the command `greetd` should run as `wayfire --config /etc/qtgreet/wayfire.ini`
+* Open `/etc/greetd/config.toml` for editing with your favorite editor.
+* Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
 
 ### Configuration of QtGreet
 
-- We first paint a base color over the entire screen over which the wallpaper is draw with 50% opacity. This is to improve the legibility.
-- You can set the base color and the wallpaper in /etc/qtgreet/config.ini file.
-- `BaseColor` key defines the base color to be painted. It takes RGB hex values as single continuous string (HTML format without the leading #).
-  * Ex: ffffff (white), ff0000 (red), 008080 (teal), and so on.
+- We first paint a base color over the entire screen over which the wallpaper is drawn with 50% opacity. This helps to improve the legibility of
+the text. Currently, three configuration options are available: `Background`, `BaseColor`, and `TextColor`
+- You can set these in `/etc/qtgreet/config.ini` file.
+- `BaseColor` key defines the base color to be painted. It takes ARGB hex values as single continuous string.
+  * Ex: ffffffff (white, alpha = 100%), AAFF0000 (red, alpha = 66.6%), 00008080 (teal, alpha = 0), and so on.
+  * The default value is white (ffffffff).
 - `Background` key defines the background image. All image formats supported by Qt on your system are supported by QtGreet. Typically
 jpg/png/svg files should be fine. Some default background files can be found in /usr/share/qtgreet/backgrounds. The path should be absolute.
 - If you wish not to use a background image, you may set `Background = none`, in which case only the base color will be painted on the screen.
+- `TextColor` key defines the color of the text. The default value is white. It takes RGB hex values as single continuous string similar to
+`BaseColor`.
+  * The default value is white (ffffff).
 
 ### Tips and tricks
 

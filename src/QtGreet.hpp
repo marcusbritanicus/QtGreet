@@ -103,6 +103,7 @@ class QtGreet : public QMainWindow {
 
         QColor baseColor;
         QImage background;
+        QString textColor;
         bool noBG = false;
 
         QBasicTimer *clockTimer;

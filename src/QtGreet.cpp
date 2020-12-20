@@ -51,14 +51,14 @@ static bool IsExec( QString exec ) {
     return false;
 };
 
-static QString getStyleSheet() {
+static QString getStyleSheet( QString textColor ) {
 
     QFile qss( ":/StyleSheet.qss" );
     qss.open( QFile::ReadOnly );
     QString ss = QString::fromLocal8Bit( qss.readAll() );
     qss.close();
 
-    return ss;
+    return ss.replace( "<text_color>", textColor );
 };
 
 QListWidget* getListWidget() {
@@ -81,7 +81,7 @@ QtGreet::QtGreet() {
 
     createUI();
 
-    setStyleSheet( getStyleSheet() );
+    setStyleSheet( getStyleSheet( textColor ) );
 
     userPass->setFocus();
 };
@@ -95,6 +95,8 @@ void QtGreet::createUI() {
 
     QSettings settings( "/etc/qtgreet/config.ini", QSettings::IniFormat );
     baseColor = QColor( "#" + settings.value( "BaseColor" ).toString() );
+
+    textColor = settings.value( "TextColor", "ffffff" ).toString();
 
     QString bgStr( settings.value( "Background" ).toString() );
     if ( bgStr != "none" )
@@ -152,6 +154,7 @@ void QtGreet::createUI() {
     userPass->setPlaceholderText( "Password" );
     userPass->setFixedSize( QSize( 270, 36 ) );
     userPass->setEchoMode( QLineEdit::Password );
+    connect( userPass, &QLineEdit::returnPressed, this, &QtGreet::tryLogin );
 
     QHBoxLayout *lyr3Lyt = new QHBoxLayout();
     lyr3Lyt->addStretch();

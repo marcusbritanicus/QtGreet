@@ -55,11 +55,11 @@ target_link_libraries ( qtgreet Qt5::Core Qt5::Gui Qt5::GuiPrivate Qt5::Widgets 
 install( TARGETS qtgreet DESTINATION bin )
 
 # SVG Backgrounds
-install( DIRECTORY backgrounds DESTINATION share/qtgreet )
+install( DIRECTORY ../backgrounds DESTINATION share/qtgreet )
 
 # Configuration
-install( FILES config.ini DESTINATION /etc/qtgreet )
-install( FILES wayfire.ini DESTINATION /etc/qtgreet )
+install( FILES ../configs/config.ini DESTINATION /etc/qtgreet )
+install( FILES ../configs/wayfire.ini DESTINATION /etc/qtgreet )
 
 # Data files
-install( FILES README.md Changelog ReleaseNotes DESTINATION share/qtgreet )
+install( FILES ../README.md ../Changelog ../ReleaseNotes DESTINATION share/qtgreet )

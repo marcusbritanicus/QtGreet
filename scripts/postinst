@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Create the system user: greeter
+useradd -r -M -G video greeter
+
+# Create the default
+chown -R greeter:greeter /etc/greetd/
+
+# Enable greetd as the display manager
+systemctl enable greetd

@@ -110,6 +110,13 @@ int main( int argc, char **argv ) {
 
 	qtgreet = new QtGreet();
 
+	/* Hidden test mode */
+	if ( app.arguments().contains( "--test" ) ) {
+
+		qtgreet->showMaximized();
+		return app.exec();
+	}
+
 	native = QGuiApplication::platformNativeInterface();
 	display = ( struct wl_display * )native->nativeResourceForWindow( "display", NULL );
 	registry = wl_display_get_registry( display );

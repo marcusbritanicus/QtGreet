@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Delete the system user: greeter
+userdel -d greeter
+
+# Create the default
+rm -rf /etc/greetd/ /etc/qtgreet
+rm /etc/systemd/system/greetd.service
+
+# Enable greetd as the display manager
+systemctl disable greetd
