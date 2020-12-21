@@ -123,8 +123,8 @@ def install() :
         if not exists( "/etc/greetd" ):
             os.mkdir( "/etc/greetd" )
 
-        os.system( "cp config.toml /etc/greetd/config.toml" )
         os.chdir( "../../" )
+        os.system( "cp configs/config.toml /etc/greetd/config.toml" )
 
     print( "Installing qtgreet..." )
     os.chdir( "src/build" )

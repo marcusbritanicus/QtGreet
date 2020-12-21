@@ -28,11 +28,13 @@ set ( HDRS
 
 set ( qtgreet_SRCS
 	proto.c
+	ClockWidget.cpp
 	QtGreet.cpp
 	Main.cpp
 )
 
 set ( qtgreet_HMOCS
+	ClockWidget.hpp
 	QtGreet.hpp
 )
 QT5_WRAP_CPP(MOCS ${qtgreet_HMOCS})

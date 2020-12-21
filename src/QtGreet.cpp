@@ -28,12 +28,49 @@
 */
 
 #include "QtGreet.hpp"
+#include "ClockWidget.hpp"
 
 #include <unistd.h>
 
 extern "C" {
     #include "proto.h"
 }
+
+static inline int getFormFactor() {
+	/*
+		*
+		* Form Factors
+		* ------------
+		*
+		* 0: Desktop - Typically 14" to 16" screens
+		* 1: Tablets - Typically  7" to 10" screens
+		* 2: Mobiles - Typically  4" to  6" screens
+		* 3: Monitor - Typically larger than 16" - huge sizes, we're not built for these screens.
+		*
+	*/
+
+	QSizeF screenSize = QGuiApplication::primaryScreen()->physicalSize();
+	double diag = sqrt( pow( screenSize.width(), 2 ) + pow( screenSize.height(), 2 ) );
+
+	//- Deadly large screen mobiles
+	if ( diag <= 6.5 )
+		return 2;
+
+	//- Tablets and small netbooks
+	else if ( diag <= 10.1 )
+		return 1;
+
+	//- Typical desktops
+	else if ( diag <= 16.0 )
+		return 0;
+
+	// Large displays
+	else
+		return 3;
+
+	/* Default value */
+	return 0;
+};
 
 static bool IsExec( QString exec ) {
 
@@ -104,6 +141,9 @@ void QtGreet::createUI() {
 
     else
         noBG = true;
+
+    if ( getFormFactor() != 2 )
+        ClockWidget * clock = new ClockWidget( this );
 
     /* Layer 1 */
     userIcon = new QLabel();

@@ -20,6 +20,18 @@ QPushButton:pressed {
 QToolButton#nav {
     border: 1px solid gray;
     border-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QToolButton#nav:hover {
+    background-color: rgba(255, 255, 255, 30);
+}
+
+QToolButton#nav:pressed {
+    background-color: rgba(255, 255, 255, 10);
+    padding-top: 2px;
+    padding-left: 2px;
 }
 
 QLineEdit {
