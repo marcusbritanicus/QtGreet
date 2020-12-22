@@ -86,6 +86,8 @@ class QtGreet : public QMainWindow {
         uint curUser = 0;
         uint curSess = 0;
 
+        QSettings *userConfig;
+
         QLabel *userIcon;
         QPushButton *userName;
 
@@ -104,7 +106,7 @@ class QtGreet : public QMainWindow {
         QColor baseColor;
         QImage background;
         QString textColor;
-        bool noBG = false;
+        bool drawBG = true;
 
         QBasicTimer *clockTimer;
 

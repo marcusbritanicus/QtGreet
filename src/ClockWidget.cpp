@@ -33,7 +33,10 @@
 #include <QtWidgets>
 #include "ClockWidget.hpp"
 
-ClockWidget::ClockWidget( QWidget *parent ) : QWidget( parent ) {
+ClockWidget::ClockWidget( QColor txtclr, QWidget *parent ) : QWidget( parent ) {
+
+	mTextColor = txtclr;
+	mShadowColor = QColor( 255 - txtclr.red(), 255 - txtclr.green(), 255 - txtclr.blue() );
 
 	QTimer *timer = new QTimer( this );
 	connect( timer, SIGNAL( timeout() ), this, SLOT( update() ) );
@@ -48,15 +51,12 @@ void ClockWidget::paintEvent( QPaintEvent * ) {
 	QPainter painter( this );
 	painter.setRenderHint( QPainter::Antialiasing );
 
-	QPalette pltt = palette();
-
 	/* Size of the square */
 	int side = qMin( width() - 20, height() - 20 );
 
 	/* Draw battery circle track */
-	painter.save();
-	QColor clr = pltt.color( QPalette::Window );
-	painter.setPen( QPen( clr, ( side > 100 ? 10 : ( side > 50 ? 6 : 4 ) ), Qt::SolidLine, Qt::RoundCap ) );
+	painter.save();;
+	painter.setPen( QPen( mTextColor, ( side > 100 ? 6 : ( side > 50 ? 4 : 2 ) ), Qt::SolidLine, Qt::RoundCap ) );
 	painter.drawArc( QRect( (width() - side) / 2, (height() - side) / 2, side, side ), 90.0 * 16.0, -360.0 * 16.0 );
 	painter.restore();
 
@@ -69,7 +69,7 @@ void ClockWidget::paintEvent( QPaintEvent * ) {
 	/* Clock center dot */
 	painter.save();
 	painter.setPen( Qt::NoPen );
-	painter.setBrush( pltt.color( QPalette::Window ) );
+	painter.setBrush( mTextColor );
 	painter.drawEllipse( QPointF( width() / 2, height() / 2 ), 3, 3 );
 	painter.restore();
 
@@ -77,7 +77,7 @@ void ClockWidget::paintEvent( QPaintEvent * ) {
 	painter.scale( ( side - 10 ) / 200.0, ( side - 10 ) / 200.0 );
 
 	/* Hour/minutes tics */
-	painter.setPen( QPen( pltt.color( QPalette::WindowText ), 2.0, Qt::SolidLine, Qt::RoundCap ) );
+	painter.setPen( QPen( mTextColor, 2.0, Qt::SolidLine, Qt::RoundCap ) );
 	for ( int j = 0; j < 60; ++j ) {
 		if ( ( j % 5 ) == 0 )
 			painter.drawLine( 88, 0, 96, 0 );
@@ -91,14 +91,14 @@ void ClockWidget::paintEvent( QPaintEvent * ) {
 	/* Hour Hand */
 	painter.save();
 	painter.rotate( 30.0 * ( ( time.hour() + time.minute() / 60.0 ) ) );
-	painter.setPen( QPen( pltt.color( QPalette::WindowText ), 5.0, Qt::SolidLine, Qt::RoundCap ) );
+	painter.setPen( QPen( mTextColor, 5.0, Qt::SolidLine, Qt::RoundCap ) );
 	painter.drawLine( QLineF( QPointF( 0, -8 ), QPointF( 0, -40 ) ) );
 	painter.restore();
 
 	/* Minute Hand */
 	painter.save();
 	painter.rotate( 6.0 * ( time.minute() + time.second() / 60.0 ) );
-	painter.setPen( QPen( pltt.color( QPalette::WindowText ), 4.0, Qt::SolidLine, Qt::RoundCap ) );
+	painter.setPen( QPen( mTextColor, 4.0, Qt::SolidLine, Qt::RoundCap ) );
 	painter.drawLine( QLineF( QPointF( 0, -8 ), QPointF( 0, -70 ) ) );
 	painter.restore();
 
@@ -114,9 +114,9 @@ void ClockWidget::paintEvent( QPaintEvent * ) {
 	painter.save();
 	QFont f( font() );
 	painter.setFont( QFont( f.family(), f.pointSize() + 1, QFont::Bold ) );
-	painter.setPen( pltt.color( QPalette::Window ) );
+	painter.setPen( mShadowColor );
 	painter.drawText( QRectF( 1, height() * 0.70 + 1, width(), height() ), Qt::AlignHCenter | Qt::AlignTop, date.toString( "MMM dd, yyyy" ) );
-	painter.setPen( pltt.color( QPalette::WindowText ) );
+	painter.setPen( mTextColor );
 	painter.drawText( QRectF( 0, height() * 0.70 + 0, width(), height() ), Qt::AlignHCenter | Qt::AlignTop, date.toString( "MMM dd, yyyy" ) );
 	painter.restore();
 

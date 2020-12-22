@@ -38,7 +38,11 @@ class ClockWidget : public QWidget {
 	Q_OBJECT
 
 	public:
-		ClockWidget(QWidget *parent = 0);
+		ClockWidget( QColor text, QWidget *parent = 0 );
+
+	private:
+		QColor mTextColor;
+		QColor mShadowColor;
 
 	protected:
 		void paintEvent( QPaintEvent *event ) override;

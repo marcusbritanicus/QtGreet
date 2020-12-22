@@ -140,10 +140,12 @@ void QtGreet::createUI() {
         background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 
     else
-        noBG = true;
+        drawBG = false;
 
     if ( getFormFactor() != 2 )
-        ClockWidget * clock = new ClockWidget( this );
+        ClockWidget * clock = new ClockWidget( QColor( "#" + textColor ), this );
+
+    userConfig = new QSettings( "/etc/qtgreet/users.conf", QSettings::IniFormat );
 
     /* Layer 1 */
     userIcon = new QLabel();
@@ -475,7 +477,7 @@ void QtGreet::paintEvent( QPaintEvent *pEvent ) {
     painter.drawRect( rect() );
     painter.restore();
 
-    if ( not noBG ) {
+    if ( drawBG ) {
         /* Background Image */
         painter.save();
         painter.setOpacity( 0.5 );

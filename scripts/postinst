@@ -5,6 +5,7 @@ useradd -r -M -G video greeter
 
 # Create the default
 chown -R greeter:greeter /etc/greetd/
+chown -R greeter:greeter /etc/qtgreet/
 
 # Enable greetd as the display manager
 systemctl enable greetd
