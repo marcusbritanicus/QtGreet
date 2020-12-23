@@ -47,7 +47,7 @@ Setup - A simple python script to build and install QtGreet and greetd
 ### =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 import os, sys
-from os.path import exists, isdir, isfile
+from os.path import exists, isdir, isfile, abspath
 
 def ls():
     os.system( "pwd" )
@@ -56,7 +56,7 @@ def ls():
 # Clean the source tree
 def clean() :
 
-    if "--no-greetd" in sys.argv :
+    if not "--no-greetd" in sys.argv :
         # Clean greetd
         print( "Cleaning greetd..." )
         os.chdir( "3rdparty/greetd/" )
@@ -77,13 +77,6 @@ def clean() :
 # Prepare the sources for building - basically update
 def prepare() :
 
-    if "--no-greetd" in sys.argv :
-        print( "Updating greetd..." )
-        os.system( "git submodule update --init --recursive" )
-        os.chdir( "3rdparty/greetd" )
-        os.system( 'git pull' )
-        os.chdir( "../../" )
-
     print( "Updating QtGreet..." )
     os.system( "git pull" )
 
@@ -92,7 +85,7 @@ def build() :
 
     # Compiling greetd is default. Unless the user has sepcified
     # --no-greetd we will go on with it
-    if "--no-greetd" in sys.argv :
+    if not "--no-greetd" in sys.argv :
         print( "Building greetd" )
         os.chdir( "3rdparty/greetd" )
         os.system( "cargo build --release" )
@@ -112,23 +105,47 @@ def install() :
         print( "You'll need super-user previleges to install" )
         exit( 1 )
 
-    if "--no-greetd" in sys.argv :
+    idx = -1
+    try:
+        idx = sys.argv.index( "--prefix" )
+    except ValueError:
+        pass
+
+    # --prefix has to be the second arg or greater
+    prefix = ""
+    if idx > 0:
+        prefix = abspath( sys.argv[ idx + 1 ] )
+
+    try:
+        print( f"Installing to prefix: {prefix}" )
+        os.mkdir( prefix )
+    except FileExistsError:
+        pass
+
+    if not "--no-greetd" in sys.argv :
         print( "Installing greetd..." )
+
+        os.mkdir( "" )
 
         # Install
         os.chdir( "3rdparty/greetd" )
-        os.system( "cp target/release/greetd /usr/bin/" )
-        os.system( "cp target/release/agreety /usr/bin/" )
-        os.system( "cp greetd.service /etc/systemd/system/greetd.service" )
-        if not exists( "/etc/greetd" ):
-            os.mkdir( "/etc/greetd" )
+        os.system( "cp target/release/greetd %s/usr/bin/" % prefix )
+        os.system( "cp target/release/agreety %s/usr/bin/" % prefix )
+        os.system( "cp greetd.service %s/etc/systemd/system/greetd.service" % prefix )
+        if not exists( "%s/etc/greetd" % prefix ):
+            os.mkdir( "%s/etc/greetd" % prefix )
 
         os.chdir( "../../" )
-        os.system( "cp configs/config.toml /etc/greetd/config.toml" )
+        os.system( "cp configs/config.toml %s/etc/greetd/config.toml" % prefix )
 
     print( "Installing qtgreet..." )
-    os.chdir( "src/build" )
-    os.system( "make install" )
+    os.chdir( "src" )
+    os.system( "install -D -m 0755 -o root --strip build/qtgreet --target-directory %s/usr/bin" % prefix )
+    os.chdir( "../" )
+    os.system( "install -D -m 0644 -o root backgrounds/* --target-directory %s/usr/share/qtgreet/backgrounds" % prefix )
+    os.system( "install -D -m 0644 -o root configs/config.ini --target-directory %s/etc/qtgreet/" % prefix )
+    os.system( "install -D -m 0644 -o root configs/wayfire.ini --target-directory %s/etc/qtgreet/" % prefix )
+    os.system( "install -D -m 0644 -o root README.md Changelog ReleaseNotes --target-directory %s/usr/share/qtgreet/" % prefix )
 
 if __name__ == "__main__":
 
@@ -209,14 +226,14 @@ if __name__ == "__main__":
         else:
             handleArgs()
 
-    elif ( len( sys.argv ) == 3 ):
-        greetd = "--no-greetd" in sys.argv
-        greetd |= "--greetd" in sys.argv
+    else:
+        # greetd = "--no-greetd" in sys.argv
+        # greetd |= "--greetd" in sys.argv
 
-        if not greetd:
-            print( "QtGreet Installer v1.0" )
-            print( "Invalid usage. Type 'setup.py help' to see the usage." )
-            exit( 1 )
+        # if not greetd:
+        #     print( "QtGreet Installer v1.0" )
+        #     print( "Invalid usage. Type 'setup.py help' to see the usage." )
+        #     exit( 1 )
 
-        else:
-            handleArgs()
+        # else:
+        handleArgs()
