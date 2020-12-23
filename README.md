@@ -7,9 +7,11 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 
 ### Dependencies:
 - Qt5 (duh...)
+- Qt5Wayland
 - wlroots
 - WLR based compositor (wayfire, sway etc..)
 - CMake (to build this project)
+- ECM (Extra CMake Modules)
 - Make (to compile this project)
 - Cargo (to build greetd)
 - Rust (to compile greetd)
@@ -26,6 +28,9 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
     - `./setup.py prepare --no-greetd && ./setup.py build --no-greetd`
 - Install the project (again, use `--no-greetd` to avoid greetd installation)
   * `sudo ./setup.py install`
+- Run the post-installation script to finish the installation - this creates the
+  user `greeter` and sets appropriate permissions on the directories and files
+  * `sudo sh ./scripts/postinst`
 
 ### Configure greetd to run QtGreet using wayfire
 
