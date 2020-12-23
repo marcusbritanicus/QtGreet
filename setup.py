@@ -56,7 +56,7 @@ def ls():
 # Clean the source tree
 def clean() :
 
-    if not "--no-greetd" in sys.argv :
+    if "--no-greetd" in sys.argv :
         # Clean greetd
         print( "Cleaning greetd..." )
         os.chdir( "3rdparty/greetd/" )
@@ -77,7 +77,7 @@ def clean() :
 # Prepare the sources for building - basically update
 def prepare() :
 
-    if not "--no-greetd" in sys.argv :
+    if "--no-greetd" in sys.argv :
         print( "Updating greetd..." )
         os.system( "git submodule update --init --recursive" )
         os.chdir( "3rdparty/greetd" )
@@ -92,7 +92,7 @@ def build() :
 
     # Compiling greetd is default. Unless the user has sepcified
     # --no-greetd we will go on with it
-    if not "--no-greetd" in sys.argv :
+    if "--no-greetd" in sys.argv :
         print( "Building greetd" )
         os.chdir( "3rdparty/greetd" )
         os.system( "cargo build --release" )
@@ -112,7 +112,7 @@ def install() :
         print( "You'll need super-user previleges to install" )
         exit( 1 )
 
-    if not "--no-greetd" in sys.argv :
+    if "--no-greetd" in sys.argv :
         print( "Installing greetd..." )
 
         # Install
