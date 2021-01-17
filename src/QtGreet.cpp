@@ -121,6 +121,8 @@ QtGreet::QtGreet() {
     setStyleSheet( getStyleSheet( textColor ) );
 
     userPass->setFocus();
+
+    updateUser();
 };
 
 void QtGreet::createUI() {
@@ -172,7 +174,6 @@ void QtGreet::createUI() {
     userName->setFixedSize( QSize( 270, 36 ) );
     userName->setFont( QFont( "Quicksand", 12, QFont::Bold ) );
     connect( userName, &QPushButton::clicked, this, &QtGreet::showUserSelection );
-    updateUser();
 
     nextUBtn = new QToolButton();
     nextUBtn->setObjectName( "nav" );
@@ -417,7 +418,8 @@ void QtGreet::getLoginSessions() {
                 session.value( "Desktop Entry/Name" ).toString(),
                 session.value( "Desktop Entry/Icon" ).toString(),
                 "wayland",
-                session.value( "Desktop Entry/Exec" ).toString()
+                session.value( "Desktop Entry/Exec" ).toString(),
+                wlSessDir.filePath( sess )
             };
 
             if ( not s.name.contains( "wayland", Qt::CaseInsensitive ) )
@@ -435,14 +437,15 @@ void QtGreet::getLoginSessions() {
                 session.value( "Desktop Entry/Name" ).toString() + " (X11)",
                 session.value( "Desktop Entry/Icon" ).toString(),
                 "X11",
-                session.value( "Desktop Entry/Exec" ).toString()
+                session.value( "Desktop Entry/Exec" ).toString(),
+                xSessDir.filePath( sess )
             };
 
             mSessions << s;
         }
     }
 
-    Session custom{ "Custom", "application-x-executable", "unknown", "" };
+    Session custom{ "Custom", "application-x-executable", "unknown", "", "" };
     mSessions << custom;
 };
 
@@ -450,6 +453,32 @@ void QtGreet::updateUser() {
 
     QString username = QString( "%1 (%2)" ).arg( mUserList.at( curUser ).name ).arg( mUserList.at( curUser ).username );
     userName->setText( username );
+
+    QString last = userConfig->value( "LastUsed/" + QString::number( mUserList.at( curUser ).uid ) ).toString();
+    /* Not saved */
+    if ( last.isEmpty() ) {
+
+        return;
+    }
+
+    /* Custom Session */
+    else if ( not last.startsWith( "/" ) ) {
+        curSess = mSessions.count() - 1;
+        updateSess();
+        QString cmd = last.split( ":" ).value( 1 );
+        sessionCmd->setText( cmd );
+    }
+
+    /* System Session */
+    else {
+        for( int i = 0; i < mSessions.count();  i++ ) {
+            if ( last == mSessions.at( i ).file ) {
+                curSess = i;
+                updateSess();
+                break;
+            }
+        }
+    }
 };
 
 void QtGreet::updateSess() {
@@ -652,6 +681,12 @@ void QtGreet::tryLogin() {
     showValidating();
     setDisabled( true );
 
+    /* Save this as last used */
+    QString user = QString( "LastUsed/%1" ).arg( mUserList.at( curUser ).uid );
+    QString last = ( mSessions.at( curSess ).type == "unknown" ? "Custom:" + sessionCmd->text() : mSessions.at( curSess ).file );
+    userConfig->setValue( user, last );
+    userConfig->sync();
+
     qApp->processEvents();
 
     /* Open the request to create a session */
@@ -687,8 +722,11 @@ void QtGreet::tryLogin() {
             if ( mSessions.at( curSess ).type == "wayland" )
                 cmd = mSessions.at( curSess ).exec + " > " + logName + " 2>&1";
 
-            else
+            else if ( mSessions.at( curSess ).type == "X11" )
                 cmd = getXSessionCommand() + " > " + logName + " 2>&1";
+
+            else
+                cmd = sessionCmd->text();
 
             strncpy( req.body.request_start_session.cmd, cmd.toUtf8().constData(), 256 );
             resp = roundtrip( req );

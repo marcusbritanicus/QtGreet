@@ -47,6 +47,7 @@ typedef struct session_t {
     QString icon;
     QString type;
     QString exec;
+    QString file;
 } Session;
 
 typedef QList<User> Users;
