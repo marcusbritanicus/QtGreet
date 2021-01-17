@@ -36,7 +36,7 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 
 In case greetd was not installed as a part of QtGreet, then you will have to configure it to use QtGreet.
 You can skip this if greetd was installed as a part of QtGreet installation.
-To do that, you'll have to set the command `greetd` should run as `wayfire --config /etc/qtgreet/wayfire.ini`
+To use wayfire, you'll have to set the command `greetd` should run as `wayfire --config /etc/qtgreet/wayfire.ini`
 * Open `/etc/greetd/config.toml` for editing with your favorite editor.
 * Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
 

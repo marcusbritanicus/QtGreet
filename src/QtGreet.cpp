@@ -718,7 +718,7 @@ void QtGreet::tryLogin() {
             };
 
             QString cmd;
-            QString logName = "/var/log/QtGreet-" + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" );
+            QString logName = "/tmp/QtGreet-" + un + '-' + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" ) + ".log";
             if ( mSessions.at( curSess ).type == "wayland" )
                 cmd = mSessions.at( curSess ).exec + " > " + logName + " 2>&1";
 
