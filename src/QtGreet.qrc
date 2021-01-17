@@ -8,5 +8,7 @@
 		<file>icons/arrow-right.png</file>
 		<file>icons/session.png</file>
 		<file>icons/user.png</file>
+		<file>icons/battery.png</file>
+		<file>icons/acpower.png</file>
 	</qresource>
 </RCC>

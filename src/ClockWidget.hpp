@@ -33,9 +33,13 @@
 #pragma once
 
 #include <QWidget>
+#include <QVariantMap>
+
+class QDBusInterface;
+class BatteryInfo;
 
 class ClockWidget : public QWidget {
-	Q_OBJECT
+	Q_OBJECT;
 
 	public:
 		ClockWidget( QColor text, QWidget *parent = 0 );
@@ -44,6 +48,36 @@ class ClockWidget : public QWidget {
 		QColor mTextColor;
 		QColor mShadowColor;
 
+		BatteryInfo *battery;
+		qreal mCharge = 100.0;
+		bool mOnBattery = false;
+		QImage battImg;
+
 	protected:
 		void paintEvent( QPaintEvent *event ) override;
+};
+
+class BatteryInfo : public QObject {
+	Q_OBJECT;
+
+	public:
+		BatteryInfo();
+
+		qreal currentCharge();
+		bool onBattery();
+
+	private:
+		QDBusInterface *iface;
+		qreal mLastPercentage = 100.0;
+		bool mOnBattery = false;
+
+	private Q_SLOTS:
+		void handlePowerChanges( QString, QVariantMap, QStringList );
+
+	Q_SIGNALS:
+		/* Battery Charge/Discharge Signals */
+		void onBatteryChanged( bool );
+
+		/* Battery charge changed */
+		void chargeChanged( double );
 };

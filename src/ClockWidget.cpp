@@ -31,6 +31,8 @@
 */
 
 #include <QtWidgets>
+#include <QtDBus>
+
 #include "ClockWidget.hpp"
 
 ClockWidget::ClockWidget( QColor txtclr, QWidget *parent ) : QWidget( parent ) {
@@ -44,6 +46,38 @@ ClockWidget::ClockWidget( QColor txtclr, QWidget *parent ) : QWidget( parent ) {
 
 	setWindowTitle( tr( "Analog Clock" ) );
 	resize( 200, 200 );
+
+	QImage bImg = QImage( ":/icons/battery.png" ).scaled( QSize( 24, 24 ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+	QImage aImg = QImage( ":/icons/acpower.png" ).scaled( QSize( 24, 24 ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+
+	battery = new BatteryInfo();
+	mCharge = battery->currentCharge();
+	connect(
+		battery, &BatteryInfo::chargeChanged, [=]( qreal bCharge ) {
+			mCharge = bCharge;
+			repaint();
+		}
+	);
+
+	mOnBattery = battery->onBattery();
+	connect(
+		battery, &BatteryInfo::onBatteryChanged, [=]( bool yes ) {
+			mOnBattery = yes;
+			if ( mOnBattery )
+				battImg = bImg;
+
+			else
+				battImg = aImg;
+
+			repaint();
+		}
+	);
+
+	if ( mOnBattery )
+		battImg = bImg;
+
+	else
+		battImg = aImg;
 };
 
 void ClockWidget::paintEvent( QPaintEvent * ) {
@@ -55,9 +89,14 @@ void ClockWidget::paintEvent( QPaintEvent * ) {
 	int side = qMin( width() - 20, height() - 20 );
 
 	/* Draw battery circle track */
-	painter.save();;
+	painter.save();
 	painter.setPen( QPen( mTextColor, ( side > 100 ? 6 : ( side > 50 ? 4 : 2 ) ), Qt::SolidLine, Qt::RoundCap ) );
-	painter.drawArc( QRect( (width() - side) / 2, (height() - side) / 2, side, side ), 90.0 * 16.0, -360.0 * 16.0 );
+	painter.drawArc( QRect( (width() - side) / 2, (height() - side) / 2, side, side ), 90.0 * 16.0, -360.0 * 16.0 * mCharge / 100.0 );
+	painter.restore();
+
+	/* Battery/AC info: 24px */
+	painter.save();
+	painter.drawImage( QRect( ( width() - 24 ) / 2.0, 30, 24, 24 ), battImg );
 	painter.restore();
 
 	/* Get the current time */
@@ -122,4 +161,82 @@ void ClockWidget::paintEvent( QPaintEvent * ) {
 
 	/* End the painting */
 	painter.end();
+};
+
+BatteryInfo::BatteryInfo() : QObject() {
+
+	iface = new QDBusInterface(
+        "org.freedesktop.UPower",
+        "/org/freedesktop/UPower/devices/DisplayDevice",
+        "org.freedesktop.UPower.Device",
+        QDBusConnection::systemBus()
+    );
+
+	QDBusConnection::systemBus().connect(
+        "org.freedesktop.UPower",
+        "/org/freedesktop/UPower/devices/DisplayDevice",
+        "org.freedesktop.DBus.Properties",
+        "PropertiesChanged",
+        this,
+        SLOT( handlePowerChanges( QString, QVariantMap, QStringList ) )
+    );
+
+	switch( iface->property( "State" ).toUInt() ) {
+		case 1:
+		case 4: {
+			mOnBattery = false;
+			break;
+		}
+
+		default: {
+			mOnBattery = true;
+			break;
+		}
+	};
+
+	mLastPercentage = iface->property( "Percentage" ).toDouble();
+};
+
+qreal BatteryInfo::currentCharge() {
+
+	return mLastPercentage;
+};
+
+bool BatteryInfo::onBattery() {
+
+	return mOnBattery;
+};
+
+void BatteryInfo::handlePowerChanges( QString interface, QVariantMap valueMap, QStringList ) {
+
+	bool battery;
+	switch( iface->property( "State" ).toUInt() ) {
+		case 1:
+		case 4: {
+			battery = false;
+			break;
+		}
+
+		default: {
+			battery = true;
+			break;
+		}
+	};
+
+    /* Check for Power State Changes */
+    if ( battery != mOnBattery ) {
+        mOnBattery = battery;
+        if ( mOnBattery )
+            emit onBatteryChanged( true );
+
+        else
+            emit onBatteryChanged( false );
+    }
+
+    /* Battery percentage */
+    double curBatPC = iface->property( "Percentage" ).toDouble();
+    if ( mLastPercentage != curBatPC ) {
+        mLastPercentage = curBatPC;
+        emit chargeChanged( mLastPercentage );
+    }
 };

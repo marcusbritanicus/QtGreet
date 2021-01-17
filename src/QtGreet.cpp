@@ -683,11 +683,12 @@ void QtGreet::tryLogin() {
             };
 
             QString cmd;
+            QString logName = "/var/log/QtGreet-" + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" );
             if ( mSessions.at( curSess ).type == "wayland" )
-                cmd = mSessions.at( curSess ).exec;
+                cmd = mSessions.at( curSess ).exec + " > " + logName + " 2>&1";
 
             else
-                cmd = getXSessionCommand();
+                cmd = getXSessionCommand() + " > " + logName + " 2>&1";
 
             strncpy( req.body.request_start_session.cmd, cmd.toUtf8().constData(), 256 );
             resp = roundtrip( req );

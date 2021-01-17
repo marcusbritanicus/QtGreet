@@ -138,6 +138,10 @@ def install() :
         os.chdir( "../../" )
         os.system( "cp configs/config.toml %s/etc/greetd/config.toml" % prefix )
 
+        if not exists( "%s/etc/pam.d" % prefix ):
+            os.mkdir( "%s/etc/pam.d" % prefix )
+            os.system( "cp configs/greetd %s/etc/pam.d/greetd" % prefix )
+
     print( "Installing qtgreet..." )
     os.chdir( "src" )
     os.system( "install -D -m 0755 -o root --strip build/qtgreet --target-directory %s/usr/bin" % prefix )
