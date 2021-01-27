@@ -116,16 +116,14 @@ def install() :
     if idx > 0:
         prefix = abspath( sys.argv[ idx + 1 ] )
 
-    try:
-        print( f"Installing to prefix: {prefix}" )
-        os.mkdir( prefix )
-    except FileExistsError:
-        pass
+        try:
+            print( f"Installing to prefix: {prefix}" )
+            os.mkdir( prefix )
+        except FileExistsError:
+            pass
 
     if not "--no-greetd" in sys.argv :
         print( "Installing greetd..." )
-
-        os.mkdir( "" )
 
         # Install
         os.chdir( "3rdparty/greetd" )
@@ -140,7 +138,8 @@ def install() :
 
         if not exists( "%s/etc/pam.d" % prefix ):
             os.mkdir( "%s/etc/pam.d" % prefix )
-            os.system( "cp configs/greetd %s/etc/pam.d/greetd" % prefix )
+
+        os.system( "cp configs/greetd %s/etc/pam.d/greetd" % prefix )
 
     print( "Installing qtgreet..." )
     os.chdir( "src" )
