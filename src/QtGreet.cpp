@@ -31,6 +31,15 @@
 #include "ClockWidget.hpp"
 
 #include <unistd.h>
+#include <QtDBus>
+
+#define CONSOLEKIT_SERVICE      "org.freedesktop.ConsoleKit"
+#define CONSOLEKIT_PATH         "/org/freedesktop/ConsoleKit/Manager"
+#define CONSOLEKIT_INTERFACE    "org.freedesktop.ConsoleKit.Manager"
+
+#define SYSTEMD_SERVICE         "org.freedesktop.login1"
+#define SYSTEMD_PATH            "/org/freedesktop/login1"
+#define SYSTEMD_INTERFACE       "org.freedesktop.login1.Manager"
 
 extern "C" {
     #include "proto.h"
@@ -144,16 +153,17 @@ void QtGreet::createUI() {
     else
         drawBG = false;
 
+    /* Add a clock widget - this goes to the top left corner */
     if ( getFormFactor() != 2 )
-        ClockWidget * clock = new ClockWidget( QColor( "#" + textColor ), this );
+        ClockWidget *clock = new ClockWidget( QColor( "#" + textColor ), this );
 
     userConfig = new QSettings( "/etc/qtgreet/users.conf", QSettings::IniFormat );
 
     /* Layer 1 */
     userIcon = new QLabel();
+    userIcon->setObjectName( "userIcon" );
     userIcon->setAlignment( Qt::AlignCenter );
     userIcon->setFixedSize( QSize( 72, 72 ) );
-    userIcon->setStyleSheet( "border: 2px solid gray; border-radius: 6px;" );
     userIcon->setPixmap( QIcon( ":/icons/user.png" ).pixmap( QSize( 64, 64 ) ) );
 
     QHBoxLayout *lyr1Lyt = new QHBoxLayout();
@@ -234,7 +244,6 @@ void QtGreet::createUI() {
     nextSBtn->setFixedSize( QSize( 36, 36 ) );
     nextSBtn->setIcon( QIcon( ":/icons/arrow-right.png" ) );
     nextSBtn->setAutoRaise( true );
-    nextSBtn->setStyleSheet( "border: 1px solid gray; border-radius: 18px;" );
     connect( nextSBtn, &QToolButton::clicked, this, &QtGreet::nextSess );
 
     QHBoxLayout *lyr5Lyt = new QHBoxLayout();
@@ -251,13 +260,55 @@ void QtGreet::createUI() {
     sessionCmd->setFixedSize( QSize( 270, 36 ) );
     sessionCmd->setAlignment( Qt::AlignCenter );
     sessionCmd->setFont( QFont( "Quicksand", 12 ) );
-    sessionCmd->setStyleSheet( "border: 1px solid gray; border-radius: 18px; padding-left: 10px; padding-right: 10px;" );
     updateSess();
 
     QHBoxLayout *lyr6Lyt = new QHBoxLayout();
     lyr6Lyt->addStretch();
     lyr6Lyt->addWidget( sessionCmd );
     lyr6Lyt->addStretch();
+
+    /* Layer 7 */
+
+    shutdownBtn = new QToolButton();
+    shutdownBtn->setObjectName( "halt" );
+    shutdownBtn->setFixedSize( QSize( 36, 36 ) );
+    shutdownBtn->setAutoRaise( true );
+    shutdownBtn->setIcon( QIcon( ":/icons/shutdown.png" ) );
+    shutdownBtn->setIconSize( QSize( 28, 28 ) );
+    connect(
+        shutdownBtn, &QToolButton::clicked, [=]() {
+            QDBusInterface *iface = new QDBusInterface( SYSTEMD_SERVICE, SYSTEMD_PATH, SYSTEMD_INTERFACE, QDBusConnection::systemBus() );
+            if ( not iface->isValid() )
+                iface = new QDBusInterface( CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, CONSOLEKIT_INTERFACE, QDBusConnection::systemBus() );
+
+            iface->call( "PowerOff", false );
+        }
+    );
+
+    rebootBtn = new QToolButton();
+    rebootBtn->setObjectName( "reboot" );
+    rebootBtn->setFixedSize( QSize( 36, 36 ) );
+    rebootBtn->setAutoRaise( true );
+    rebootBtn->setIcon( QIcon( ":/icons/reboot.png" ) );
+    rebootBtn->setIconSize( QSize( 28, 28 ) );
+    connect(
+        rebootBtn, &QToolButton::clicked, [=]() {
+            QDBusInterface *iface = new QDBusInterface( SYSTEMD_SERVICE, SYSTEMD_PATH, SYSTEMD_INTERFACE, QDBusConnection::systemBus() );
+            if ( not iface->isValid() )
+                iface = new QDBusInterface( CONSOLEKIT_SERVICE, CONSOLEKIT_PATH, CONSOLEKIT_INTERFACE, QDBusConnection::systemBus() );
+
+            iface->call( "Reboot", false );
+        }
+    );
+    shutdownBtn->setGeometry( QRect( width() - 36, height() - 36, 36, 36 ) );
+    rebootBtn->setGeometry( QRect( width() - 72, height() - 36, 36, 36 ) );
+
+    QHBoxLayout *lyr7Lyt = new QHBoxLayout();
+    lyr7Lyt->setContentsMargins( QMargins( 5, 5, 5, 5 ) );
+    lyr7Lyt->setSpacing( 0 );
+    lyr7Lyt->addStretch();
+    lyr7Lyt->addWidget( rebootBtn );
+    lyr7Lyt->addWidget( shutdownBtn );
 
     /* Final Layout */
     QVBoxLayout *lyt = new QVBoxLayout();
@@ -289,6 +340,8 @@ void QtGreet::createUI() {
     lyt->addLayout( lyr6Lyt );
 
     lyt->addStretch();
+
+    lyt->addLayout( lyr7Lyt );
 
     QWidget *base = new QWidget();
     base->setLayout( lyt );

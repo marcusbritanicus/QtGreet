@@ -92,8 +92,6 @@ class QtGreet : public QMainWindow {
         QLabel *userIcon;
         QPushButton *userName;
 
-        QLabel *clock;
-
         QToolButton *nextUBtn, *prevUBtn;
         QLineEdit *userPass;
 
@@ -103,6 +101,8 @@ class QtGreet : public QMainWindow {
         QLineEdit *sessionCmd;
 
         QPushButton *loginBtn;
+
+        QToolButton *shutdownBtn, *rebootBtn;
 
         QColor baseColor;
         QImage background;

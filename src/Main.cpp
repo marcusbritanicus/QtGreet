@@ -89,7 +89,20 @@ static void show() {
 
 	/* Hack to disable wayland integration */
 	wl_surface = static_cast<struct wl_surface *>( native->nativeResourceForWindow( "surface", qtgreet->windowHandle() ) );
+	if ( not wl_surface ) {
+		qDebug() << "Unable to create a wayland surface. Aborting...";
+		return;
+	}
+
 	layer_surface = zwlr_layer_shell_v1_get_layer_surface( layer_shell, wl_surface, NULL, layer, "QtGreet" );
+	if ( not layer_surface ) {
+		qDebug() << "Unable to create a layer surface. Aborting...";
+		return;
+	}
+
+	else
+		qDebug() << "Created a layer surface...";
+
 	zwlr_layer_surface_v1_set_margin( layer_surface, 0, 0, 0, 0 );
 	zwlr_layer_surface_v1_set_size( layer_surface, qtgreet->width(), qtgreet->height() );
 	zwlr_layer_surface_v1_set_anchor( layer_surface, anchor );
@@ -119,7 +132,17 @@ int main( int argc, char **argv ) {
 
 	native = QGuiApplication::platformNativeInterface();
 	display = ( struct wl_display * )native->nativeResourceForWindow( "display", NULL );
+	if ( not display ) {
+		qDebug() << "Unable to connect to wayland display. Aborting...";
+		return 1;
+	}
+
 	registry = wl_display_get_registry( display );
+	if ( not display ) {
+		qDebug() << "Unable to connect to get the registry. Aborting...";
+		return 1;
+	}
+
 	wl_registry_add_listener( registry, &registry_listener, NULL );
 	wl_display_roundtrip( display );
 

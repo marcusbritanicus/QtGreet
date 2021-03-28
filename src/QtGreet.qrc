@@ -10,5 +10,7 @@
 		<file>icons/user.png</file>
 		<file>icons/battery.png</file>
 		<file>icons/acpower.png</file>
+		<file>icons/shutdown.png</file>
+		<file>icons/reboot.png</file>
 	</qresource>
 </RCC>

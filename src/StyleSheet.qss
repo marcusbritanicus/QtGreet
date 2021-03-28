@@ -17,6 +17,16 @@ QPushButton:pressed {
     padding-left: 1px;
 }
 
+QToolButton:hover {
+    background-color: rgba(255, 255, 255, 30);
+}
+
+QToolButton:pressed {
+    background-color: rgba(255, 255, 255, 10);
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
 QToolButton#nav {
     border: 1px solid gray;
     border-radius: 18px;
@@ -24,20 +34,30 @@ QToolButton#nav {
     padding-left: 1px;
 }
 
-QToolButton#nav:hover {
-    background-color: rgba(255, 255, 255, 30);
+QToolButton#halt {
+    border: 1px solid gray;
+    border-radius: 0px;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
 }
 
-QToolButton#nav:pressed {
-    background-color: rgba(255, 255, 255, 10);
-    padding-top: 2px;
-    padding-left: 2px;
+QToolButton#reboot {
+    border: 1px solid gray;
+    border-radius: 0px;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
 }
 
 QLineEdit {
     background-color: transparent;
     border: 1px solid gray;
     border-radius: 18px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 QListWidget {
@@ -52,4 +72,9 @@ QWidget#widget {
 
 QWidget#OverLay {
     background-color: rgba(0, 0, 0, 230);
+}
+
+QLabel#userIcon {
+    border: 2px solid gray;
+    border-radius: 6px;
 }
