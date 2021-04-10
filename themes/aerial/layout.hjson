@@ -39,7 +39,7 @@
 					Margins: {
 						Left    : 0.08
 						Top     : 0.30
-						Right   : 0.68
+						Right   : 0
 						Bottom  : 0.09
 					}
 
@@ -56,62 +56,78 @@
 							}
 						}
 						{
-							Clock: {
-								Type: Time
-								Font: Quicksand, 40, Normal, Normal
-								Format: hh:mm
-							}
-						}
-						{
-							Clock: {
-								Type: Date
-								Font: Quicksand, 14, Normal, Normal
-								Format: dddd, MMMM dd, yyyy
-							}
-						}
-						{
-							HorizontalLayout: {
-								Objects: [
-									{
-										QLabel: {
-											Text: Username
-											FixedHeight: 27
-											FixedWidth: 75
+							QWidget: {
+								FixedWidth: 0.25
+								Alignment: Left
+								VerticalLayout: {
+									Spacing: 10
+
+									Objects: [
+										{
+											Clock: {
+												Alignment: Left
+												Type: Time
+												Font: Quicksand, 40, Normal, Normal
+												Format: hh:mm
+											}
 										}
-									}
-									{
-										UserName: {
-											Type: LineEdit
-											FixedHeight: 27
+										{
+											Clock: {
+												Alignment: Left
+												Type: Date
+												Font: Quicksand, 14, Normal, Normal
+												Format: dddd, MMMM dd, yyyy
+											}
 										}
-									}
-								]
-							}
-						}
-						{
-							HorizontalLayout: {
-								Objects: [
-									{
-										QLabel: {
-											Text: Password
-											FixedHeight: 27
-											FixedWidth: 75
+										{
+											HorizontalLayout: {
+												Alignment: Left
+												Objects: [
+													{
+														QLabel: {
+															Text: Username
+															FixedHeight: 27
+															FixedWidth: 75
+														}
+													}
+													{
+														UserName: {
+															Type: LineEdit
+															FixedHeight: 27
+														}
+													}
+												]
+											}
 										}
-									}
-									{
-										Password: {
-											Type: LineEdit
-											FixedHeight: 27
+										{
+											HorizontalLayout: {
+												Alignment: Left
+												Objects: [
+													{
+														QLabel: {
+															Text: Password
+															FixedHeight: 27
+															FixedWidth: 75
+														}
+													}
+													{
+														Password: {
+															Type: LineEdit
+															FixedHeight: 27
+														}
+													}
+													{
+														LoginButton: {
+															Type: ToolButton
+															FixedHeight: 27
+															FixedWidth: 27
+														}
+													}
+												]
+											}
 										}
-									}
-									{
-										LoginButton: {
-											Type: ToolButton
-											FixedHeight: 27
-											FixedWidth: 27
-										}
-									}
-								]
+									]
+								}
 							}
 						}
 					]
