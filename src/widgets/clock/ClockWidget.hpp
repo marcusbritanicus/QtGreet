@@ -38,11 +38,11 @@
 class QDBusInterface;
 class BatteryInfo;
 
-class ClockWidget : public QWidget {
+class AnalogClock : public QWidget {
 	Q_OBJECT;
 
 	public:
-		ClockWidget( QColor text, QWidget *parent = 0 );
+		AnalogClock( QColor text, QWidget *parent = 0 );
 
 	private:
 		QColor mTextColor;
@@ -55,6 +55,38 @@ class ClockWidget : public QWidget {
 
 	protected:
 		void paintEvent( QPaintEvent *event ) override;
+};
+
+class DigitalClock : public QWidget {
+	Q_OBJECT
+
+	public:
+		DigitalClock(QWidget *parent = 0);
+
+	private:
+		QLCDNumber *time;
+		QLCDNumber *secs;
+		QLabel     *ampm;
+		QLabel     *date;
+		QLabel	   *alrm;
+
+		QBasicTimer *timer;
+
+	protected:
+		void timerEvent( QTimerEvent *event ) override;
+};
+
+class SimpleClock : public QLabel {
+	Q_OBJECT
+
+	public:
+		SimpleClock(QWidget *parent = 0);
+
+	private:
+		QBasicTimer *timer;
+
+	protected:
+		void timerEvent( QTimerEvent *event ) override;
 };
 
 class BatteryInfo : public QObject {

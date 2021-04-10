@@ -33,26 +33,6 @@
 #include <QtGui>
 #include <QtWidgets>
 
-typedef struct user_t {
-    QString username;
-    uint uid;
-    uint gid;
-    QString name;
-    QString homePath;
-    QString shell;
-} User;
-
-typedef struct session_t {
-    QString name;
-    QString icon;
-    QString type;
-    QString exec;
-    QString file;
-} Session;
-
-typedef QList<User> Users;
-typedef QList<Session> Sessions;
-
 class QtGreet : public QMainWindow {
     Q_OBJECT;
 
@@ -64,84 +44,50 @@ class QtGreet : public QMainWindow {
         void createUI();
 
         /* Read the list of users */
-        void getUserList();
+        void getUserList() {};
 
         /* Read the list of X11/Wayland sessions */
-        void getLoginSessions();
+        void getLoginSessions() {};
 
         /* Update the username on the screen */
-        void updateUser();
+        void updateUser() {};
 
         /* Update the session on the screen */
-        void updateSess();
+        void updateSess() {};
 
         /* Show the validating message */
-        void showValidating();
+        void showValidating() {};
 
         /* Get the command to launch an X session */
-        QString getXSessionCommand();
-
-        Users mUserList;
-        Sessions mSessions;
+        QString getXSessionCommand() { return QString(); };
 
         uint curUser = 0;
         uint curSess = 0;
 
-        QSettings *userConfig;
-
-        QLabel *userIcon;
-        QPushButton *userName;
-
-        QToolButton *nextUBtn, *prevUBtn;
-        QLineEdit *userPass;
-
-        QToolButton *nextSBtn, *prevSBtn;
-
-        QPushButton *session;
-        QLineEdit *sessionCmd;
-
-        QPushButton *loginBtn;
-
-        QToolButton *shutdownBtn, *rebootBtn;
-
-        QColor baseColor;
         QImage background;
-        QString textColor;
-        bool drawBG = true;
-
-        QBasicTimer *clockTimer;
-
-        /* User/Session Widgets */
-        QWidget *overLay;
-        QListWidget *userLW;
-        QListWidget *sessionLW;
-
-        /* Validation message */
-        QLabel *validating;
 
     protected:
         void paintEvent( QPaintEvent *pEvent );
-        void timerEvent( QTimerEvent *tEvent );
 
     private Q_SLOTS:
         /* Show the next user */
-        void nextUser();
+        void nextUser() {};
 
         /* Show the previous user */
-        void previousUser();
+        void previousUser() {};
 
         /* Show the next user */
-        void nextSess();
+        void nextSess() {};
 
         /* Show the previous user */
-        void previousSess();
+        void previousSess() {};
 
         /* User selection */
-        void showUserSelection();
+        void showUserSelection() {};
 
         /* Session selection */
-        void showSessionSelection();
+        void showSessionSelection() {};
 
         /* Try to login */
-        void tryLogin();
+        void tryLogin() {};
 };

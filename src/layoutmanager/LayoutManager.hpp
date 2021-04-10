@@ -27,18 +27,30 @@
 	*
 */
 
-// Local Headers
-#include "Global.hpp"
-#include "QtGreet.hpp"
+#pragma once
 
-int main( int argc, char **argv ) {
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
-	QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
+#include "hjson.h"
 
-	QApplication app( argc, argv );
+class LayoutManager {
 
-	QtGreet *qtgreet = new QtGreet();
-	qtgreet->showFullScreen();
+    public:
+        LayoutManager( QString layoutFile );
+        void applyLayout( QWidget *w );
 
-	return app.exec();
+    private:
+        QVBoxLayout* getVLayout( Hjson::Value layout );
+        QHBoxLayout* getHLayout( Hjson::Value layout );
+
+        QWidget *getWidget( std::string objName, Hjson::Value obj );
+
+        /* Initalize the screen size */
+        QSize screenSize;
+
+        /* Layout */
+        Hjson::Value mLayout;
+        QLayout *lyt = nullptr;
 };

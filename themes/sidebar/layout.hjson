@@ -1,0 +1,198 @@
+{
+	VerticalLayout: {
+		Margins: {
+			Left    : 0
+			Top     : 0
+			Right   : 0
+			Bottom  : 0
+		}
+
+		Spacing: 0
+
+		Objects: [
+			# Top Panel
+			{
+				QWidget: {
+					FixedWidth: 1.0
+					FixedHeight: 40
+					Type: Panel
+
+					HorizontalLayout: {
+						Objects: [
+							{
+								Logo: {
+									FixedHeight: 40
+									Icon: ":/icons/qtgreet1.png"
+								}
+							}
+							{
+								Stretch: {}
+							}
+							{
+								Clock: {
+									Type: simple
+									FixedHeight: 40
+								}
+							}
+							{
+								Stretch: {}
+							}
+							{
+								NumLock: {
+									FixedHeight: 40
+								}
+							}
+							{
+								CapsLock: {
+									FixedHeight: 40
+								}
+							}
+							{
+								Separator: {
+									FixedHeight: 40
+								}
+							}
+							{
+								PowerButton: {
+									FixedHeight: 40
+									Type: Menu
+								}
+							}
+						]
+					}
+				}
+			}
+			{
+				HorizontalLayout: {
+					Objects: [
+						{
+							QWidget : {
+								FixedWidth: 0.25
+								Type: Sidebar
+								VerticalLayout: {
+									Objects: [
+										{
+											VerticalLayout: {
+												Objects: [
+													{
+														Stretch: {}
+													}
+												]
+											}
+										}
+										{
+											HorizontalLayout : {
+												Margins: {
+													Left:   10
+													Right:  10
+													Top:    10
+													Bottom: 10
+												}
+												Objects: [
+													{
+														Stretch: {}
+													}
+													{
+														UserPass: {
+															Text: Hello, Marcus
+															Alignment: Center
+														}
+													}
+													{
+														Stretch: {}
+													}
+												]
+											}
+										}
+										{
+											VerticalLayout: {
+												Objects: [
+													{
+														Stretch: {}
+													}
+												]
+											}
+										}
+										{
+											VerticalLayout: {
+												Objects: [
+													{
+														Stretch: {}
+													}
+												]
+											}
+										}
+									]
+								}
+							},
+						}
+						{
+							QWidget: {
+								FixedWidth: 0.75
+								VerticalLayout: {
+									Margins: {
+										Left   : 0.10
+										Top    : 0.10
+										Right  : 0.15
+										Bottom : 0.15
+									}
+
+									Spacing: 5
+
+									Objects: [
+										{
+											VerticalLayout: {
+												Objects: [
+													{
+														Stretch: {}
+													}
+												]
+											}
+										}
+										{
+											QLabel: {
+												Text: Available sessions
+											}
+										}
+										{
+											SessionList: {
+												Type: List
+												MinimumHeight: 0.3
+											}
+										}
+										{
+											HorizontalLayout: {
+												Objects: [
+													{
+														SessionEdit: {
+															FixedHeight: 27
+														}
+													}
+													{
+														SessionEditButton: {
+															FixedHeight: 27
+															FixedWidth: 27
+														}
+													}
+												]
+											}
+										}
+										{
+											VerticalLayout: {
+												Objects: [
+													{
+														Stretch: {}
+													}
+												]
+											}
+										}
+									]
+								}
+							}
+						}
+					]
+				}
+			}
+		]
+	}
+}

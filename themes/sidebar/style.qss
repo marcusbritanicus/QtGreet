@@ -1,0 +1,98 @@
+QWidget {
+    color: #ffffff;
+}
+
+#Panel {
+    background-color: rgba(0, 0, 0, 30);
+    border-bottom: 1px solid rgba(80, 80, 80, 60);
+}
+
+#Sidebar {
+    background-color: rgba(0, 0, 0, 30);
+    border-right: 1px solid rgba(80, 80, 80, 60);
+}
+
+QPushButton {
+    border: none;
+    border-radius: 0px;
+    background-color: rgba(255, 255, 255, 60);
+}
+
+QPushButton:hover {
+    background-color: rgba(255, 255, 255, 30);
+}
+
+QPushButton:pressed {
+    background-color: rgba(255, 255, 255, 10);
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QToolButton {
+    border: none;
+    border-radius: 0px;
+    background-color: rgba(255, 255, 255, 60);
+}
+
+QToolButton:hover {
+    background-color: rgba(255, 255, 255, 30);
+}
+
+QToolButton:pressed {
+    background-color: rgba(255, 255, 255, 10);
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
+QToolButton#nav {
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QToolButton#halt {
+    border: 1px solid gray;
+    border-radius: 0px;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QToolButton#reboot {
+    border: 1px solid gray;
+    border-radius: 0px;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QLineEdit {
+    background-color: rgba(255, 255, 255, 60);
+    border: none;
+    border-radius: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+QListWidget {
+    margin-bottom: 2px;
+    background-color: rgba(255, 255, 255, 60);
+    border: none;
+}
+
+QWidget#widget {
+    border: 2px solid gray;
+    border-radius: 5px;
+}
+
+QWidget#OverLay {
+    background-color: rgba(0, 0, 0, 230);
+}
+
+QLabel#userIcon {
+    border: 2px solid gray;
+    border-radius: 6px;
+}

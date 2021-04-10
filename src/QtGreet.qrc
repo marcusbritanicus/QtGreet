@@ -1,16 +1,14 @@
 <!DOCTYPE RCC><RCC version="1.0">
 	<qresource>
-		<file>StyleSheet.qss</file>
-	</qresource>
-
-	<qresource>
 		<file>icons/arrow-left.png</file>
 		<file>icons/arrow-right.png</file>
 		<file>icons/session.png</file>
 		<file>icons/user.png</file>
+		<file>icons/edit.png</file>
 		<file>icons/battery.png</file>
 		<file>icons/acpower.png</file>
 		<file>icons/shutdown.png</file>
 		<file>icons/reboot.png</file>
+		<file>icons/qtgreet1.png</file>
 	</qresource>
 </RCC>

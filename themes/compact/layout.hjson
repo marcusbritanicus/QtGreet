@@ -1,0 +1,157 @@
+{
+	VerticalLayout: {
+		Margins: {
+			Left: 5,
+			Top: 5,
+			Right: 5,
+			Bottom: 5
+		},
+
+		Spacing: 20,
+
+		Objects: [
+			{
+				Stretch: {}
+			},
+
+			{
+				UserIcon: {
+					Alignment: Center
+				}
+			},
+
+			{
+				Stretch: {}
+			},
+
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left: 0,
+						Top: 0,
+						Right: 0,
+						Bottom: 0
+					},
+
+					Spacing: 10,
+
+					Objects: [
+						{
+							Stretch: {}
+						},
+						{
+							UserNavLeft: {
+								Alignment: Center
+							}
+						},
+						{
+							UserName: {
+								Alignment: Center
+							}
+						},
+						{
+							UserNavRight: {
+								Alignment: Center
+							}
+						},
+						{
+							Stretch: {}
+						}
+					]
+				}
+			},
+
+			{
+				PassWord: {
+					Alignment: Center
+				}
+			},
+
+			{
+				Stretch: {}
+			},
+
+			{
+				LoginButton: {
+					Alignment: Center
+				}
+			},
+
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left: 0,
+						Top: 0,
+						Right: 0,
+						Bottom: 0
+					},
+
+					Spacing: 10,
+
+					Objects: [
+						{
+							Stretch: {}
+						},
+						{
+							SessionNavLeft: {
+								Alignment: Center
+							}
+						},
+						{
+							SessionName: {
+								Alignment: Center
+							}
+						},
+						{
+							SessionNavRight: {
+								Alignment: Center
+							}
+						},
+						{
+							Stretch: {}
+						}
+					]
+				}
+			},
+
+			{
+				SessionEdit: {
+					Alignment: Center
+				}
+			},
+
+			{
+				Stretch: {}
+			},
+
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left: 0,
+						Top: 0,
+						Right: 0,
+						Bottom: 0
+					},
+
+					Spacing: 0,
+
+					Objects: [
+						{
+							Stretch: {}
+						},
+						{
+							RebootButton: {
+								Alignment: Center
+							}
+						},
+						{
+							HaltButton: {
+								Alignment: Center
+							}
+						}
+					]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,1 @@
+/bin/c++ -O3 -DNDEBUG CMakeFiles/parser.dir/parser/hjson_decode.cpp.o CMakeFiles/parser.dir/parser/hjson_encode.cpp.o CMakeFiles/parser.dir/parser/hjson_parsenumber.cpp.o CMakeFiles/parser.dir/parser/hjson_value.cpp.o CMakeFiles/parser.dir/main.cpp.o -o parser 

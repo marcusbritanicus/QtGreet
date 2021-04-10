@@ -1,0 +1,291 @@
+{
+	VerticalLayout: {
+		Margins: {
+			Left:   5
+			Top:    5
+			Right:  5
+			Bottom: 5
+		}
+
+		Spacing: 20
+
+		Objects: [
+			{
+				VerticalLayout: {
+					Objects: [
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left:   0
+						Top:    0
+						Right:  0
+						Bottom: 0
+					}
+					Spacing: 10
+					Objects: [
+						{
+							Stretch: {}
+						}
+						{
+							UserIcon: {
+								Alignment: Center
+							}
+						}
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				VerticalLayout: {
+					Objects: [
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left:   0
+						Top:    0
+						Right:  0
+						Bottom: 0
+					}
+					Spacing: 10
+					Objects: [
+						{
+							Stretch: {}
+						}
+						{
+							UserNav: {
+								FixedWidth: 36
+								FixedHeight: 36
+								Type: Left
+								Alignment: Center
+							}
+						}
+						{
+							UserName: {
+								Type: PushButton
+								FixedWidth: 200
+								FixedHeight: 36
+								Alignment: Center
+							}
+						}
+						{
+							UserNav: {
+								FixedWidth: 36
+								FixedHeight: 36
+								Type: Right
+								Alignment: Center
+							}
+						}
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left: 0
+						Top: 0
+						Right: 0
+						Bottom: 0
+					}
+
+					Spacing: 10
+
+					Objects: [
+						{
+							Stretch: {}
+						}
+						{
+							Password: {
+								FixedWidth: 200
+								FixedHeight: 36
+								Alignment: Center
+							}
+						}
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				VerticalLayout: {
+					Objects: [
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left: 0
+						Top: 0
+						Right: 0
+						Bottom: 0
+					}
+
+					Spacing: 10
+
+					Objects: [
+						{
+							Stretch: {}
+						}
+						{
+							LoginButton: {
+								MaximumWidth: 100
+								FixedHeight: 36
+								Type: PushButton
+								Alignment: Center
+							}
+						}
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				VerticalLayout: {
+					Objects: [
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left: 0
+						Top: 0
+						Right: 0
+						Bottom: 0
+					}
+
+					Spacing: 10
+
+					Objects: [
+						{
+							Stretch: {}
+						}
+						{
+							SessionNav: {
+								FixedWidth: 36
+								FixedHeight: 36
+								Type: Left
+								Alignment: Center
+							}
+						}
+						{
+							SessionName: {
+								Type: PushButton
+								FixedWidth: 200
+								FixedHeight: 36
+								Alignment: Center
+							}
+						}
+						{
+							SessionNav: {
+								Type: Right
+								FixedWidth: 36
+								FixedHeight: 36
+								Alignment: Center
+							}
+						}
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left: 0
+						Top: 0
+						Right: 0
+						Bottom: 0
+					}
+
+					Spacing: 10
+
+					Objects: [
+						{
+							Stretch: {}
+						}
+						{
+							SessionEdit: {
+								FixedWidth: 200
+								FixedHeight: 36
+								Alignment: Center
+							}
+						}
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				VerticalLayout: {
+					Objects: [
+						{
+							Stretch: {}
+						}
+					]
+				}
+			}
+			{
+				HorizontalLayout: {
+					Margins: {
+						Left: 0
+						Top: 0
+						Right: 0
+						Bottom: 0
+					}
+
+					Spacing: 0
+
+					Objects: [
+						{
+							Stretch: {}
+						}
+						{
+							PowerButton: {
+								FixedWidth: 36
+								FixedHeight: 36
+								Type: Reboot
+								Alignment: Center
+							}
+						}
+						{
+							PowerButton: {
+								FixedWidth: 36
+								FixedHeight: 36
+								Type: Halt
+								Alignment: Center
+							}
+						}
+					]
+				}
+			}
+		]
+	}
+}

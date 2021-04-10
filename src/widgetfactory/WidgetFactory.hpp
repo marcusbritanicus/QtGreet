@@ -27,18 +27,21 @@
 	*
 */
 
-// Local Headers
-#include "Global.hpp"
-#include "QtGreet.hpp"
+#pragma once
 
-int main( int argc, char **argv ) {
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
-	QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
+class WidgetFactory {
 
-	QApplication app( argc, argv );
+    public:
+        /* Create a widget, given its name, and apply the properties given in the map */
+        static QWidget *createWidget( QString name, QString type, QVariantMap properties );
 
-	QtGreet *qtgreet = new QtGreet();
-	qtgreet->showFullScreen();
-
-	return app.exec();
+    private:
+        /* Most of the properties given can be applied directly, like width and height */
+        /* Some properties like text, or icon need to be applied after casting them into suitable types. */
+        /* Invalid properties will be ignored. Ex. icon for a label */
+        static void applyWidgetProperties( QWidget*, QString, QVariantMap );
 };

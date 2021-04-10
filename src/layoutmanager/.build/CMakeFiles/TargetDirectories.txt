@@ -1,0 +1,3 @@
+/home/cosmos/Softwares/Projects/QtGreet/src/layoutmanager/.build/CMakeFiles/edit_cache.dir
+/home/cosmos/Softwares/Projects/QtGreet/src/layoutmanager/.build/CMakeFiles/rebuild_cache.dir
+/home/cosmos/Softwares/Projects/QtGreet/src/layoutmanager/.build/CMakeFiles/parser.dir

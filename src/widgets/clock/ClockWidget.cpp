@@ -35,7 +35,13 @@
 
 #include "ClockWidget.hpp"
 
-ClockWidget::ClockWidget( QColor txtclr, QWidget *parent ) : QWidget( parent ) {
+/*
+	*
+	* Analog Clock
+	*
+*/
+
+AnalogClock::AnalogClock( QColor txtclr, QWidget *parent ) : QWidget( parent ) {
 
 	mTextColor = txtclr;
 	mShadowColor = QColor( 255 - txtclr.red(), 255 - txtclr.green(), 255 - txtclr.blue() );
@@ -80,7 +86,7 @@ ClockWidget::ClockWidget( QColor txtclr, QWidget *parent ) : QWidget( parent ) {
 		battImg = aImg;
 };
 
-void ClockWidget::paintEvent( QPaintEvent * ) {
+void AnalogClock::paintEvent( QPaintEvent * ) {
 
 	QPainter painter( this );
 	painter.setRenderHint( QPainter::Antialiasing );
@@ -162,6 +168,122 @@ void ClockWidget::paintEvent( QPaintEvent * ) {
 	/* End the painting */
 	painter.end();
 };
+
+/*
+	*
+	* Digital Clock
+	*
+*/
+
+DigitalClock::DigitalClock( QWidget *parent ) : QWidget( parent ) {
+
+	QDateTime dt = QDateTime::currentDateTime();
+	int size = font().pointSize() * 16.0 / 12.0 * 2.0;
+
+	time = new QLCDNumber( this );
+	time->setDigitCount( 5 );
+	time->setSegmentStyle( QLCDNumber::Flat );
+	time->setFrameStyle( QLCDNumber::NoFrame );
+	time->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding ) );
+	time->setMinimumHeight( size * 2 );
+	time->display( dt.toString( "hh:mm" ) );
+
+	secs = new QLCDNumber( this );
+	secs->setDigitCount( 2 );
+	secs->setSegmentStyle( QLCDNumber::Flat );
+	secs->setFrameStyle( QLCDNumber::NoFrame );
+	secs->setFixedSize( QSize( size, size ) );
+	secs->display( dt.toString( "ss" ) );
+
+	ampm = new QLabel();
+	ampm->setAlignment( Qt::AlignCenter );
+	ampm->setFixedSize( QSize( size, size ) );
+	ampm->setFixedSize( QSize( size, size ) );
+	ampm->setText( dt.time().hour() > 12 ? "PM" : "AM" );
+
+	date = new QLabel();
+	date->setAlignment( Qt::AlignCenter );
+	date->setText( dt.toString( "ddd, MMM dd, yyyy" ) );
+
+	alrm = new QLabel();
+	alrm->setAlignment( Qt::AlignCenter );
+	alrm->setText( QString::fromUtf8( "\xF0\x9F\x94\x94" ) );
+
+	QGridLayout *lyt = new QGridLayout();
+	lyt->addWidget( time, 0, 0, 2, 1 );
+	lyt->addWidget( secs, 0, 1, Qt::AlignCenter );
+	lyt->addWidget( ampm, 1, 1, Qt::AlignCenter );
+	lyt->addWidget( date, 2, 0, Qt::AlignCenter );
+	lyt->addWidget( alrm, 2, 1, Qt::AlignCenter );
+	setLayout( lyt );
+
+	setFixedHeight( size * 3.5 );
+
+	QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
+	shadow->setOffset( 1, 1 );
+	shadow->setColor( palette().color( QPalette::Window ) );
+	setGraphicsEffect( shadow );
+
+	timer = new QBasicTimer();
+	timer->start( 1000, this );
+};
+
+void DigitalClock::timerEvent( QTimerEvent *event ) {
+
+	if ( event->timerId() == timer->timerId() ) {
+
+		QDateTime dt = QDateTime::currentDateTime();
+		time->display( dt.toString( "hh:mm" ) );
+		secs->display( dt.toString( "ss" ) );
+		ampm->setText( dt.time().hour() > 12 ? "PM" : "AM" );
+		date->setText( dt.toString( "ddd, MMM dd, yyyy" ) );
+	}
+
+	QWidget::timerEvent( event );
+};
+
+/*
+	*
+	* Simple Clock
+	*
+*/
+
+SimpleClock::SimpleClock( QWidget *parent ) {
+
+	QDateTime dt = QDateTime::currentDateTime();
+	setText( QString( "<center><b><large>%1</large></b><br>%2</center>" )
+		.arg( dt.toString( "hh:mm:ss AP" ) )
+		.arg( dt.toString( "ddd, MMM dd, yyyy" ) )
+	);
+
+	QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
+	shadow->setOffset( 1, 1 );
+	shadow->setColor( palette().color( QPalette::Window ) );
+	setGraphicsEffect( shadow );
+
+	timer = new QBasicTimer();
+	timer->start( 1000, this );
+};
+
+void SimpleClock::timerEvent( QTimerEvent *event ) {
+
+	if ( event->timerId() == timer->timerId() ) {
+
+		QDateTime dt = QDateTime::currentDateTime();
+		setText( QString( "<center><b><large>%1</large></b><br>%2</center>" )
+			.arg( dt.toString( "hh:mm:ss AP" ) )
+			.arg( dt.toString( "ddd, MMM dd, yyyy" ) )
+		);
+	}
+
+	QLabel::timerEvent( event );
+};
+
+/*
+	*
+	* Battery Info
+	*
+*/
 
 BatteryInfo::BatteryInfo() : QObject() {
 
