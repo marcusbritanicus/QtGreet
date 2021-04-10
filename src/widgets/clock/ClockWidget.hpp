@@ -80,10 +80,19 @@ class SimpleClock : public QLabel {
 	Q_OBJECT
 
 	public:
-		SimpleClock(QWidget *parent = 0);
+		SimpleClock( bool time, bool date, QWidget *parent = 0);
+
+		void setDateFormat( QString );
+		void setTimeFormat( QString );
 
 	private:
 		QBasicTimer *timer;
+		QString timeFmt;
+		QString dateFmt;
+		QString clockFmt;
+
+		bool mShowTime = true;
+		bool mShowDate = true;
 
 	protected:
 		void timerEvent( QTimerEvent *event ) override;

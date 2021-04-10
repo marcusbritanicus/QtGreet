@@ -248,13 +248,32 @@ void DigitalClock::timerEvent( QTimerEvent *event ) {
 	*
 */
 
-SimpleClock::SimpleClock( QWidget *parent ) {
+SimpleClock::SimpleClock( bool time, bool date, QWidget *parent ) {
+
+	timeFmt = "HH:mm";
+	dateFmt = "dddd, MMMM dd, yyyy";
+
+	// Text inside the QLabel
+	setAlignment( Qt::AlignCenter );
+
+	if ( not date and not time ) {
+		date = true;
+		time = true;
+	}
+
+	mShowTime = time;
+	mShowDate = date;
 
 	QDateTime dt = QDateTime::currentDateTime();
-	setText( QString( "<center><b><large>%1</large></b><br>%2</center>" )
-		.arg( dt.toString( "hh:mm:ss AP" ) )
-		.arg( dt.toString( "ddd, MMM dd, yyyy" ) )
-	);
+	if ( time and date ) {
+		clockFmt = "<center><large>%1</large><br>%2</center>";
+		setText( QString( clockFmt ).arg( dt.toString( timeFmt ) ).arg( dt.toString( dateFmt ) ) );
+	}
+
+	else {
+		clockFmt = "<center>%1</center>";
+		setText( QString( clockFmt ).arg( dt.toString( time ? timeFmt : dateFmt ) ) );
+	}
 
 	QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
 	shadow->setOffset( 1, 1 );
@@ -265,15 +284,26 @@ SimpleClock::SimpleClock( QWidget *parent ) {
 	timer->start( 1000, this );
 };
 
+void SimpleClock::setDateFormat( QString newFmt ) {
+
+	dateFmt = newFmt;
+};
+
+void SimpleClock::setTimeFormat( QString newFmt ) {
+
+	timeFmt = newFmt;
+};
+
 void SimpleClock::timerEvent( QTimerEvent *event ) {
 
 	if ( event->timerId() == timer->timerId() ) {
 
 		QDateTime dt = QDateTime::currentDateTime();
-		setText( QString( "<center><b><large>%1</large></b><br>%2</center>" )
-			.arg( dt.toString( "hh:mm:ss AP" ) )
-			.arg( dt.toString( "ddd, MMM dd, yyyy" ) )
-		);
+		if ( mShowTime and mShowDate )
+			setText( QString( clockFmt ).arg( dt.toString( timeFmt ) ).arg( dt.toString( dateFmt ) ) );
+
+		else
+			setText( QString( clockFmt ).arg( dt.toString( mShowTime ? timeFmt : dateFmt ) ) );
 	}
 
 	QLabel::timerEvent( event );

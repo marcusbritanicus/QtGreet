@@ -83,8 +83,15 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         else {
             // qWarning() << "Simple clock";
 
-            SimpleClock *cw = new SimpleClock();
-            cw->setFixedHeight( 40 );
+            bool time = ( type == "Time" );
+            bool date = ( type == "Date" );
+
+            if ( not date and not time ) {
+                date = true;
+                time = true;
+            }
+
+            SimpleClock *cw = new SimpleClock( time, date );
             applyWidgetProperties( cw, type, properties );
 
             return cw;
@@ -254,6 +261,12 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
     else if ( name == "SessionList" ) {
         // qWarning() << "Session List";
 
+        QStringList sessions = {
+            "DesQ (Wayland)", "Paper (Wayland)", "Wayfire (Wayland)", "Sway (Wayland)", "Plasma Wayland", "Weston (Wayland)",
+            "Awesome (X11)", "I3-with-shmlog (X11)", "LXQt (X11)", "MWM (X11)", "Oyster (X11)", "TinyWM (X11)", "XFCE (X11)",
+            "Enlightenment (X11)", "I3 (X11)", "MatchBox (X11)", "OpenBox (X11)", "Plasma (X11)", "Win7 (X11)"
+        };
+
         if ( type == "List" ) {
             QListWidget *lw = new QListWidget();
             lw->setIconSize( QSize( 36, 36 ) );
@@ -261,12 +274,6 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
             lw->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
             lw->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
             applyWidgetProperties( lw, type, properties );
-
-            QStringList sessions = {
-                "DesQ (Wayland)", "Paper (Wayland)", "Wayfire (Wayland)", "Sway (Wayland)", "Plasma Wayland", "Weston (Wayland)",
-                "Awesome (X11)", "I3-with-shmlog (X11)", "LXQt (X11)", "MWM (X11)", "Oyster (X11)", "TinyWM (X11)", "XFCE (X11)",
-                "Enlightenment (X11)", "I3 (X11)", "MatchBox (X11)", "OpenBox (X11)", "Plasma (X11)", "Win7 (X11)"
-            };
 
             for( QString sess: sessions ) {
                 QListWidgetItem *item = new QListWidgetItem( QIcon( ":/icons/session.png" ), sess, lw );
@@ -278,6 +285,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
 
         else if ( type == "Combo" ) {
             QComboBox *cb = new QComboBox();
+            cb->addItems( sessions );
             applyWidgetProperties( cb, type, properties );
 
             return cb;
@@ -527,6 +535,9 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString type, QVaria
             if ( type == "Label" )
                 qobject_cast<QLabel*>( widget )->setText( properties[ key ].toString() );
 
+            else if ( type == "Combo" )
+                qobject_cast<QComboBox*>( widget )->setCurrentText( properties[ key ].toString() );
+
             else if ( type == "PushButton" )
                 qobject_cast<QPushButton*>( widget )->setText( properties[ key ].toString() );
 
@@ -550,6 +561,18 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString type, QVaria
 
             else if ( type == "ToolButton" )
                 qobject_cast<QToolButton*>( widget )->setIcon( QIcon::fromTheme( properties[ key ].toString() ) );
+        }
+
+        /* Font */
+        else if ( key == "Font" ) {
+            QStringList fontBits = properties[ key ].toString().split( ", ", Qt::SkipEmptyParts );
+            QFont font(
+                fontBits[ 0 ],
+                fontBits[ 1 ].toInt(),
+                ( fontBits[ 1 ] == "Bold" ? QFont::Bold : QFont::Normal ),
+                ( fontBits[ 1 ] == "Italic" )
+            );
+            widget->setFont( font );
         }
     }
 }
