@@ -93,30 +93,39 @@ static bool IsExec( QString exec ) {
     return false;
 };
 
-static QString getStyleSheet( QString textColor ) {
+static QString getStyleSheet( QString fn ) {
 
-    QFile qss( "/home/cosmos/Softwares/Projects/QtGreet/themes/sidebar/style.qss" );
+    QFile qss( fn );
     qss.open( QFile::ReadOnly );
     QString ss = QString::fromLocal8Bit( qss.readAll() );
     qss.close();
 
-    return ss.replace( "<text_color>", textColor );
+    return ss;
 };
 
 QtGreet::QtGreet() {
 
+	sett = new QSettings( "QtGreet", "QtGreet" );
+
 	setFixedSize( qApp->primaryScreen()->size() );
     createUI();
 
-	setStyleSheet( getStyleSheet( "#ffffff" ) );
+	setStyleSheet( getStyleSheet( sett->value( "StyleSheet" ).toString() ) );
 
-	QString bgStr( "/home/cosmos/Softwares/Projects/QtGreet/backgrounds/Sailboats.svg" );
-    background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
+	if ( sett->contains( "VideoBG" ) ) {
+		QStringList vbg = sett->value( "VideoBG" ).toString().split( "\\s+" );
+		QProcess::startDetached( vbg.takeFirst(), vbg );
+	}
+
+	else {
+		QString bgStr( sett->value( "Background" ).toString() );
+	    background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
+	}
 };
 
 void QtGreet::createUI() {
 
-    LayoutManager lytMgr( "/home/cosmos/Softwares/Projects/QtGreet/themes/sidebar/layout.hjson" );
+    LayoutManager lytMgr( sett->value( "LayoutFile" ).toString() );
 
     QWidget *w = new QWidget();
     lytMgr.applyLayout( w );

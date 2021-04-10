@@ -66,6 +66,8 @@ class QtGreet : public QMainWindow {
 
         QImage background;
 
+        QSettings *sett;
+
     protected:
         void paintEvent( QPaintEvent *pEvent );
 
