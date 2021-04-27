@@ -76,7 +76,7 @@
 						{
 							UserName: {
 								Type: PushButton
-								FixedWidth: 200
+								FixedWidth: 270
 								FixedHeight: 36
 								Alignment: Center
 							}
@@ -112,7 +112,7 @@
 						}
 						{
 							Password: {
-								FixedWidth: 200
+								FixedWidth: 270
 								FixedHeight: 36
 								Alignment: Center
 							}
@@ -196,7 +196,7 @@
 						{
 							SessionName: {
 								Type: PushButton
-								FixedWidth: 200
+								FixedWidth: 270
 								FixedHeight: 36
 								Alignment: Center
 							}
@@ -232,7 +232,7 @@
 						}
 						{
 							SessionEdit: {
-								FixedWidth: 200
+								FixedWidth: 270
 								FixedHeight: 36
 								Alignment: Center
 							}

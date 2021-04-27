@@ -32,6 +32,11 @@ include_directories(
     src/widgetfactory
     src/widgets
     src/widgets/clock
+    src/widgets/buttons
+    src/widgets/labels
+    src/widgets/power
+    src/widgets/session
+    src/widgets/user
 )
 
 set ( HDRS
@@ -41,6 +46,11 @@ set ( HDRS
     src/ui/QtGreet.hpp
     src/widgetfactory/WidgetFactory.hpp
     src/widgets/clock/ClockWidget.hpp
+    src/widgets/buttons/buttons.hpp
+    src/widgets/labels/labels.hpp
+    src/widgets/power/power.hpp
+    src/widgets/session/session.hpp
+    src/widgets/user/user.hpp
 )
 
 set ( SRCS
@@ -53,6 +63,11 @@ set ( SRCS
     src/ui/QtGreet.cpp
     src/widgetfactory/WidgetFactory.cpp
     src/widgets/clock/ClockWidget.cpp
+    src/widgets/buttons/buttons.cpp
+    src/widgets/labels/labels.cpp
+    src/widgets/power/power.cpp
+    src/widgets/session/session.cpp
+    src/widgets/user/user.cpp
 )
 
 set ( RSCS

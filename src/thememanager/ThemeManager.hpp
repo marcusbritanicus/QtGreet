@@ -29,19 +29,10 @@
 
 #pragma once
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include "Global.hpp"
 
-class WidgetFactory {
+class ThemeManager {
 
     public:
-        /* Create a widget, given its name, and apply the properties given in the map */
-        static QWidget *createWidget( QString name, QString type, QVariantMap properties );
-
-    private:
-        /* Most of the properties given can be applied directly, like width and height */
-        /* Some properties like text, or icon need to be applied after casting them into suitable types. */
-        /* Invalid properties will be ignored. Ex. icon for a label */
-        static void applyWidgetProperties( QWidget*, QString, QString, QVariantMap );
+        ThemeManager();
 };

@@ -27,14 +27,21 @@ QToolButton:pressed {
     padding-left: 2px;
 }
 
-QToolButton#nav {
+#UserNavRight, #UserNavLeft {
     border: 1px solid gray;
     border-radius: 18px;
     padding-top: 1px;
     padding-left: 1px;
 }
 
-QToolButton#halt {
+#SessionNavRight, #SessionNavLeft {
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QToolButton#Halt {
     border: 1px solid gray;
     border-radius: 0px;
     border-top-right-radius: 18px;
@@ -43,7 +50,7 @@ QToolButton#halt {
     padding-left: 1px;
 }
 
-QToolButton#reboot {
+QToolButton#Reboot {
     border: 1px solid gray;
     border-radius: 0px;
     border-top-left-radius: 18px;
@@ -74,7 +81,7 @@ QWidget#OverLay {
     background-color: rgba(0, 0, 0, 230);
 }
 
-QLabel#userIcon {
+QLabel#UserIcon {
     border: 2px solid gray;
     border-radius: 6px;
 }

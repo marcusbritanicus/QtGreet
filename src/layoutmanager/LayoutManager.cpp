@@ -72,8 +72,6 @@ QMargins getMargins( Hjson::Value margins ) {
 
 Qt::Alignment getAlignment( Hjson::Value obj ) {
 
-    // @vertical: Layout direction
-
     if ( obj[ "Alignment" ].type() == Hjson::Type::String ) {
 
         // Left alignment

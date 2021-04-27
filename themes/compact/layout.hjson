@@ -1,156 +1,238 @@
 {
-	VerticalLayout: {
-		Margins: {
-			Left: 5,
-			Top: 5,
-			Right: 5,
-			Bottom: 5
-		},
-
-		Spacing: 20,
-
+	HorizontalLayout: {
 		Objects: [
 			{
 				Stretch: {}
-			},
-
+			}
 			{
-				UserIcon: {
-					Alignment: Center
-				}
-			},
+				QWidget : {
+					FixedWidth: 0.5
+					FixedHeight: 0.5
+					HorizontalLayout: {
+						Objects: [
+							{
+								QWidget: {
+									Type: Sidebar
+									FixedWidth: 0.15
 
+									VerticalLayout: {
+										Margins: {
+											Left: 5
+											Top: 5
+											Right: 5
+											Bottom: 5
+										}
+
+										Objects: [
+											{
+												Logo: {
+													FixedWidth: 0.15
+													FixedHeight: 0.1
+													IconSize: 72
+												}
+											}
+											{
+												Stretch: {}
+											}
+											{
+												UserList: {
+													Type: List
+													IconSize: 24
+													FixedHeight: 0.25
+												}
+											}
+											{
+												Stretch: {}
+											}
+											{
+												HorizontalLayout: {
+													Objects: [
+														{
+															PowerButton: {
+																Type: Logout
+																FixedWidth: 32
+																FixedHeight: 32
+																IconSize: 24
+															}
+														}
+														{
+															PowerButton: {
+																Type: Suspend
+																FixedWidth: 32
+																FixedHeight: 32
+																IconSize: 36
+															}
+														}
+														{
+															PowerButton: {
+																Type: Hibernate
+																FixedWidth: 32
+																FixedHeight: 32
+															}
+														}
+														{
+															PowerButton: {
+																Type: Halt
+																FixedWidth: 32
+																FixedHeight: 32
+															}
+														}
+														{
+															PowerButton: {
+																Type: Reboot
+																FixedWidth: 32
+																FixedHeight: 32
+															}
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							}
+							{
+								QWidget: {
+									Type: MainView
+									FixedWidth: 0.35
+
+									VerticalLayout: {
+										Objects: [
+											{
+												# Indicators
+												QWidget: {
+													FixedHeight: 15
+													FixedWidth: 0.35
+													HorizontalLayout: {
+														Objects: [
+															{
+																Clock: {
+																	Type: Time
+																	Format: hh:mm:ss AP
+																	FixedWidth: 75
+																}
+															}
+															{
+																Stretch: {}
+															}
+															{
+																CapsLock: {
+																	Type: NumLock
+																	Font: Envy Code R, 12, Normal, Normal
+																	FixedWidth: 15
+																	ToolTip: CapsLock status
+																}
+															}
+															{
+																NumLock: {
+																	Type: CapsLock
+																	Font: Envy Code R, 12, Normal, Normal
+																	FixedWidth: 15
+																	ToolTip: NumLock status
+																}
+															}
+														]
+													}
+												}
+											}
+											{
+												HorizontalLayout: {
+													Objects: [
+														{
+															# Login Module
+															QWidget: {
+																FixedWidth: 0.21
+																VerticalLayout: {
+																	Spacing: 10
+																	Objects: [
+																		{
+																			Stretch: {}
+																		}
+																		{
+																			HorizontalLayout: {
+																				Objects: [
+																					{
+																						Stretch: {}
+																					}
+																					{
+																						UserIcon: {
+																							Type: Label
+																							FixedHeight: 72
+																							FixedWidth: 72
+																						}
+																					}
+																					{
+																						Stretch: {}
+																					}
+																				]
+																			}
+																		}
+																		{
+																			UserName: {
+																				Type: Label
+																				Text: Marcus Britanicus
+																				FixedHeight: 27
+																				Font: Quicksand, 15, Bold, Italic
+																				Alignment: Center
+																			}
+																		}
+																		{
+																			Password: {}
+																		}
+																		{
+																			HorizontalLayout: {
+																				Spacing: 5
+																				Objects: [
+																					{
+																						Stretch: {}
+																					}
+																					{
+																						SessionList: {
+																							Type: Combo
+																							FixedHeight: 27
+																						}
+																					}
+																					{
+																						LoginButton: {
+																							Type: ToolButton
+																							ToolTip: Click to login
+																						}
+																					}
+																					{
+																						Stretch: {}
+																					}
+																				]
+																			}
+																		}
+																		{
+																			Stretch: {}
+																		}
+																		{
+																			Stretch: {}
+																		}
+																	]
+																}
+															}
+														}
+													]
+												}
+											}
+											{
+												Clock: {
+													Type: Date
+													FixedHeight: 27
+												}
+											}
+										]
+									}
+								}
+							}
+						]
+					}
+				}
+			}
 			{
 				Stretch: {}
-			},
-
-			{
-				HorizontalLayout: {
-					Margins: {
-						Left: 0,
-						Top: 0,
-						Right: 0,
-						Bottom: 0
-					},
-
-					Spacing: 10,
-
-					Objects: [
-						{
-							Stretch: {}
-						},
-						{
-							UserNavLeft: {
-								Alignment: Center
-							}
-						},
-						{
-							UserName: {
-								Alignment: Center
-							}
-						},
-						{
-							UserNavRight: {
-								Alignment: Center
-							}
-						},
-						{
-							Stretch: {}
-						}
-					]
-				}
-			},
-
-			{
-				PassWord: {
-					Alignment: Center
-				}
-			},
-
-			{
-				Stretch: {}
-			},
-
-			{
-				LoginButton: {
-					Alignment: Center
-				}
-			},
-
-			{
-				HorizontalLayout: {
-					Margins: {
-						Left: 0,
-						Top: 0,
-						Right: 0,
-						Bottom: 0
-					},
-
-					Spacing: 10,
-
-					Objects: [
-						{
-							Stretch: {}
-						},
-						{
-							SessionNavLeft: {
-								Alignment: Center
-							}
-						},
-						{
-							SessionName: {
-								Alignment: Center
-							}
-						},
-						{
-							SessionNavRight: {
-								Alignment: Center
-							}
-						},
-						{
-							Stretch: {}
-						}
-					]
-				}
-			},
-
-			{
-				SessionEdit: {
-					Alignment: Center
-				}
-			},
-
-			{
-				Stretch: {}
-			},
-
-			{
-				HorizontalLayout: {
-					Margins: {
-						Left: 0,
-						Top: 0,
-						Right: 0,
-						Bottom: 0
-					},
-
-					Spacing: 0,
-
-					Objects: [
-						{
-							Stretch: {}
-						},
-						{
-							RebootButton: {
-								Alignment: Center
-							}
-						},
-						{
-							HaltButton: {
-								Alignment: Center
-							}
-						}
-					]
-				}
 			}
 		]
 	}

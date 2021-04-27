@@ -33,6 +33,11 @@
 
 // Provides Analog, Digital and Simple clock
 #include "ClockWidget.hpp"
+#include "buttons.hpp"
+#include "labels.hpp"
+#include "power.hpp"
+#include "session.hpp"
+#include "user.hpp"
 
 QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap properties ) {
 
@@ -40,13 +45,8 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         // qWarning() << "Creating QWidget";
 
         QWidget *w = new QWidget();
-        applyWidgetProperties( w, type, properties );
-
-        if ( type == "Panel" )
-            w->setObjectName( "Panel" );
-
-        else if ( type == "Sidebar" )
-            w->setObjectName( "Sidebar" );
+        applyWidgetProperties( w, name, type, properties );
+        w->setObjectName( type );
 
         return w;
     }
@@ -55,7 +55,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         // qWarning() << "Creating QLabel";
 
         QLabel *w = new QLabel();
-        applyWidgetProperties( w, "Label", properties );
+        applyWidgetProperties( w, "QLabel", "Label", properties );
 
         return w;
     }
@@ -66,16 +66,18 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
             // qWarning() << "Analog clock";
 
             AnalogClock *cw = new AnalogClock( "#ffffff" );
-            applyWidgetProperties( cw, type, properties );
+            cw->setObjectName( "Clock" );
+            applyWidgetProperties( cw, name, type, properties );
 
             return cw;
         }
 
-        if ( type == "Digital" ) {
+        else if ( type == "Digital" ) {
             // qWarning() << "Digital clock";
 
             DigitalClock *cw = new DigitalClock();
-            applyWidgetProperties( cw, type, properties );
+            cw->setObjectName( "Clock" );
+            applyWidgetProperties( cw, name, type, properties );
 
             return cw;
         }
@@ -92,7 +94,8 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
             }
 
             SimpleClock *cw = new SimpleClock( time, date );
-            applyWidgetProperties( cw, type, properties );
+            cw->setObjectName( "Clock" );
+            applyWidgetProperties( cw, name, type, properties );
 
             return cw;
         }
@@ -101,12 +104,8 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
     else if ( name == "UserIcon" ) {
         // qWarning() << "UserIcon";
 
-        QLabel *lbl = new QLabel();
-        lbl->setObjectName( "userIcon" );
-        lbl->setAlignment( Qt::AlignCenter );
-        lbl->setFixedSize( QSize( 72, 72 ) );
-        lbl->setPixmap( QIcon( ":/icons/user.png" ).pixmap( QSize( 64, 64 ) ) );
-        applyWidgetProperties( lbl, type, properties );
+        UserIcon *lbl = new UserIcon();
+        applyWidgetProperties( lbl, name, type, properties );
 
         return lbl;
     }
@@ -116,50 +115,37 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
 
         if ( type == "LineEdit" ) {
             QLineEdit *le = new QLineEdit();
-            applyWidgetProperties( le, type, properties );
+            applyWidgetProperties( le, name, type, properties );
 
             return le;
         }
 
         else if ( type == "Label" ) {
 
-            QLabel *lbl = new QLabel();
-            lbl->setFixedHeight( 27 );
-            lbl->setText( "Hello, Marcus" );
-            applyWidgetProperties( lbl, type, properties );
+            UserNameLabel *lbl = new UserNameLabel();
+            applyWidgetProperties( lbl, name, type, properties );
 
             return lbl;
         }
 
         else if ( type == "PushButton" ) {
 
-            QPushButton *btn = new QPushButton();
-            btn->setFixedHeight( 27 );
-            btn->setIcon( QIcon( ":/icons/session.png" ) );
-            btn->setText( "DesQ (Wayland)" );
-            applyWidgetProperties( btn, type, properties );
+            UserNameButton *btn = new UserNameButton();
+            applyWidgetProperties( btn, name, type, properties );
 
             return btn;
         }
-    }
 
-    else if ( name == "UserList" ) {
-        // qWarning() << "User list";
-
-        if ( type == "List" ) {
-            QListWidget *lw = new QListWidget();
-            lw->setIconSize( QSize( 36, 36 ) );
-            lw->setFont( QFont( "Quicksand", 12 ) );
-            lw->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-            lw->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-            applyWidgetProperties( lw, type, properties );
+        else if ( type == "List" ) {
+            UserList *lw = new UserList();
+            applyWidgetProperties( lw, name, type, properties );
 
             return lw;
         }
 
         else if ( type == "Combo" ) {
-            QComboBox *cb = new QComboBox();
-            applyWidgetProperties( cb, type, properties );
+            UserList *cb = new UserList();
+            applyWidgetProperties( cb, name, type, properties );
 
             return cb;
         }
@@ -170,9 +156,11 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
 
         QLineEdit *le = new QLineEdit();
         le->setObjectName( "Password" );
+        le->setPlaceholderText( "Password" );
         le->setEchoMode( QLineEdit::Password );
         le->setFixedHeight( 27 );
-        applyWidgetProperties( le, type, properties );
+        le->setAlignment( Qt::AlignCenter );
+        applyWidgetProperties( le, name, type, properties );
 
         return le;
     }
@@ -189,7 +177,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         le->setObjectName( "Password" );
         le->setEchoMode( QLineEdit::Password );
         le->setFixedHeight( 27 );
-        applyWidgetProperties( le, type, properties );
+        applyWidgetProperties( le, name, type, properties );
 
         QToolButton *btn = new QToolButton();
         btn->setIcon( QIcon::fromTheme( ":/icons/arrow-right.png" ) );
@@ -218,42 +206,17 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
     else if ( name == "SessionName" ) {
         // qWarning() << "Session name";
 
-        if ( type == "LineEdit" ) {
-            QLineEdit *le = new QLineEdit();
-            applyWidgetProperties( le, type, properties );
+        SessionName *sess = new SessionName();
+        applyWidgetProperties( sess, name, type, properties );
 
-            return le;
-        }
-
-        else if ( type == "Label" ) {
-
-            QLabel *lbl = new QLabel();
-            lbl->setFixedHeight( 27 );
-            lbl->setText( "DesQ (Wayland)" );
-            applyWidgetProperties( lbl, type, properties );
-
-            return lbl;
-        }
-
-        else if ( type == "PushButton" ) {
-
-            QPushButton *btn = new QPushButton();
-            btn->setFixedHeight( 27 );
-            btn->setIcon( QIcon( ":/icons/session.png" ) );
-            btn->setText( "DesQ (Wayland)" );
-            applyWidgetProperties( btn, type, properties );
-
-            return btn;
-        }
+        return sess;
     }
 
     else if ( name == "SessionEdit" ) {
         // qWarning() << "Session Edit";
 
-        QLineEdit *le = new QLineEdit();
-        le->setObjectName( "Password" );
-        le->setFixedHeight( 27 );
-        applyWidgetProperties( le, type, properties );
+        SessionEdit *le = new SessionEdit();
+        applyWidgetProperties( le, name, type, properties );
 
         return le;
     }
@@ -273,7 +236,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
             lw->setFont( QFont( "Quicksand", 12 ) );
             lw->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
             lw->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-            applyWidgetProperties( lw, type, properties );
+            applyWidgetProperties( lw, name, type, properties );
 
             for( QString sess: sessions ) {
                 QListWidgetItem *item = new QListWidgetItem( QIcon( ":/icons/session.png" ), sess, lw );
@@ -284,9 +247,8 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         }
 
         else if ( type == "Combo" ) {
-            QComboBox *cb = new QComboBox();
-            cb->addItems( sessions );
-            applyWidgetProperties( cb, type, properties );
+            SessionList *cb = new SessionList();
+            applyWidgetProperties( cb, name, type, properties );
 
             return cb;
         }
@@ -295,143 +257,34 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
     else if ( name == "SessionEditButton" ) {
         // qWarning() << "SessionEdit Button";
 
-        QToolButton *nav = new QToolButton();
-        nav->setFixedSize( QSize( 27, 27 ) );
-        nav->setIconSize( QSize( 22, 22 ) );
-        nav->setIcon( QIcon( ":/icons/edit.png" ) );
-        nav->setAutoRaise( true );
-        applyWidgetProperties( nav, type, properties );
+        SessionEditButton *editBtn = new SessionEditButton();
+        applyWidgetProperties( editBtn, name, type, properties );
 
-        return nav;
+        return editBtn;
     }
 
     else if ( name == "PowerButton" ) {
         // qWarning() << "PowerButton";
 
-        if ( type == "Menu" ) {
-            QToolButton *btn = new QToolButton();
-            btn->setAutoRaise( true );
-            btn->setFixedSize( QSize( 40, 40 ) );
-            btn->setIconSize( QSize( 32, 32 ) );
-            btn->setIcon( QIcon( ":/icons/shutdown.png" ) );
-            applyWidgetProperties( btn, type, properties );
+        PowerButton *btn = new PowerButton( type );
+        applyWidgetProperties( btn, name, type, properties );
 
-            QMenu *menu = new QMenu();
-            menu->addAction( QIcon( ":/icons/suspend.png" ), "Suspend to RAM" );
-            menu->addAction( QIcon( ":/icons/hibernate.png" ), "Suspend to Disk" );
-            menu->addAction( QIcon( ":/icons/shutdown.png" ), "Halt System" );
-            menu->addAction( QIcon( ":/icons/reboot.png" ), "Reboot System" );
-
-            btn->setMenu( menu );
-            btn->setPopupMode( QToolButton::InstantPopup );
-
-            return btn;
-        }
-
-        else if ( type == "Halt" ) {
-            QToolButton *btn = new QToolButton();
-            btn->setObjectName( "halt" );
-            btn->setAutoRaise( true );
-            btn->setFixedSize( QSize( 40, 40 ) );
-            btn->setIconSize( QSize( 32, 32 ) );
-            btn->setIcon( QIcon( ":/icons/shutdown.png" ) );
-            applyWidgetProperties( btn, type, properties );
-
-            return btn;
-        }
-
-        else if ( type == "Reboot" ) {
-            QToolButton *btn = new QToolButton();
-            btn->setObjectName( "reboot" );
-            btn->setAutoRaise( true );
-            btn->setFixedSize( QSize( 40, 40 ) );
-            btn->setIconSize( QSize( 32, 32 ) );
-            btn->setIcon( QIcon( ":/icons/reboot.png" ) );
-            applyWidgetProperties( btn, type, properties );
-
-            return btn;
-        }
+        return btn;
     }
 
-    else if ( name == "NumLock" ) {
-        // qWarning() << "NumLock";
-
-        QLabel *lbl = new QLabel( "<b>#</b>" );
-        lbl->setFixedSize( QSize( 40, 40 ) );
-        QFile num( "/sys/class/leds/input0::numlock/brightness" );
-        if ( num.open( QFile::ReadOnly ) ) {
-            if ( num.readAll().toInt() )
-                lbl->setStyleSheet( "color: rgb(255, 255, 255)" );
-
-            else
-                lbl->setStyleSheet( "color: rgba(255, 255, 255, 50)" );
-
-            num.close();
-        }
-
-        else
-            lbl->setStyleSheet( "color: rgba(255, 255, 255, 20)" );
-
-        applyWidgetProperties( lbl, type, properties );
-        return lbl;
-    }
-
-    else if ( name == "CapsLock" ) {
+    else if ( ( name == "CapsLock" ) or ( name == "NumLock" ) ) {
         // qWarning() << "CapsLock";
 
-        QLabel *lbl = new QLabel( "<b>A</b>" );
-        lbl->setFixedSize( QSize( 40, 40 ) );
-        QFile caps( "/sys/class/leds/input0::capslock/brightness" );
-        if ( caps.open( QFile::ReadOnly ) ) {
-            if ( caps.readAll().toInt() )
-                lbl->setStyleSheet( "color: rgb(255, 255, 255)" );
+        LockState *lock = new LockState( name );
+        applyWidgetProperties( lock, name, type, properties );
 
-            else
-                lbl->setStyleSheet( "color: rgba(255, 255, 255, 50)" );
-
-            caps.close();
-        }
-
-        else
-            lbl->setStyleSheet( "color: rgba(255, 255, 255, 20)" );
-
-        return lbl;
+        return lock;
     }
 
-    else if ( name == "UserNav" ) {
-        // qWarning() << "UserNav";
+    else if ( ( name == "UserNav" ) or ( name == "SessionNav" ) ) {
 
-        QToolButton *nav = new QToolButton();
-        nav->setObjectName( "nav" );
-        nav->setFixedSize( QSize( 27, 27 ) );
-        nav->setIconSize( QSize( 22, 22 ) );
-        nav->setAutoRaise( true );
-        if ( type == "Right" )
-            nav->setIcon( QIcon( ":/icons/arrow-right.png" ) );
-
-        else
-            nav->setIcon( QIcon( ":/icons/arrow-left.png" ) );
-
-        applyWidgetProperties( nav, type, properties );
-
-        return nav;
-    }
-
-    else if ( name == "SessionNav" ) {
-        // qWarning() << "SessionNav";
-
-        QToolButton *nav = new QToolButton();
-        nav->setObjectName( "nav" );
-        nav->setFixedSize( QSize( 27, 27 ) );
-        nav->setIconSize( QSize( 22, 22 ) );
-        nav->setAutoRaise( true );
-        if ( type == "Right" )
-            nav->setIcon( QIcon( ":/icons/arrow-right.png" ) );
-
-        else
-            nav->setIcon( QIcon( ":/icons/arrow-left.png" ) );
-
-        applyWidgetProperties( nav, type, properties );
+        NavButton *nav = new NavButton( name, type );
+        applyWidgetProperties( nav, name, type, properties );
 
         return nav;
     }
@@ -439,10 +292,8 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
     else if ( name == "Logo" ) {
         // qWarning() << "Logo";
 
-        QLabel *logo = new QLabel();
-        logo->setFixedSize( 40, 40 );
-        logo->setPixmap( QIcon( ":/icons/qtgreet1.png" ).pixmap( 40 ) );
-        applyWidgetProperties( logo, type, properties );
+        Logo *logo = new Logo();
+        applyWidgetProperties( logo, name, type, properties );
 
         return logo;
     }
@@ -451,24 +302,15 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         // qWarning() << "LoginButton";
 
         if ( type == "ToolButton" ) {
-            QToolButton *btn = new QToolButton();
-            btn->setFixedSize( QSize( 27, 27 ) );
-            btn->setIconSize( QSize( 22, 22 ) );
-            btn->setIcon( QIcon( ":/icons/arrow-right.png" ) );
-            btn->setAutoRaise( true );
-            applyWidgetProperties( btn, type, properties );
+            LoginToolButton *btn = new LoginToolButton();
+            applyWidgetProperties( btn, name, type, properties );
 
             return btn;
         }
 
         else {
-            QPushButton *btn = new QPushButton();
-            btn->setFixedHeight( 27 );
-            btn->setIconSize( QSize( 22, 22 ) );
-            btn->setIcon( QIcon( ":/icons/arrow-right.png" ) );
-            btn->setText( "&Login" );
-            btn->setFlat( true );
-            applyWidgetProperties( btn, type, properties );
+            LoginPushButton *btn = new LoginPushButton();
+            applyWidgetProperties( btn, name, type, properties );
 
             return btn;
         }
@@ -501,7 +343,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
     return new QWidget();
 };
 
-void WidgetFactory::applyWidgetProperties( QWidget *widget, QString type, QVariantMap properties ) {
+void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QString type, QVariantMap properties ) {
 
     for( QString key: properties.keys() ) {
         /* Width */
@@ -552,6 +394,9 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString type, QVaria
 
             else if ( type == "ToolButton" )
                 qobject_cast<QToolButton*>( widget )->setIcon( QIcon( properties[ key ].toString() ) );
+
+            else if ( name == "Logo" )
+                qobject_cast<QToolButton*>( widget )->setIcon   ( QIcon( properties[ key ].toString() ) );
         }
 
         /* Theme Icon */
@@ -559,7 +404,7 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString type, QVaria
             if ( type == "PushButton" )
                 qobject_cast<QPushButton*>( widget )->setIcon( QIcon::fromTheme( properties[ key ].toString() ) );
 
-            else if ( type == "ToolButton" )
+            else if ( ( type == "ToolButton" ) or ( name == "PowerButton" ) )
                 qobject_cast<QToolButton*>( widget )->setIcon( QIcon::fromTheme( properties[ key ].toString() ) );
         }
 
@@ -569,10 +414,52 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString type, QVaria
             QFont font(
                 fontBits[ 0 ],
                 fontBits[ 1 ].toInt(),
-                ( fontBits[ 1 ] == "Bold" ? QFont::Bold : QFont::Normal ),
-                ( fontBits[ 1 ] == "Italic" )
+                ( fontBits[ 2 ] == "Bold" ? QFont::Bold : QFont::Normal ),
+                ( fontBits[ 3 ] == "Italic" )
             );
             widget->setFont( font );
+        }
+
+        /* Format string for Clock */
+        else if ( name == "Clock" and key == "Format" ) {
+            if ( type == "Time" )
+                qobject_cast<SimpleClock *>( widget )->setTimeFormat( properties[ key ].toString() );
+
+            else if ( type == "Date" )
+                qobject_cast<SimpleClock *>( widget )->setDateFormat( properties[ key ].toString() );
+        }
+
+        else if ( key == "IconSize" ) {
+            QSize iSize = QSize( properties[ key ].toInt(), properties[ key ].toInt() );
+
+            if ( type == "List" )
+                qobject_cast<QListWidget *>( widget  )->setIconSize( iSize );
+
+            else if ( ( type == "PowerButton" ) or ( type == "ToolButton" ) )
+                qobject_cast<QToolButton*>( widget )->setIconSize( iSize );
+
+            else if ( type == "PushButton" )
+                qobject_cast<QPushButton*>( widget )->setIconSize( iSize );
+
+            else if ( name == "Logo" )
+                qobject_cast<Logo*>( widget )->setIconSize( iSize );
+        }
+
+        else if ( key == "Alignment" ) {
+            if ( name == "QLabel" or type == "Label" ) {
+                if ( properties[ key ].toString() == "Center" )
+                    qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignCenter );
+
+                else if ( properties[ key ].toString() == "Left" )
+                    qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignLeft );
+
+                else if ( properties[ key ].toString() == "Right" )
+                    qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignRight );
+            }
+        }
+
+        else if ( key == "ToolTip" ) {
+            widget->setToolTip( properties[ key ].toString() );
         }
     }
 }

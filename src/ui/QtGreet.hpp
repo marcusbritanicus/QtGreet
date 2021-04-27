@@ -70,6 +70,7 @@ class QtGreet : public QMainWindow {
 
     protected:
         void paintEvent( QPaintEvent *pEvent );
+        void keyPressEvent( QKeyEvent *kEvent );
 
     private Q_SLOTS:
         /* Show the next user */
@@ -92,4 +93,9 @@ class QtGreet : public QMainWindow {
 
         /* Try to login */
         void tryLogin() {};
+
+        /* Auto Slots */
+        void on_UserList_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
+        void on_UserNavRight_clicked();
+        void on_UserNavLeft_clicked();
 };

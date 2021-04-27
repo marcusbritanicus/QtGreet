@@ -1,11 +1,17 @@
 [General]
-Name = Sidebar
+Name = Aerial
 
 [Files]
 Layout = layout.json
 StyleSheet = style.qss
 
 [Theme]
-Background = /usr/share/qtgreet/backgrounds/Christmas.svg
+Background = mpvpaper
 BaseColor = ffffffff
 TextColor = ffffff
+
+[mpvpaper]
+Playlist = 4k.m3u, all_sd.m3u, day.m3u, night.m3u
+
+[cache]
+Location = $HOME/.cache/qtgreet/

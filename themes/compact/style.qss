@@ -1,80 +1,199 @@
 QWidget {
-    color: #<text_color>;
+    color: white;
 }
 
-QPushButton {
-    border: 1px solid gray;
-    border-radius: 18px;
+#Halt:hover {
+    background-color: rgba(60, 60, 60, 60);
+    border: none;
+    border-radius: 3px;
 }
 
-QPushButton:hover {
-    background-color: rgba(255, 255, 255, 30);
+#Reboot:hover {
+    background-color: rgba(60, 60, 60, 60);
+    border: none;
+    border-radius: 3px;
 }
 
-QPushButton:pressed {
-    background-color: rgba(255, 255, 255, 10);
-    padding-top: 1px;
-    padding-left: 1px;
+#Logout:hover {
+    background-color: rgba(60, 60, 60, 60);
+    border: none;
+    border-radius: 3px;
 }
 
-QToolButton:hover {
-    background-color: rgba(255, 255, 255, 30);
+#Suspend:hover {
+    background-color: rgba(60, 60, 60, 60);
+    border: none;
+    border-radius: 3px;
 }
 
-QToolButton:pressed {
-    background-color: rgba(255, 255, 255, 10);
-    padding-top: 2px;
-    padding-left: 2px;
+#Hibernate:hover {
+    background-color: rgba(60, 60, 60, 60);
+    border: none;
+    border-radius: 3px;
 }
 
-QToolButton#nav {
-    border: 1px solid gray;
-    border-radius: 18px;
-    padding-top: 1px;
-    padding-left: 1px;
+#Halt:focus {
+    background-color: rgba(60, 60, 60, 120);
+    border-radius: 3px;
+    border-left: 2px solid darkgray;
 }
 
-QToolButton#halt {
-    border: 1px solid gray;
-    border-radius: 0px;
-    border-top-right-radius: 18px;
-    border-bottom-right-radius: 18px;
-    padding-top: 1px;
-    padding-left: 1px;
+#Reboot:focus {
+    background-color: rgba(60, 60, 60, 120);
+    border-radius: 3px;
+    border-left: 2px solid darkgray;
 }
 
-QToolButton#reboot {
-    border: 1px solid gray;
-    border-radius: 0px;
-    border-top-left-radius: 18px;
-    border-bottom-left-radius: 18px;
-    padding-top: 1px;
-    padding-left: 1px;
+#Logout:focus {
+    background-color: rgba(60, 60, 60, 120);
+    border-radius: 3px;
+    border-left: 2px solid darkgray;
 }
 
-QLineEdit {
-    background-color: transparent;
-    border: 1px solid gray;
-    border-radius: 18px;
-    padding-left: 10px;
-    padding-right: 10px;
+#Suspend:focus {
+    background-color: rgba(60, 60, 60, 120);
+    border-radius: 3px;
+    border-left: 2px solid darkgray;
+}
+
+#Hibernate:focus {
+    background-color: rgba(60, 60, 60, 120);
+    border-radius: 3px;
+    border-left: 2px solid darkgray;
+}
+
+#LoginToolButton {
+    background-color: rgba(60, 60, 60, 60);
+    border: none;
+    border-radius: 3px;
+}
+
+#LoginToolButton:hover {
+    background-color: rgba(60, 60, 60, 90);
+    border-radius: 3px;
+}
+
+#LoginToolButton:pressed {
+    background-color: rgba(60, 60, 60, 120);
+    border-radius: 3px;
+}
+
+#LoginToolButton:focus {
+    background-color: rgba(60, 60, 60, 90);
+    border-radius: 3px;
+    border-left: 2px solid darkgray;
+}
+
+#Password {
+    background-color: rgba(60, 60, 60, 60);
+    border-radius: 3px;
+}
+
+#Password:focus {
+    background-color: rgba(60, 60, 60, 90);
+    border-radius: 3px;
+    border-left: 2px solid darkgray;
 }
 
 QListWidget {
     background-color: transparent;
     border: none;
+    font-size: 10pt;
 }
 
-QWidget#widget {
-    border: 2px solid gray;
-    border-radius: 5px;
+QListWidget::item:focus {
+    border-right: 2px solid palette(Highlight);
+    font-size: 10pt;
 }
 
-QWidget#OverLay {
-    background-color: rgba(0, 0, 0, 230);
+QListWidget::item:selected {
+    background-color: #904A0404;
+    font-size: 10pt;
 }
 
-QLabel#userIcon {
-    border: 2px solid gray;
+QLabel#UserIcon {
+    border: 2px solid white;
     border-radius: 6px;
+}
+
+QLabel#UserName {
+    font-weight: bold;
+}
+
+#Sidebar {
+    background-color: #904A0404;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+#MainView {
+    background-color: #9066CEFE;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+#Clock {
+    font-weight: bold;
+}
+
+QComboBox {
+    border: none;
+    border-radius: 3px;
+    background-color: rgba(60, 60, 60, 60);
+}
+
+QComboBox:focus {
+    border: none;
+    border-left: 2px solid darkgray;
+    background-color: rgba(60, 60, 60, 90);
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 27px;
+    border: none;
+ }
+
+QComboBox::down-arrow {
+    image: url(:/icons/arrow-down.png);
+    width: 15px;
+    height: 15px;
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: rgba(60, 60, 60, 120);
+}
+
+QComboBox:on {
+    border-top: 2px solid darkgray;
+    border-left: none;
+}
+
+QComboBox QAbstractItemView QScrollBar {
+    background-color: transparent;
+}
+
+QComboBox QAbstractItemView QScrollBar:vertical {
+    background-color: rgba(60, 60, 60, 60);
+    border: none;
+    width: 0px;
+}
+
+QComboBox QAbstractItemView QScrollBar::handle:vertical {
+    background: rgba(60, 60, 60, 200);
+    width: 2px;
+}
+
+QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
+    background: transparent;
+}
+
+QComboBox QAbstractItemView QScrollBar::add-line:vertical {
+    background: transparent;
 }

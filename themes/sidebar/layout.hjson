@@ -1,14 +1,5 @@
 {
 	VerticalLayout: {
-		Margins: {
-			Left    : 0
-			Top     : 0
-			Right   : 0
-			Bottom  : 0
-		}
-
-		Spacing: 0
-
 		Objects: [
 			# Top Panel
 			{
@@ -30,7 +21,7 @@
 							}
 							{
 								Clock: {
-									Type: simple
+									Type: Simple
 									FixedHeight: 40
 								}
 							}

@@ -68,7 +68,7 @@
 												Alignment: Left
 												Type: Time
 												Font: Quicksand, 40, Normal, Normal
-												Format: hh:mm
+												Format: "HH : mm"
 											}
 										}
 										{
@@ -91,8 +91,8 @@
 														}
 													}
 													{
-														UserName: {
-															Type: LineEdit
+														UserList: {
+															Type: Combo
 															FixedHeight: 27
 														}
 													}

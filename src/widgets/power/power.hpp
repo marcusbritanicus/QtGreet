@@ -2,7 +2,10 @@
 	*
 	* Copyright 2020 Britanicus <marcusbritanicus@gmail.com>
 	*
-	* This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/QtGreet)
+	* This file is a part of QtGreet project
+	* (https://gitlab.com/marcusbritanicus/QtGreet/)
+	* Qt5 example of analog clock is the inspiration for this.
+	* Some parts of the code are taken from Qt5's example.
 	*
 
 	*
@@ -29,19 +32,11 @@
 
 #pragma once
 
-#include <QtCore>
-#include <QtGui>
 #include <QtWidgets>
 
-class WidgetFactory {
+class PowerButton: public QToolButton {
+    Q_OBJECT;
 
     public:
-        /* Create a widget, given its name, and apply the properties given in the map */
-        static QWidget *createWidget( QString name, QString type, QVariantMap properties );
-
-    private:
-        /* Most of the properties given can be applied directly, like width and height */
-        /* Some properties like text, or icon need to be applied after casting them into suitable types. */
-        /* Invalid properties will be ignored. Ex. icon for a label */
-        static void applyWidgetProperties( QWidget*, QString, QString, QVariantMap );
+        PowerButton( QString type );
 };

@@ -30,6 +30,12 @@
 #include "QtGreet.hpp"
 #include "LayoutManager.hpp"
 
+#include "buttons.hpp"
+#include "labels.hpp"
+#include "power.hpp"
+#include "session.hpp"
+#include "user.hpp"
+
 #include <unistd.h>
 #include <QtDBus>
 
@@ -77,22 +83,6 @@ static inline int getFormFactor() {
 	return 0;
 };
 
-static bool IsExec( QString exec ) {
-
-    /* If this is a full path (ex: /usr/bin/fish) */
-    if ( access( exec.toUtf8().constData(), R_OK | X_OK ) == 0 )
-        return true;
-
-    /* Otherwise (ex: plasmashell) */
-    for( QString path : qgetenv( "PATH" ).split( ':' ) ) {
-        int ret = access( QString( path + "/" + exec ).toUtf8().constData(), R_OK | X_OK );
-        if ( ret == 0 )
-            return true;
-    }
-
-    return false;
-};
-
 static QString getStyleSheet( QString fn ) {
 
     QFile qss( fn );
@@ -131,6 +121,8 @@ void QtGreet::createUI() {
     lytMgr.applyLayout( w );
 
     setCentralWidget( w );
+
+	QMetaObject::connectSlotsByName( this );
 };
 
 void QtGreet::paintEvent( QPaintEvent *pEvent ) {
@@ -153,4 +145,95 @@ void QtGreet::paintEvent( QPaintEvent *pEvent ) {
     painter.end();
 
     QMainWindow::paintEvent( pEvent );
+};
+
+void QtGreet::keyPressEvent( QKeyEvent *kEvent ) {
+
+    switch ( kEvent->key() ) {
+        case Qt::Key_CapsLock : {
+			LockState *lock = findChild<LockState *>( "CapsLock" );
+			if ( not lock )
+				return;
+
+            if ( lock->objectName() == "CapsLock" )
+                lock->toggle();
+
+            break;
+        }
+
+        case Qt::Key_NumLock : {
+			LockState *lock = findChild<LockState *>( "NumLock" );
+			if ( not lock )
+				return;
+
+            if ( lock->objectName() == "NumLock" )
+                lock->toggle();
+
+            break;
+        }
+
+        default:
+            return;
+    }
+
+    return;
+};
+
+void QtGreet::on_UserList_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
+
+	User usr( cur->data( Qt::UserRole + 1 ).value<User>() );
+	int uid = usr.uid;
+
+	/* Update the 'UserName' label */
+	UserNameLabel *un = findChild<UserNameLabel *>( "UserName" );
+	if ( un ) {
+		un->setText( usr.name );
+	}
+
+	/* Update the 'UserIcon' */
+	UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
+	if ( ui ) {
+		ui->setPixmap( usr.icon );
+	}
+
+	/* Clear the password field */
+	QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
+	if ( pwd )
+		pwd->clear();
+
+	/* Update the session to the last used session */
+	SessionList *sl = findChild<SessionList *>( "SessionList" );
+	for( int i = 0; i < sl->count(); i++ ) {
+		Session sess( sl->itemData( i, Qt::UserRole ).value<Session>() );
+		if ( sess.file == sett->value( QString( "Users/%1" ).arg( uid ) ).toString() ) {
+			sl->setCurrentIndex( i );
+			break;
+		}
+	}
+};
+
+void QtGreet::on_UserNavRight_clicked() {
+
+	UserNameButton *btn = findChild<UserNameButton *>( "UserName" );
+	if ( btn ) {
+		btn->switchToNextUser();
+
+		/* Update the 'UserIcon' */
+		UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
+		if ( ui )
+			ui->setPixmap( btn->userIcon() );
+	}
+};
+
+void QtGreet::on_UserNavLeft_clicked() {
+
+	UserNameButton *btn = findChild<UserNameButton *>( "UserName" );
+	if ( btn ) {
+		btn->switchToPreviousUser();
+
+		/* Update the 'UserIcon' */
+		UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
+		if ( ui )
+			ui->setPixmap( btn->userIcon() );
+	}
 };

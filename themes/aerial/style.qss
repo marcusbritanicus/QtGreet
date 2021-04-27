@@ -51,7 +51,7 @@ QToolButton#nav {
     padding-left: 1px;
 }
 
-QToolButton#halt {
+QToolButton#Halt {
     border: 1px solid gray;
     border-radius: 0px;
     border-top-right-radius: 18px;
@@ -60,7 +60,7 @@ QToolButton#halt {
     padding-left: 1px;
 }
 
-QToolButton#reboot {
+QToolButton#Reboot {
     border: 1px solid gray;
     border-radius: 0px;
     border-top-left-radius: 18px;
@@ -92,12 +92,36 @@ QWidget#OverLay {
     background-color: rgba(0, 0, 0, 230);
 }
 
-QLabel#userIcon {
+QLabel#UserIcon {
     border: 2px solid gray;
     border-radius: 6px;
 }
 
 QComboBox {
     border: none;
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 60);
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 27px;
+
+    background-color: rgba(255, 255, 255, 60);
+    border: none;
+ }
+
+ QComboBox::down-arrow {
+    image: url(:/icons/arrow-down.png);
+    width: 18px;
+    height: 18px;
+ }
+
+ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+     top: 1px;
+     left: 1px;
+ }
+
+QComboBox QAbstractItemView {
+    background-color: rgba(0, 0, 0, 60);
 }

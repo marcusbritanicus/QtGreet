@@ -50,7 +50,6 @@ AnalogClock::AnalogClock( QColor txtclr, QWidget *parent ) : QWidget( parent ) {
 	connect( timer, SIGNAL( timeout() ), this, SLOT( update() ) );
 	timer->start( 250 );
 
-	setWindowTitle( tr( "Analog Clock" ) );
 	resize( 200, 200 );
 
 	QImage bImg = QImage( ":/icons/battery.png" ).scaled( QSize( 24, 24 ), Qt::KeepAspectRatio, Qt::SmoothTransformation );

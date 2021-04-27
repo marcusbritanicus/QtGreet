@@ -1,0 +1,32 @@
+buttons - All generic buttons
+    1. Okay button
+    2. Cancel button
+    3. Session Edit Button
+    4. User nav buttons
+    5. Session nav buttons
+
+clock - various clock widgets
+    1. Analog Clock
+    2. Digital Clock
+    3. Simple Clock
+
+labels - simple labels
+    1. Caps lock
+    2. Num lock
+
+power - power related buttons
+    1. Power menu button
+    2. Halt button
+    3. Reboot button
+    4. Suspend button
+    5. Hibernate button
+
+session - Session name and lists (autoloading)
+    1. Session combo
+    2. Session list
+    3. Session name (clicking shows list)
+
+user - User name and lists (autoloading)
+    1. User combo
+    2. User list
+    3. User name (clicking shows list)
