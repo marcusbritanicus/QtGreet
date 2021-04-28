@@ -95,7 +95,38 @@ class QtGreet : public QMainWindow {
         void tryLogin() {};
 
         /* Auto Slots */
-        void on_UserList_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
+
+        // SessionNavButton - Right - Next User
+        void on_SessionNavRight_clicked();
+        // SessionNavButton - Left - Previous User
+        void on_SessionNavLeft_clicked();
+
+        // UserNavButton - Right - Next User
         void on_UserNavRight_clicked();
+        // UserNavButton - Left - Previous User
         void on_UserNavLeft_clicked();
+
+        // Generic okay button - Not implemented
+        // void on_OkayButton_clicked();
+        // Generic cancel button - Not implemented
+        // void on_CancelButton_clicked();
+
+        // SessionEditButton - Convert the SessionEdit from ReadOnly to ReadWrite
+        void on_SessionEditButton_clicked();
+        // LoginButton - ToolButton and PushButton - Perform the login: tryLogin()
+        void on_LoginButton_clicked();
+
+        // PushButton
+        void on_SessionName_clicked();
+        // ComboBox
+        void on_SessionName_curremtIndexChanged( int );
+        // ListWidget
+        void on_SessionName_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
+
+        // PushButton
+        void on_UserName_clicked();
+        // ComboBox
+        void on_UserName_curremtIndexChanged( int );
+        // ListWidget
+        void on_UserName_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
 };

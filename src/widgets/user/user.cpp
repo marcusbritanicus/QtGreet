@@ -103,7 +103,40 @@ static inline Users getUsers() {
     return mUserList;
 };
 
-UserListCombo::UserListCombo() : QComboBox() {
+/* User Name - Generic Class */
+
+UserName::UserName() {
+
+    mUserList = getUsers();
+};
+
+void UserName::switchToNextUser() {
+
+    curUser++;
+    if ( curUser >= mUserList.count() )
+        curUser = 0;
+};
+
+void UserName::switchToPreviousUser() {
+
+    curUser--;
+    if ( curUser < 0 )
+        curUser = mUserList.count() - 1;
+};
+
+Users UserName::users() {
+
+    return mUserList;
+};
+
+User UserName::currentUser() {
+
+    return mUserList.at( curUser );
+};
+
+/* User ComboBox */
+
+UserListCombo::UserListCombo() : QComboBox(), UserName() {
 
     setObjectName( "UserList" );
     mUserList = getUsers();
@@ -113,7 +146,25 @@ UserListCombo::UserListCombo() : QComboBox() {
     }
 };
 
-UserList::UserList() : QListWidget() {
+void UserListCombo::switchToNextUser() {
+
+    UserName::switchToNextUser();
+
+    setCurrentIndex( curUser );
+    setToolTip( mUserList.at( curUser ).username );
+};
+
+void UserListCombo::switchToPreviousUser() {
+
+    UserName::switchToPreviousUser();
+
+    setCurrentIndex( curUser );
+    setToolTip( mUserList.at( curUser ).username );
+};
+
+/* User List */
+
+UserList::UserList() : QListWidget(), UserName() {
 
     setObjectName( "UserName" );
     setIconSize( QSize( 24, 24 ) );
@@ -130,14 +181,47 @@ UserList::UserList() : QListWidget() {
     }
 };
 
-UserNameLabel::UserNameLabel() : QLabel() {
+void UserList::switchToNextUser() {
+
+    UserName::switchToNextUser();
+};
+
+void UserList::switchToPreviousUser() {
+
+    UserName::switchToPreviousUser();
+
+    setCurrentIndex( curUser );
+    setToolTip( mUserList.at( curUser ).username );
+};
+
+/* User Label */
+
+UserNameLabel::UserNameLabel() : QLabel(), UserName() {
 
     setObjectName( "UserName" );
     setFixedHeight( 27 );
     setText( "Hello, Marcus" );
 };
 
-UserNameButton::UserNameButton() : QPushButton() {
+void UserNameLabel::switchToNextUser() {
+
+    UserName::switchToNextUser();
+
+    setText( mUserList.at( curUser ).name );
+    setToolTip( mUserList.at( curUser ).username );
+};
+
+void UserNameLabel::switchToPreviousUser() {
+
+    UserName::switchToPreviousUser();
+
+    setText( mUserList.at( curUser ).name );
+    setToolTip( mUserList.at( curUser ).username );
+};
+
+/* User Button */
+
+UserNameButton::UserNameButton() : QPushButton(), UserName() {
 
     setObjectName( "UserName" );
     mUserList = getUsers();
@@ -150,9 +234,7 @@ UserNameButton::UserNameButton() : QPushButton() {
 
 void UserNameButton::switchToNextUser() {
 
-    curUser++;
-    if ( curUser >= mUserList.count() )
-        curUser = 0;
+    UserName::switchToNextUser();
 
     setText( mUserList.at( curUser ).name );
     setToolTip( mUserList.at( curUser ).username );
@@ -160,15 +242,8 @@ void UserNameButton::switchToNextUser() {
 
 void UserNameButton::switchToPreviousUser() {
 
-    curUser--;
-    if ( curUser < 0 )
-        curUser = mUserList.count() - 1;
+    UserName::switchToPreviousUser();
 
     setText( mUserList.at( curUser ).name );
     setToolTip( mUserList.at( curUser ).username );
-};
-
-QPixmap UserNameButton::userIcon() {
-
-    return mUserList.at( curUser ).icon;
 };

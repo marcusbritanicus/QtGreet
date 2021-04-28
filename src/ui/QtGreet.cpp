@@ -179,7 +179,102 @@ void QtGreet::keyPressEvent( QKeyEvent *kEvent ) {
     return;
 };
 
-void QtGreet::on_UserList_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
+void QtGreet::on_UserNavRight_clicked() {
+
+	UserNameButton *btn = findChild<UserNameButton *>( "UserName" );
+	if ( btn ) {
+		btn->switchToNextUser();
+
+		User usr = btn->currentUser();
+		int uid = usr.uid;
+
+		/* Update the 'UserIcon' */
+		UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
+		if ( ui )
+			ui->setPixmap( usr.icon );
+
+		/* Update the 'UserName' label */
+		UserNameLabel *un = findChild<UserNameLabel *>( "UserName" );
+		if ( un ) {
+			un->setText( usr.name );
+		}
+
+		/* Clear the password field */
+		QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
+		if ( pwd )
+			pwd->clear();
+	}
+};
+
+void QtGreet::on_UserNavLeft_clicked() {
+
+	UserNameButton *btn = findChild<UserNameButton *>( "UserName" );
+	if ( btn ) {
+		btn->switchToPreviousUser();
+
+		User usr = btn->currentUser();
+		int uid = usr.uid;
+
+		/* Update the 'UserIcon' */
+		UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
+		if ( ui )
+			ui->setPixmap( usr.icon );
+
+		/* Update the 'UserName' label */
+		UserNameLabel *un = findChild<UserNameLabel *>( "UserName" );
+		if ( un ) {
+			un->setText( usr.name );
+		}
+
+		/* Clear the password field */
+		QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
+		if ( pwd )
+			pwd->clear();
+	}
+};
+
+void QtGreet::on_SessionNavRight_clicked() {
+
+	SessionNameButton *btn = findChild<SessionNameButton *>( "SessionName" );
+	if ( btn )
+		btn->switchToNextSession();
+};
+
+void QtGreet::on_SessionNavLeft_clicked() {
+
+	SessionNameButton *btn = findChild<SessionNameButton *>( "SessionName" );
+	if ( btn )
+		btn->switchToPreviousSession();
+};
+
+void QtGreet::on_SessionEditButton_clicked() {
+};
+
+void QtGreet::on_LoginButton_clicked() {
+};
+
+void QtGreet::on_SessionName_clicked() {
+};
+
+void QtGreet::on_SessionName_curremtIndexChanged( int ) {
+};
+
+void QtGreet::on_SessionName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
+
+	Session sess( cur->data( Qt::UserRole + 1 ).value<Session>() );
+};
+
+void QtGreet::on_UserName_clicked() {
+
+	// Show the user dialog!!
+};
+
+void QtGreet::on_UserName_curremtIndexChanged( int ) {
+
+	// Reset the password and change the login session
+};
+
+void QtGreet::on_UserName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
 
 	User usr( cur->data( Qt::UserRole + 1 ).value<User>() );
 	int uid = usr.uid;
@@ -200,40 +295,4 @@ void QtGreet::on_UserList_currentItemChanged( QListWidgetItem *cur, QListWidgetI
 	QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
 	if ( pwd )
 		pwd->clear();
-
-	/* Update the session to the last used session */
-	SessionList *sl = findChild<SessionList *>( "SessionList" );
-	for( int i = 0; i < sl->count(); i++ ) {
-		Session sess( sl->itemData( i, Qt::UserRole ).value<Session>() );
-		if ( sess.file == sett->value( QString( "Users/%1" ).arg( uid ) ).toString() ) {
-			sl->setCurrentIndex( i );
-			break;
-		}
-	}
-};
-
-void QtGreet::on_UserNavRight_clicked() {
-
-	UserNameButton *btn = findChild<UserNameButton *>( "UserName" );
-	if ( btn ) {
-		btn->switchToNextUser();
-
-		/* Update the 'UserIcon' */
-		UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
-		if ( ui )
-			ui->setPixmap( btn->userIcon() );
-	}
-};
-
-void QtGreet::on_UserNavLeft_clicked() {
-
-	UserNameButton *btn = findChild<UserNameButton *>( "UserName" );
-	if ( btn ) {
-		btn->switchToPreviousUser();
-
-		/* Update the 'UserIcon' */
-		UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
-		if ( ui )
-			ui->setPixmap( btn->userIcon() );
-	}
 };

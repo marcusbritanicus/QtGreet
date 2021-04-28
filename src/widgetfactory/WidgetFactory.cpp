@@ -39,6 +39,8 @@
 #include "session.hpp"
 #include "user.hpp"
 
+const QSettings sett( "QtGreet", "QtGreet" );
+
 QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap properties ) {
 
     if ( name == "QWidget" ) {
@@ -206,10 +208,43 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
     else if ( name == "SessionName" ) {
         // qWarning() << "Session name";
 
-        SessionName *sess = new SessionName();
-        applyWidgetProperties( sess, name, type, properties );
+        bool custom = sett.value( "AllowCustomSessions" ).toBool();
 
-        return sess;
+        QStringList sessions = {
+            "DesQ (Wayland)", "Paper (Wayland)", "Wayfire (Wayland)", "Sway (Wayland)", "Plasma Wayland", "Weston (Wayland)",
+            "Awesome (X11)", "I3-with-shmlog (X11)", "LXQt (X11)", "MWM (X11)", "Oyster (X11)", "TinyWM (X11)", "XFCE (X11)",
+            "Enlightenment (X11)", "I3 (X11)", "MatchBox (X11)", "OpenBox (X11)", "Plasma (X11)", "Win7 (X11)"
+        };
+
+        if ( type == "List" ) {
+            SessionList *lw = new SessionList( custom );
+            applyWidgetProperties( lw, name, type, properties );
+
+
+            return lw;
+        }
+
+        else if ( type == "Combo" ) {
+            SessionListCombo *cb = new SessionListCombo( custom );
+            applyWidgetProperties( cb, name, type, properties );
+
+            return cb;
+        }
+
+        else if ( type == "Label" ) {
+            SessionNameLabel *sess = new SessionNameLabel( custom );
+            applyWidgetProperties( sess, name, type, properties );
+
+            return sess;
+        }
+
+        else if ( type == "PushButton" ) {
+
+            SessionNameButton *btn = new SessionNameButton( custom );
+            applyWidgetProperties( btn, name, type, properties );
+
+            return btn;
+        }
     }
 
     else if ( name == "SessionEdit" ) {
@@ -219,39 +254,6 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         applyWidgetProperties( le, name, type, properties );
 
         return le;
-    }
-
-    else if ( name == "SessionList" ) {
-        // qWarning() << "Session List";
-
-        QStringList sessions = {
-            "DesQ (Wayland)", "Paper (Wayland)", "Wayfire (Wayland)", "Sway (Wayland)", "Plasma Wayland", "Weston (Wayland)",
-            "Awesome (X11)", "I3-with-shmlog (X11)", "LXQt (X11)", "MWM (X11)", "Oyster (X11)", "TinyWM (X11)", "XFCE (X11)",
-            "Enlightenment (X11)", "I3 (X11)", "MatchBox (X11)", "OpenBox (X11)", "Plasma (X11)", "Win7 (X11)"
-        };
-
-        if ( type == "List" ) {
-            QListWidget *lw = new QListWidget();
-            lw->setIconSize( QSize( 36, 36 ) );
-            lw->setFont( QFont( "Quicksand", 12 ) );
-            lw->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-            lw->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-            applyWidgetProperties( lw, name, type, properties );
-
-            for( QString sess: sessions ) {
-                QListWidgetItem *item = new QListWidgetItem( QIcon( ":/icons/session.png" ), sess, lw );
-                lw->addItem( item );
-            }
-
-            return lw;
-        }
-
-        else if ( type == "Combo" ) {
-            SessionList *cb = new SessionList();
-            applyWidgetProperties( cb, name, type, properties );
-
-            return cb;
-        }
     }
 
     else if ( name == "SessionEditButton" ) {

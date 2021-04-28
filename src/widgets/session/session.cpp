@@ -51,26 +51,9 @@ static bool IsExec( QString exec ) {
     return false;
 };
 
-SessionEdit::SessionEdit() : QLineEdit() {
+Sessions getSessions( bool custom ) {
 
-    setObjectName( "SessionEdit" );
-    setMinimumSize( QSize( 200, 27 ) );
-};
-
-SessionName::SessionName() : QPushButton() {
-
-    setObjectName( "SessionName" );
-    setFixedHeight( 27 );
-    setIcon( QIcon( ":/icons/session.png" ) );
-    setText( "DesQ (Wayland)" );
-    setFlat( true );
-};
-
-SessionList::SessionList() : QComboBox() {
-
-    setObjectName( "SessionList" );
-
-    mSessions.clear();
+    Sessions mSessions;
 
     QDir wlSessDir( "/usr/share/wayland-sessions" );
     for( QString sess: wlSessDir.entryList( { "*.desktop" } ) ) {
@@ -107,10 +90,141 @@ SessionList::SessionList() : QComboBox() {
         }
     }
 
-    Session custom{ "Custom", "application-x-executable", "unknown", "", "" };
-    mSessions << custom;
-
-    for( Session sess: mSessions ) {
-        addItem( QIcon::fromTheme( sess.icon, QIcon( sess.icon ) ), sess.name, QVariant::fromValue( sess ) );
+    if ( custom ) {
+        Session customSess{ "Custom", "application-x-executable", "unknown", "", "" };
+        mSessions << customSess;
     }
+
+    return mSessions;
+};
+
+SessionEdit::SessionEdit() : QLineEdit() {
+
+    setObjectName( "SessionEdit" );
+    setMinimumSize( QSize( 200, 27 ) );
+    setAlignment( Qt::AlignCenter );
+};
+
+/* Session Name - Generic Class */
+
+SessionName::SessionName( bool custom ) {
+
+    mSessionList = getSessions( custom );
+};
+
+void SessionName::switchToNextSession() {
+
+    curSess++;
+    if ( curSess >= mSessionList.count() )
+        curSess = 0;
+};
+
+void SessionName::switchToPreviousSession() {
+
+    curSess--;
+    if ( curSess < 0 )
+        curSess = mSessionList.count() - 1;
+};
+
+Sessions SessionName::sessions() {
+
+    return mSessionList;
+};
+
+Session SessionName::currentSession() {
+
+    // Return an invalid session
+    return mSessionList.at( curSess );
+};
+
+/* Session ComboBox */
+
+SessionListCombo::SessionListCombo( bool custom ) : QComboBox(), SessionName( custom ) {
+
+    setObjectName( "SessionName" );
+    for( Session sess: mSessionList ) {
+        addItem( QIcon( sess.icon ), sess.name );
+    }
+};
+
+void SessionListCombo::switchToNextSession() {
+
+    SessionName::switchToNextSession();
+    setCurrentIndex( curSess );
+};
+
+void SessionListCombo::switchToPreviousSession() {
+
+    SessionName::switchToPreviousSession();
+    setCurrentIndex( curSess );
+};
+
+/* Session Button */
+
+SessionNameButton::SessionNameButton( bool custom ) : QPushButton(), SessionName( custom ) {
+
+    setObjectName( "SessionName" );
+    setFixedHeight( 27 );
+    setIcon( QIcon( ":/icons/session.png" ) );
+    setText( "DesQ (Wayland)" );
+    setFlat( true );
+};
+
+void SessionNameButton::switchToNextSession() {
+
+    SessionName::switchToNextSession();
+    setText( mSessionList.at( curSess ).name );
+};
+
+void SessionNameButton::switchToPreviousSession() {
+
+    SessionName::switchToPreviousSession();
+    setText( mSessionList.at( curSess ).name );
+};
+
+/* Session Label */
+
+SessionNameLabel::SessionNameLabel( bool custom ) : QLabel(), SessionName( custom ) {
+
+    setObjectName( "SessionName" );
+    setFixedHeight( 27 );
+    setText( "DesQ (Wayland)" );
+};
+
+void SessionNameLabel::switchToNextSession() {
+
+    SessionName::switchToNextSession();
+    setText( mSessionList.at( curSess ).name );
+};
+
+void SessionNameLabel::switchToPreviousSession() {
+
+    SessionName::switchToPreviousSession();
+    setText( mSessionList.at( curSess ).name );
+};
+
+/* Session List */
+
+SessionList::SessionList( bool custom ) : QListWidget(), SessionName( custom ) {
+
+    setObjectName( "SessionName" );
+    setIconSize( QSize( 24, 24 ) );
+    setFont( QFont( "Quicksand", 12 ) );
+    setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+
+    for( Session sess: mSessionList )
+        addItem( new QListWidgetItem( QIcon::fromTheme( sess.icon, QIcon( sess.icon ) ), sess.name, this ) );
+};
+
+void SessionList::switchToNextSession() {
+
+    SessionName::switchToNextSession();
+    setCurrentRow( curSess );
+};
+
+void SessionList::switchToPreviousSession() {
+
+    SessionName::switchToPreviousSession();
+    setCurrentRow( curSess );
 };

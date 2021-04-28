@@ -60,7 +60,7 @@ SessionEditButton::SessionEditButton() : QToolButton() {
 
 LoginToolButton::LoginToolButton() : QToolButton() {
 
-    setObjectName( "LoginToolButton" );
+    setObjectName( "LoginButton" );
     setFixedSize( QSize( 27, 27 ) );
     setIconSize( QSize( 22, 22 ) );
     setAutoRaise( true );
@@ -70,7 +70,7 @@ LoginToolButton::LoginToolButton() : QToolButton() {
 
 LoginPushButton::LoginPushButton() : QPushButton() {
 
-    setObjectName( "LoginPushButton" );
+    setObjectName( "LoginButton" );
     setFixedSize( QSize( 27, 27 ) );
     setIconSize( QSize( 22, 22 ) );
     setFlat( true );

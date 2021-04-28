@@ -52,19 +52,57 @@ class SessionEdit : public QLineEdit {
         SessionEdit();
 };
 
-class SessionName : public QPushButton {
-    Q_OBJECT;
-
+class SessionName {
     public:
-        SessionName();
+        SessionName( bool );
+
+        void switchToNextSession();
+        void switchToPreviousSession();
+
+        Sessions sessions();
+        Session currentSession();
+
+    protected:
+        Sessions mSessionList;
+        int curSess = 0;
 };
 
-class SessionList : public QComboBox {
+class SessionListCombo: public QComboBox, public SessionName {
     Q_OBJECT;
 
     public:
-        SessionList();
+        SessionListCombo( bool );
 
-    private:
-        Sessions mSessions;
+        void switchToNextSession();
+        void switchToPreviousSession();
+};
+
+class SessionNameButton : public QPushButton, public SessionName {
+    Q_OBJECT;
+
+    public:
+        SessionNameButton( bool );
+
+        void switchToNextSession();
+        void switchToPreviousSession();
+};
+
+class SessionNameLabel : public QLabel, public SessionName {
+    Q_OBJECT;
+
+    public:
+        SessionNameLabel( bool );
+
+        void switchToNextSession();
+        void switchToPreviousSession();
+};
+
+class SessionList : public QListWidget, public SessionName {
+    Q_OBJECT;
+
+    public:
+        SessionList( bool );
+
+        void switchToNextSession();
+        void switchToPreviousSession();
 };

@@ -48,34 +48,58 @@ Q_DECLARE_METATYPE( User );
 
 typedef QList<User> Users;
 
-class UserListCombo: public QComboBox {
+class UserName {
+    public:
+        UserName();
+
+        void switchToNextUser();
+        void switchToPreviousUser();
+
+        Users users();
+        User currentUser();
+
+    protected:
+        Users mUserList;
+        int curUser = 0;
+};
+
+class UserListCombo: public QComboBox, public UserName {
     Q_OBJECT;
 
     public:
         UserListCombo();
 
+        void switchToNextUser();
+        void switchToPreviousUser();
+
     private:
         Users mUserList;
 };
 
-class UserList: public QListWidget {
+class UserList: public QListWidget, public UserName {
     Q_OBJECT;
 
     public:
         UserList();
 
+        void switchToNextUser();
+        void switchToPreviousUser();
+
     private:
         Users mUserList;
 };
 
-class UserNameLabel: public QLabel {
+class UserNameLabel: public QLabel, public UserName {
     Q_OBJECT;
 
     public:
         UserNameLabel();
+
+        void switchToNextUser();
+        void switchToPreviousUser();
 };
 
-class UserNameButton: public QPushButton {
+class UserNameButton: public QPushButton, public UserName {
     Q_OBJECT;
 
     public:
@@ -83,7 +107,6 @@ class UserNameButton: public QPushButton {
 
         void switchToNextUser();
         void switchToPreviousUser();
-        QPixmap userIcon();
 
     private:
         Users mUserList;
