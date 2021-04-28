@@ -141,9 +141,8 @@ UserListCombo::UserListCombo() : QComboBox(), UserName() {
     setObjectName( "UserList" );
     mUserList = getUsers();
 
-    for( User usr: mUserList ) {
-        addItem( QIcon( usr.icon ), usr.username, QVariant::fromValue( usr ) );
-    }
+    for( User usr: mUserList )
+        addItem( QIcon( usr.icon ), usr.username );
 };
 
 void UserListCombo::switchToNextUser() {
@@ -172,25 +171,23 @@ UserList::UserList() : QListWidget(), UserName() {
     setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-    mUserList = getUsers();
-
-    for( User usr: mUserList ) {
-        QListWidgetItem *item = new QListWidgetItem( QIcon( usr.icon ), usr.username, this );
-        item->setData( Qt::UserRole + 1, QVariant::fromValue( usr ) );
-        addItem( item );
-    }
+    for( User usr: mUserList )
+        addItem( new QListWidgetItem( QIcon( usr.icon ), usr.username, this ) );
 };
 
 void UserList::switchToNextUser() {
 
     UserName::switchToNextUser();
+
+    setCurrentRow( curUser );
+    setToolTip( mUserList.at( curUser ).username );
 };
 
 void UserList::switchToPreviousUser() {
 
     UserName::switchToPreviousUser();
 
-    setCurrentIndex( curUser );
+    setCurrentRow( curUser );
     setToolTip( mUserList.at( curUser ).username );
 };
 
@@ -200,7 +197,6 @@ UserNameLabel::UserNameLabel() : QLabel(), UserName() {
 
     setObjectName( "UserName" );
     setFixedHeight( 27 );
-    setText( "Hello, Marcus" );
 };
 
 void UserNameLabel::switchToNextUser() {
@@ -224,12 +220,9 @@ void UserNameLabel::switchToPreviousUser() {
 UserNameButton::UserNameButton() : QPushButton(), UserName() {
 
     setObjectName( "UserName" );
-    mUserList = getUsers();
 
     setFixedHeight( 27 );
     setText( "Hello, Marcus" );
-
-    switchToNextUser();
 };
 
 void UserNameButton::switchToNextUser() {

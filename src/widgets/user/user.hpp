@@ -60,7 +60,7 @@ class UserName {
 
     protected:
         Users mUserList;
-        int curUser = 0;
+        int curUser = -1;
 };
 
 class UserListCombo: public QComboBox, public UserName {
@@ -71,9 +71,6 @@ class UserListCombo: public QComboBox, public UserName {
 
         void switchToNextUser();
         void switchToPreviousUser();
-
-    private:
-        Users mUserList;
 };
 
 class UserList: public QListWidget, public UserName {
@@ -84,9 +81,6 @@ class UserList: public QListWidget, public UserName {
 
         void switchToNextUser();
         void switchToPreviousUser();
-
-    private:
-        Users mUserList;
 };
 
 class UserNameLabel: public QLabel, public UserName {
@@ -107,8 +101,4 @@ class UserNameButton: public QPushButton, public UserName {
 
         void switchToNextUser();
         void switchToPreviousUser();
-
-    private:
-        Users mUserList;
-        int curUser = -1;
 };

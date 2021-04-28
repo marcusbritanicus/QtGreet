@@ -33,6 +33,8 @@
 #include <QtGui>
 #include <QtWidgets>
 
+class UserName;
+
 class QtGreet : public QMainWindow {
     Q_OBJECT;
 
@@ -43,23 +45,14 @@ class QtGreet : public QMainWindow {
         /* Create UI */
         void createUI();
 
-        /* Read the list of users */
-        void getUserList() {};
-
-        /* Read the list of X11/Wayland sessions */
-        void getLoginSessions() {};
+        /* Prepare first use */
+        void prepareUIforUse();
 
         /* Update the username on the screen */
-        void updateUser() {};
+        void updateUser( UserName * );
 
         /* Update the session on the screen */
-        void updateSess() {};
-
-        /* Show the validating message */
-        void showValidating() {};
-
-        /* Get the command to launch an X session */
-        QString getXSessionCommand() { return QString(); };
+        void updateSession( QString );
 
         uint curUser = 0;
         uint curSess = 0;
@@ -73,23 +66,6 @@ class QtGreet : public QMainWindow {
         void keyPressEvent( QKeyEvent *kEvent );
 
     private Q_SLOTS:
-        /* Show the next user */
-        void nextUser() {};
-
-        /* Show the previous user */
-        void previousUser() {};
-
-        /* Show the next user */
-        void nextSess() {};
-
-        /* Show the previous user */
-        void previousSess() {};
-
-        /* User selection */
-        void showUserSelection() {};
-
-        /* Session selection */
-        void showSessionSelection() {};
 
         /* Try to login */
         void tryLogin() {};
