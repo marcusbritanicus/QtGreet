@@ -42,7 +42,35 @@
         </div>
 
         <div class = "title">Configuration</div>
-    </div>
+
+		<ul>
+			<li>We first paint a base color over the entire screen over which the wallpaper is drawn with 50% opacity. This helps to improve the
+			legibility of the text. Currently, three configuration options are available: <code>Background</code>, <code>BaseColor</code>, and
+			<code>TextColor</code></li>
+
+			<li>You can set these in <code>/etc/qtgreet/config.ini</code> file.</li>
+
+			<li>BaseColor key defines the base color to be painted. It takes ARGB hex values as single continuous string.</li>
+			<ul>
+				<li>Ex: <code>ffffffff</code> (white, alpha = 100%), <code>AAFF0000</code> (red, alpha = 66.6%), <code>00008080</code>
+					(teal, alpha = 0), and so on.</li>
+				<li>The default value is white (<code>ffffffff</code>).</li>
+			</ul>
+
+			<li>Background key defines the background image. All image formats supported by Qt on your system are supported by QtGreet.
+			Typically jpg/png/svg files should be fine. Some default background files can be found in /usr/share/qtgreet/backgrounds. The path
+			should be absolute.</li>
+
+			<li>If you wish not to use a background image, you may set <code>Background = none</code>, in which case only the base color will be
+			painted on the screen.</li>
+
+			<li><code>TextColor</code> key defines the color of the text. The default value is white. It takes RGB hex values as single continuous string
+			similar to <code>BaseColor</code>.</li>
+			<ul>
+				<li>The default value is white (<code>ffffff</code>).</li>
+			</ul>
+		</ul>
+	</div>
 </body>
 
 </html>

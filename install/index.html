@@ -42,6 +42,48 @@
         </div>
 
         <div class = "title">Installation</div>
+
+        <h3>Dependencies</h3>
+        <ul>
+            <li>Qt5 (duh...)</li>
+            <li>Qt5Wayland</li>
+            <li>WLR based compositor (wayfire, sway etc..)</li>
+            <li>CMake (to build this project)</li>
+            <li>Make or Ninja (to compile this project)</li>
+        </ul>
+
+        <h3>Compiling and installing</h3>
+        <ul>
+            <li>Get the sources of QtGreet</li>
+            <ul>
+                <li><pre>git clone https://gitlab.com/marcusbritanicus/QtGreet.git</pre></li>
+            </ul>
+
+            <li>Enter the QtGreet folder</li>
+            <ul>
+                <li><pre>cd QtGreet</pre></li>
+            </ul>
+
+            <li>Now you can simply type to update and build QtGreet and greetd</li>
+            <ul>
+                <li><pre>./setup.py prepare && ./setup.py build</pre></li>
+                <li>In case you want to disable greetd, use the --no-greetd switch,</li>
+                <ul>
+                    <li><pre>./setup.py prepare --no-greetd && ./setup.py build --no-greetd</pre></li>
+                </ul>
+            </ul>
+
+            <li>Install the project (again, use --no-greetd to avoid greetd installation)</li>
+            <ul>
+                <li><pre>sudo ./setup.py install</pre></li>
+            </ul>
+
+            <li>Run the post-installation script to finish the installation - this creates the
+            user greeter and sets appropriate permissions on the directories and files</li>
+            <ul>
+                <li><pre>sudo sh ./scripts/postinst</pre></li>
+            </ul>
+        </ul>
     </div>
 </body>
 
