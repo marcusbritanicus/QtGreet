@@ -19,7 +19,7 @@ td {
 .sidebar {
     float: left;
     width: 150px;
-    color: #995515;
+    color: #4B9CD3;
     text-align: right;
     border-right: 1px solid green;
     line-height: 150%;
@@ -29,11 +29,16 @@ td {
 }
 
 .sidebar .title {
+    color: #995515;
     font-variant: small-caps;
     font-size: 120%;
     font-weight: bold;
     padding-top: 15px;
     padding-bottom: 20px;
+}
+
+.sidebar .this {
+    font-weight: bold;
 }
 
 .sidebar a {
@@ -54,6 +59,26 @@ td {
     float: right;
     text-align: justify;
     padding-right: 10px;
+}
+
+.content .banner {
+    display: block;
+    font-size: 2em;
+    margin-top: 0.67em;
+    margin-bottom: 0.67em;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: bold;
+}
+
+.content .title {
+    display: block;
+    font-size: 1.25em;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: bold;
 }
 
 .content a {
