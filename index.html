@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<title>QtGreet</title>
+
+    <link rel="stylesheet" type="text/css" href="./styles/stylesheet.css" media="screen">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link id="faviconLink" rel="shortcut icon" HREF="./images/qtgreet.png">
+	<link rel=icon href=./favicon.ico>
+    <link rel=icon href=./images/qtgreet.png>
+</head>
+
+<body>
+
+    <!-- SideBar -->
+    <div class = "sidebar">
+        <span class = "title">Documentation</span>
+        <a href = "#">About</a> <br>
+        <a href = "#">Installation</a> <br>
+        <a href = "#">Gallery</a> <br>
+        <a href = "#">Configuration</a> <br>
+        <a href = "#">Theming</a> <br>
+
+        <div class = "title">Resources</div>
+        <a href = "https://matrix.to/#/#qtgreet:matrix.org?via=matrix.org" target = "_blank">
+            Matrix <span class = "fa fa-external-link"></span>
+        </a> <br>
+        <a href = "https://sr.ht/~kennylevinsen/greetd/" target = "_blank">
+            greetd <span class = "fa fa-external-link"></span>
+        </a> <br>
+        <a href = "#">Contributing</a> <br>
+    </div>
+    <div class = "content">
+        <h1>
+            <img src = "./images/qtgreet.png" width = "30px" class = "logo">QtGreet
+            <small><small> - A light-weight Qt-based Greeter</small></small>
+        </h1>
+
+        <p>QtGreet is a cross-desktop graphical display manager for linux built using Qt5. It supports two backends, namely
+		<a href = "https://sr.ht/~kennylevinsen/greetd/" target = "_blank">
+            greetd <span class = "fa fa-external-link"></span>
+        </a>
+		and
+		<a href = "https://github.com/canonical/lightdm" target = "_blank">
+            lightdm <span class = "fa fa-external-link"></span>
+        </a>.</p>
+
+		<p><center><img src = "images/compact.jpg" /></center></p>
+
+        <p>Some of its features are
+		<ul>
+			<li>Cross-desktop - works on X11 and Wayland</li>
+			<li>Light-weight - Pure Qt5 + lightdm + greetd</li>
+			<li>Standards compliant - PAM, logind support</li>
+			<li>Supports remote login - (via lightdm)</li>
+			<li>Supports guest sessions - (via lightdm)</li>
+		</ul></p>
+    </div>
+</body>
+
+</html>

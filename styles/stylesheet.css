@@ -1,0 +1,92 @@
+body {
+    width: 800px;
+    background-color: #444;
+    color: #ccc;
+    font-size: 14px;
+    margin: 15px;
+}
+
+table {
+    border: 0px;
+}
+
+td {
+    padding-left: 10px;
+    padding-right: 10px;
+    vertical-align: top;
+}
+
+.sidebar {
+    float: left;
+    width: 150px;
+    color: #995515;
+    text-align: right;
+    border-right: 1px solid green;
+    line-height: 150%;
+    padding-top: 15px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.sidebar .title {
+    font-variant: small-caps;
+    font-size: 120%;
+    font-weight: bold;
+    padding-top: 15px;
+    padding-bottom: 20px;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: #4169E1;
+}
+
+.sidebar a:hover {
+    font-weight: bold;
+}
+
+.sidebar a:visited {
+    color: #ACE5EE;
+}
+
+.content {
+    width: 603px;
+    float: right;
+    text-align: justify;
+    padding-right: 10px;
+}
+
+.content a {
+    text-decoration: none;
+    color: #4169E1;
+}
+
+.content a:hover {
+    font-weight: bold;
+}
+
+.content a:visited {
+    text-decoration: none;
+    color: #ccc;
+}
+
+.content h1 {
+    vertical-align: middle;
+}
+
+.content img {
+    border: 2px solid gray;
+    border-radius: 5px;
+    width: 100%;
+    padding: 5px;
+}
+
+h1 .logo {
+    display: inline-block;
+    vertical-align: middle;
+    width: 2em;
+    padding: 0;
+    padding-right: 10px;
+    border: 0;
+    margin: 0;
+}
