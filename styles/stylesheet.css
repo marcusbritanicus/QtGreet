@@ -106,7 +106,7 @@ td {
     padding: 5px;
 }
 
-h1 .logo {
+.content .logo {
     display: inline-block;
     vertical-align: middle;
     width: 2em;
