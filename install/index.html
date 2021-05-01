@@ -61,12 +61,10 @@
             <ul>
                 <li><pre>git clone --single-branch -b stable https://gitlab.com/marcusbritanicus/QtGreet.git</pre></li>
             </ul>
-
             <li>Enter the QtGreet folder</li>
             <ul>
                 <li><pre>cd QtGreet</pre></li>
             </ul>
-
             <li>Now you can simply type to update and build QtGreet and greetd</li>
             <ul>
                 <li><pre>./setup.py prepare && ./setup.py build</pre></li>
@@ -75,14 +73,12 @@
                     <li><pre>./setup.py prepare --no-greetd && ./setup.py build --no-greetd</pre></li>
                 </ul>
             </ul>
-
             <li>Install the project (again, use --no-greetd to avoid greetd installation)</li>
             <ul>
                 <li><pre>sudo ./setup.py install</pre></li>
             </ul>
-
-            <li>Run the post-installation script to finish the installation - this creates the
-            user greeter and sets appropriate permissions on the directories and files</li>
+            <li>Run the post-installation script to finish the installation - this creates the user greeter and sets appropriate permissions on
+            the directories and files</li>
             <ul>
                 <li><pre>sudo sh ./scripts/postinst</pre></li>
             </ul>
