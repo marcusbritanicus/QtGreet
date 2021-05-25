@@ -3,9 +3,9 @@ Qt based greeter for [greetd](https://git.sr.ht/~kennylevinsen/greetd), to be ru
 
 Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.org) (#qtgreet:matrix.org)
 
-<img src="screenshots/Greeter.jpg" width="300" />
-<img src="screenshots/Sessions.jpg" width="300" />
-<img src="screenshots/Users.jpg" width="300" />
+<img src="screenshots/Greeter.jpg" width="800" /><br /><br />
+<img src="screenshots/Sessions.jpg" width="800" /><br /><br />
+<img src="screenshots/Users.jpg" width="800" />
 
 ### Dependencies:
 - Qt5 (duh...)
