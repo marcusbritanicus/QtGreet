@@ -35,3 +35,12 @@ If you wish to make use of greetd, then you will have to configure it to use QtG
 To use wayfire, you'll have to set the command `greetd` should run as `wayfire --config /etc/qtgreet/wayfire.ini`
 * Open `/etc/greetd/config.toml` for editing with your favorite editor.
 * Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
+
+### Configuring the keyboard layout for wayfire
+Sometimes, it would be easier if the keyboard layout was not the default `us`. For wayfire, simply add the following line at the end of
+`/etc/qtgreet/wayfire.ini` file:
+
+```ini
+[input]
+xkb_layout = us
+```
