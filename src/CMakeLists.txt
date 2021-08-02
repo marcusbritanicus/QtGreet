@@ -22,12 +22,7 @@ find_package ( Qt5Core REQUIRED )
 find_package ( Qt5Gui REQUIRED )
 find_package ( Qt5DBus REQUIRED )
 
-find_package(ECM REQUIRED)
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_FIND_MODULE_DIR} )
-
-find_package( WaylandScanner REQUIRED )
 find_package( PkgConfig )
-pkg_check_modules( wayland-client REQUIRED wayland-client )
 
 set ( HDRS
 	Global.hpp
@@ -47,14 +42,8 @@ set ( RSCS
 	QtGreet.qrc
 )
 
-execute_process(COMMAND pkg-config wayland-protocols --variable=pkgdatadir OUTPUT_VARIABLE WAYLAND_PROTOCOLS_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-ECM_ADD_WAYLAND_CLIENT_PROTOCOL( WL_PROT_SRC PROTOCOL protocols/xdg-shell.xml BASENAME xdg-shell )
-ECM_ADD_WAYLAND_CLIENT_PROTOCOL( WL_PROT_SRC PROTOCOL protocols/wlr-layer-shell-unstable-v1.xml BASENAME wlr-layer-shell-unstable-v1 )
-
-add_executable( qtgreet ${SRCS} ${HDRS} ${RSCS} ${WL_PROT_SRC} )
-target_include_directories( qtgreet PRIVATE protocols )
-target_link_libraries ( qtgreet Qt5::Core Qt5::Gui Qt5::GuiPrivate Qt5::Widgets Qt5::DBus ${wayland-client_LIBRARIES} json-c )
+add_executable( qtgreet ${SRCS} ${HDRS} ${RSCS} )
+target_link_libraries ( qtgreet Qt5::Core Qt5::Gui Qt5::GuiPrivate Qt5::Widgets Qt5::DBus json-c )
 
 # Main Executable
 install( TARGETS qtgreet DESTINATION bin )

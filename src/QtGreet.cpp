@@ -137,8 +137,6 @@ QtGreet::QtGreet() {
 void QtGreet::createUI() {
 
     QIcon::setThemeName( "breeze-dark" );
-
-    setWindowFlags( Qt::FramelessWindowHint );
     setAttribute( Qt::WA_TranslucentBackground );
 
     QSettings settings( "/etc/qtgreet/config.ini", QSettings::IniFormat );

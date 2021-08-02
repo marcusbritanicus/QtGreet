@@ -31,122 +31,33 @@
 #include "Global.hpp"
 #include "QtGreet.hpp"
 
-#include <qpa/qplatformnativeinterface.h>
-
-#include "wayland-wlr-layer-shell-unstable-v1-client-protocol.h"
-
-struct wl_display *display;
-struct wl_registry *registry;
-static struct zwlr_layer_shell_v1 *layer_shell;
-struct zwlr_layer_surface_v1 *layer_surface;
-struct wl_surface *wl_surface;
-
-QPlatformNativeInterface *native;
-QtGreet *qtgreet;
-
-uint32_t layer = ZWLR_LAYER_SHELL_V1_LAYER_TOP;
-
-uint32_t anchor = ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT | ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT |
-					ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP | ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM;
-
-static void handle_global(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version) {
-	if ( strcmp( interface, zwlr_layer_shell_v1_interface.name ) == 0 ) {
-		layer_shell = (zwlr_layer_shell_v1*)wl_registry_bind( registry, name, &zwlr_layer_shell_v1_interface, 1);
-	}
-}
-
-static void handle_global_remove(void *data, struct wl_registry *registry, uint32_t name) {
-	// who cares
-}
-
-static const struct wl_registry_listener registry_listener = {
-	.global = handle_global,
-	.global_remove = handle_global_remove,
-};
-
-static void layer_surface_configure(void *data, struct zwlr_layer_surface_v1 *surface, uint32_t serial, uint32_t w, uint32_t h) {
-
-	if ( qtgreet )
-		qtgreet->resize(w, h);
-
-	zwlr_layer_surface_v1_ack_configure( surface, serial );
-}
-
-static void layer_surface_closed( void *data, struct zwlr_layer_surface_v1 *surface ) {
-
-	zwlr_layer_surface_v1_destroy( surface );
-}
-
-struct zwlr_layer_surface_v1_listener layer_surface_listener = {
-	.configure = layer_surface_configure,
-	.closed = layer_surface_closed,
-};
-
-static void show() {
-
-	qputenv( "QT_WAYLAND_SHELL_INTEGRATION", "qtgreet" );
-	qtgreet->showFullScreen();
-
-	/* Hack to disable wayland integration */
-	wl_surface = static_cast<struct wl_surface *>( native->nativeResourceForWindow( "surface", qtgreet->windowHandle() ) );
-	if ( not wl_surface ) {
-		qDebug() << "Unable to create a wayland surface. Aborting...";
-		return;
-	}
-
-	layer_surface = zwlr_layer_shell_v1_get_layer_surface( layer_shell, wl_surface, NULL, layer, "QtGreet" );
-	if ( not layer_surface ) {
-		qDebug() << "Unable to create a layer surface. Aborting...";
-		return;
-	}
-
-	else
-		qDebug() << "Created a layer surface...";
-
-	zwlr_layer_surface_v1_set_margin( layer_surface, 0, 0, 0, 0 );
-	zwlr_layer_surface_v1_set_size( layer_surface, qtgreet->width(), qtgreet->height() );
-	zwlr_layer_surface_v1_set_anchor( layer_surface, anchor );
-	zwlr_layer_surface_v1_set_keyboard_interactivity( layer_surface, 1 );
-	zwlr_layer_surface_v1_add_listener( layer_surface, &layer_surface_listener, layer_surface );
-	wl_surface_commit( wl_surface );
-	wl_display_roundtrip( display );
-
-	/* Hack to disable wayland integration */
-	qunsetenv( "QT_WAYLAND_SHELL_INTEGRATION" );
-}
-
 int main( int argc, char **argv ) {
 
 	QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
 
 	QApplication app( argc, argv );
 
-	qtgreet = new QtGreet();
-
 	/* Hidden test mode */
 	if ( app.arguments().contains( "--test" ) ) {
 
-		qtgreet->showMaximized();
+		QtGreet qtgreet;
+		qtgreet.showMaximized();
 		return app.exec();
 	}
 
-	native = QGuiApplication::platformNativeInterface();
-	display = ( struct wl_display * )native->nativeResourceForWindow( "display", NULL );
-	if ( not display ) {
-		qDebug() << "Unable to connect to wayland display. Aborting...";
-		return 1;
+	for( QScreen *screen: app.screens() ) {
+		// Create the UI instance
+		QtGreet *greet = new QtGreet();
+
+		// Show it to get windowHandle()
+		greet->show();
+
+		// Move it @screen
+		greet->windowHandle()->setScreen( screen );
+
+		// Fullscreen it
+		greet->showFullScreen();
 	}
-
-	registry = wl_display_get_registry( display );
-	if ( not display ) {
-		qDebug() << "Unable to connect to get the registry. Aborting...";
-		return 1;
-	}
-
-	wl_registry_add_listener( registry, &registry_listener, NULL );
-	wl_display_roundtrip( display );
-
-	show();
 
 	return app.exec();
 };
