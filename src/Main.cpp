@@ -55,6 +55,12 @@ int main( int argc, char **argv ) {
 		// Move it @screen
 		greet->windowHandle()->setScreen( screen );
 
+		// Wait for this to happen.
+		app.processEvents();
+
+		// Set the coorect screen size
+		greet->resize( screen->size() );
+
 		// Fullscreen it
 		greet->showFullScreen();
 	}
