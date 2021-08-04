@@ -46,33 +46,26 @@ int main( int argc, char **argv ) {
 	}
 
 	for( QScreen *screen: app.screens() ) {
+
 		// Create the UI instance
 		QtGreet *greet = new QtGreet();
 
 		// Show it to get windowHandle()
 		greet->show();
 
-		// Wait for this to happen.
-		app.processEvents();
-
-		// Move it @screen
+		// Move it @screen - sometimes works, othertimes it does not
 		greet->windowHandle()->setScreen( screen );
 
-		// Wait for this to happen.
-		app.processEvents();
+		// Set the correct position and size
+		// This should move the window to the correct monitor
+		greet->setGeometry( screen->geometry() );
 
-		// Set the coorect screen size
-		qDebug() << screen->name() << screen->size();
-		greet->resize( screen->size() );
-
-		// Wait for this to happen.
-		app.processEvents();
-
-		// Fullscreen it
-		greet->showFullScreen();
-
-		// Wait for this to happen.
-		app.processEvents();
+		/**
+		 * Since we're applying the screen geometry to the QtGreet window,
+		 * we don't need to maximize it or fullscreen it.
+		 * We'll just flush the event queue, before we begin with the next screen
+		 */
+		qApp->processEvents();
 	}
 
 	return app.exec();
