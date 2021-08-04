@@ -81,6 +81,18 @@ static inline int getFormFactor() {
 	return 0;
 };
 
+static inline QPixmap getIcon( QString name ) {
+
+    QPixmap pix( QString( "/home/%1/.face" ).arg( name ) );
+    if ( pix.isNull() )
+        pix = QPixmap( QString( "/home/%1/.face.icon" ).arg( name ) );
+
+    if ( pix.isNull() )
+        pix = QPixmap( ":/icons/user.png" );
+
+    return pix;
+}
+
 static bool IsExec( QString exec ) {
 
     /* If this is a full path (ex: /usr/bin/fish) */
@@ -505,6 +517,10 @@ void QtGreet::updateUser() {
 
     QString username = QString( "%1 (%2)" ).arg( mUserList.at( curUser ).name ).arg( mUserList.at( curUser ).username );
     userName->setText( username );
+
+    /* Set the user icon from ~/.face or ~/.face.icon */
+    QPixmap pix = getIcon( mUserList.at( curUser ).username );
+    userIcon->setPixmap( pix.scaled( 64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
 
     QString last = userConfig->value( "LastUsed/" + QString::number( mUserList.at( curUser ).uid ) ).toString();
     /* Not saved */
