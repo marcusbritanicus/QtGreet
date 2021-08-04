@@ -52,6 +52,9 @@ int main( int argc, char **argv ) {
 		// Show it to get windowHandle()
 		greet->show();
 
+		// Wait for this to happen.
+		app.processEvents();
+
 		// Move it @screen
 		greet->windowHandle()->setScreen( screen );
 
@@ -59,10 +62,17 @@ int main( int argc, char **argv ) {
 		app.processEvents();
 
 		// Set the coorect screen size
+		qDebug() << screen->name() << screen->size();
 		greet->resize( screen->size() );
+
+		// Wait for this to happen.
+		app.processEvents();
 
 		// Fullscreen it
 		greet->showFullScreen();
+
+		// Wait for this to happen.
+		app.processEvents();
 	}
 
 	return app.exec();
