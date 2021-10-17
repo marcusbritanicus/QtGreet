@@ -32,239 +32,185 @@
 #include "LayoutManager.hpp"
 #include "WidgetFactory.hpp"
 
-bool isNumeric( Hjson::Value val ) {
+#include "Container.hpp"
+#include "LayoutUtils.hpp"
 
-    switch( val.type() ) {
-        case Hjson::Type::Double:
-        case Hjson::Type::Int64:
-            return true;
+QtGreet::LayoutManager::LayoutManager() {
 
-        default:
-            return false;
-    }
-
-    return false;
+    mScreenSize = qApp->primaryScreen()->size();
 };
 
-QMargins getMargins( Hjson::Value margins ) {
+QBoxLayout* QtGreet::LayoutManager::generateLayout( QString lytFile ) {
 
-    QSize screenSize = qApp->primaryScreen()->size();
+    mLytFile = lytFile;
 
-    double left = 0;
-    double right = 0;
-    double top = 0;
-    double bottom = 0;
+    Hjson::Value layout = Hjson::UnmarshalFromFile( lytFile.toStdString() );
 
-    if ( isNumeric( margins[ "Left" ] ) )
-        left = ( margins[ "Left" ] < 1.0 ? screenSize.width() * margins[ "Left" ] : margins[ "Left" ] );
+    mLayout = layout[ "Layout" ];
+    mProperties = layout[ "Properties" ];
 
-    if ( isNumeric( margins[ "Right" ] ) )
-        right = ( margins[ "Right" ] < 1.0 ? screenSize.width() * margins[ "Right" ] : margins[ "Right" ] );
+    Hjson::Value layoutItems( mLayout[ "Keys" ] );
 
-    if ( isNumeric( margins[ "Top" ] ) )
-        top = ( margins[ "Top" ] < 1.0 ? screenSize.width() * margins[ "Top" ] : margins[ "Top" ] );
+    /** Do we have a row? If yes, we will be expanding the size vertically */
+    QRegularExpression rows = QRegularExpression( "^R[0-9]+$" );
 
-    if ( isNumeric( margins[ "Bottom" ] ) )
-        bottom = ( margins[ "Bottom" ] < 1.0 ? screenSize.width() * margins[ "Bottom" ] : margins[ "Bottom" ] );
+    /** Do we have a column? If yes, we will be expanding the size horizontally */
+    QRegularExpression cols = QRegularExpression( "^C[0-9]+$" );
 
-    return QMargins( left, top, right, bottom );
-};
+    QBoxLayout *topLyt;
 
-Qt::Alignment getAlignment( Hjson::Value obj ) {
-
-    if ( obj[ "Alignment" ].type() == Hjson::Type::String ) {
-
-        // Left alignment
-        if ( obj[ "Alignment" ] == "Left" )
-            return Qt::AlignLeft;
-
-        // Right alignment
-        else if ( obj[ "Alignment" ] == "Right" )
-            return Qt::AlignRight;
-
-        // Top alignment
-        if ( obj[ "Alignment" ] == "Top" )
-            return Qt::AlignTop;
-
-        // Bottom alignment
-        else if ( obj[ "Alignment" ] == "Bottom" )
-            return Qt::AlignBottom;
-
-        // Centered
-        // Fall through to end of function
-    }
-
-    return Qt::AlignCenter;
-};
-
-LayoutManager::LayoutManager( QString layoutFile ) {
-
-    screenSize = qApp->primaryScreen()->size();
-    mLayout = Hjson::UnmarshalFromFile( layoutFile.toStdString() );
-};
-
-void LayoutManager::applyLayout( QWidget *widget ) {
-
-    if ( mLayout.key( 0 ) == "VerticalLayout" )
-        widget->setLayout( getVLayout( mLayout[ "VerticalLayout" ] ) );
+    /** Vertical Layout */
+    if ( mLayout[ "Direction" ].to_string() == "Vertical" )
+        topLyt = new QBoxLayout( QBoxLayout::TopToBottom );
 
     else
-        widget->setLayout( getHLayout( mLayout[ "HorizontalLayout" ] ) );
-};
+        topLyt = new QBoxLayout( QBoxLayout::LeftToRight );
 
-QVBoxLayout* LayoutManager::getVLayout( Hjson::Value layout ) {
+    topLyt->setContentsMargins( getMargins( mLayout[ "Margins" ] ) );
+    topLyt->setSpacing( getSpacing( mLayout[ "Spacing" ] ) );
 
-    Hjson::Value margins( layout[ "Margins" ] );
-    int spacing = ( isNumeric( layout[ "Spacing" ] ) ? layout[ "Spacing" ] : 0 );
+    topLyt->setGeometry( QRect( QPoint( 0, 0 ), mScreenSize ) );
 
-    QVBoxLayout *lyt = new QVBoxLayout();
-    lyt->setContentsMargins( getMargins( margins ) );
-    lyt->setSpacing( spacing );
+    for( int idx = 0; idx < (int)layoutItems.size(); ++idx ) {
+        QString key( layoutItems[ idx ].to_string().c_str() );
 
-    Hjson::Value objects( layout[ "Objects" ] );
-    for( size_t i = 0; i < objects.size(); i++ ) {
+        /** Vertical Layout: Each key will leat to new rows */
+        if ( rows.match( key ).hasMatch() ) {
+            Hjson::Value row = mLayout[ key.toUtf8().data() ];
+            topLyt->addWidget( addRow( row, key, mProperties[ key.toStdString() ], "" ) );
+        }
 
-        /* Every object in the list @objects will be a map with a single item. */
-        std::string objName = Hjson::Value( layout[ "Objects" ][ i ] ).key( 0 );
+        /** Horizontal Layout: Each key will leat to new columns */
+        else if ( cols.match( key ).hasMatch() ) {
+            Hjson::Value col = mLayout[ key.toUtf8().data() ];
+            topLyt->addWidget( addColumn( col, key, mProperties[ key.toStdString() ], "" ) );
+        }
 
-        /* Get the actual object in that map */
-        Hjson::Value obj( layout[ "Objects" ][ i ][ objName ] );
-
-        /* Object alignment: default is center */
-        Qt::Alignment align = getAlignment( obj );
-
-        /* The object is a vertical layout */
-        if ( objName == "VerticalLayout" )
-            lyt->addLayout( getVLayout( obj ), align );
-
-        /* The object is a horizontal layout */
-        else if ( objName == "HorizontalLayout" )
-            lyt->addLayout( getHLayout( obj ), align );
-
-        /* The object is a stretch */
-        else if ( objName == "Stretch" )
-            lyt->addStretch();
-
-        /* The object is a Separator */
-        else if ( objName == "Separator" )
-            lyt->addWidget( WidgetFactory::createWidget( "Separator", "Vertical", QVariantMap() ), align );
-
-        /* This object is a widget (Named or a generic QWidget) */
-        /* This object is a widget (Named or a generic QWidget) */
+        /** Should not have come here */
         else {
-            QWidget *widget = getWidget( objName, obj );
-            lyt->addWidget( widget, align );
+            return topLyt;
         }
     }
 
-    return lyt;
+    return topLyt;
 };
 
-QHBoxLayout* LayoutManager::getHLayout( Hjson::Value layout ) {
+QWidget* QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson::Value props, QString space ) {
 
-    Hjson::Value margins( layout[ "Margins" ] );
-    int spacing = ( isNumeric( layout[ "Spacing" ] ) ? layout[ "Spacing" ] : 0 );
+    /** Do we have a row? If yes, we will be expanding the size vertically */
+    QRegularExpression rows = QRegularExpression( "^R[0-9]+$" );
+    /** Do we have a column? If yes, we will be expanding the size horizontally */
+    QRegularExpression cols = QRegularExpression( "^C[0-9]+$" );
 
-    QHBoxLayout *lyt = new QHBoxLayout();
-    lyt->setContentsMargins( getMargins( margins ) );
-    lyt->setSpacing( spacing );
+    QBoxLayout *lyt = new QBoxLayout( QBoxLayout::LeftToRight );
+    lyt->setContentsMargins( getMargins( props[ "Margins" ] ) );
+    lyt->setSpacing( getSpacing( props[ "Spacing" ] ) );
 
-    Hjson::Value objects( layout[ "Objects" ] );
-    for( size_t i = 0; i < objects.size(); i++ ) {
-
-        /* Every object in the list @objects will be a map with a single item. */
-        std::string objName = Hjson::Value( layout[ "Objects" ][ i ] ).key( 0 );
-
-        /* Get the actual object in that map */
-        Hjson::Value obj( layout[ "Objects" ][ i ][ objName ] );
-
-        /* Object alignment: default is center */
-        Qt::Alignment align = getAlignment( obj );
-
-        /* The object is a vertical layout */
-        if ( objName == "VerticalLayout" )
-            lyt->addLayout( getVLayout( obj ), align );
-
-        /* The object is a horizontal layout */
-        else if ( objName == "HorizontalLayout" )
-            lyt->addLayout( getHLayout( obj ), align );
-
-        /* The object is a stretch */
-        else if ( objName == "Stretch" )
-            lyt->addStretch();
-
-        /* The object is a Separator */
-        else if ( objName == "Separator" )
-            lyt->addWidget( WidgetFactory::createWidget( "Separator", "Horizontal", QVariantMap() ), align );
-
-        /* This object is a widget (Named or a generic QWidget) */
-        else {
-            QWidget *widget = getWidget( objName, obj );
-            lyt->addWidget( widget, align );
-        }
-    }
-
-    return lyt;
-};
-
-QWidget* LayoutManager::getWidget( std::string objName, Hjson::Value obj ) {
-
-    /* Let's first get the object type */
-    std::string type = "";
-
-    /* Layout info, if any. */
-    bool hasLayout = false;
-    std::string lytType;
-
-    /* Now we get its properties */
-    QVariantMap properties;
-
-    for( size_t p = 0; p < obj.size(); p++ ) {
-        std::string prop( obj.key( p ) );
-
-        if ( prop == "Type" )
-            type = obj[ "Type" ].to_string();
-
-        /* If the property is a Layout */
-        else if ( prop.find( "Layout" ) != std::string::npos ) {
-            hasLayout = true;
-            lytType = prop;
-        }
-
-        /* If the property is width related */
-        else if ( prop.find( "Width" ) != std::string::npos ) {
-            int width = obj[ prop ];
-            if ( obj[ prop ].type() == Hjson::Type::Double )
-                width = ( obj[ prop ] * screenSize.width() );
-
-            properties[ prop.c_str() ] = QVariant::fromValue( width );
-        }
-
-        /* If the property is height related */
-        else if ( prop.find( "Height" ) != std::string::npos ) {
-            int height = obj[ prop ];
-            if ( obj[ prop ].type() == Hjson::Type::Double )
-                height = ( obj[ prop ] * screenSize.height() );
-
-            properties[ prop.c_str() ] = QVariant::fromValue( height );
-        }
-
-        else {
-            properties[ prop.c_str() ] = obj[ prop ].to_string().c_str();
-        }
-    }
-
-    /* Create this widget */
-    QWidget *widget = WidgetFactory::createWidget( objName.c_str(), type.c_str(), properties );
-
-    /* If this is a generic QWidget with a Layout, apply the layout */
-    if ( objName == "QWidget" and hasLayout ) {
-        if ( lytType == "VerticalLayout" )
-            widget->setLayout( getVLayout( obj[ "VerticalLayout" ] ) );
+    double height = getHeight( props[ "Height" ] );
+    if ( height ) {
+        if ( height < 1.0 )
+            lyt->addStrut( height * mScreenSize.height() );
 
         else
-            widget->setLayout( getHLayout( obj[ "HorizontalLayout" ] ) );
+            lyt->addStrut( (int)height );
     }
 
-    return widget;
+    for( int idx = 0; idx < (int)row.size(); ++idx ) {
+        QString key( row[ idx ].to_string().c_str() );
+        Hjson::Value properties( mProperties[ key.toStdString() ] );
+
+        /** Vertical Layout: Each key will leat to new rows */
+        if ( rows.match( key ).hasMatch() ) {
+            Hjson::Value row = mLayout[ key.toUtf8().data() ];
+            lyt->addWidget( addRow( row, key, properties, space + "  " ) );
+        }
+
+        /** Horizontal Layout: Each key will leat to new columns */
+        else if ( cols.match( key ).hasMatch() ) {
+            Hjson::Value col = mLayout[ key.toUtf8().data() ];
+            lyt->addWidget( addColumn( col, key, properties, space + "  " ) );
+        }
+
+        /** Initialize the widget */
+        else {
+            printf( "%s%s ", space.toUtf8().data(), key.toUtf8().data() );
+
+            if ( key == "Stretch" ) {
+                lyt->addStretch();
+                continue;
+            }
+
+            /** We can have multiple widgets with same name (ex: Clock(Time), Clock(Date)) */
+            QString widget = key.split( "-" ).at( 0 );
+
+            QWidget *w = WidgetFactory::createWidget( widget, getType( properties[ "Type" ] ), properties );
+            lyt->addWidget( w, 0, getAlignment( props[ "Alignment" ] ) );
+        }
+    }
+
+    printf( "\n" );
+
+    Container *cw = new Container( props[ "BGColor" ], name );
+    cw->setLayout( lyt );
+
+    return cw;
+};
+
+QWidget* QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjson::Value props, QString space ) {
+
+    /** Do we have a row? If yes, we will be expanding the size vertically */
+    QRegularExpression rows = QRegularExpression( "^R[0-9]+$" );
+    /** Do we have a column? If yes, we will be expanding the size horizontally */
+    QRegularExpression cols = QRegularExpression( "^C[0-9]+$" );
+
+    QBoxLayout *lyt = new QBoxLayout( QBoxLayout::TopToBottom );
+    lyt->setContentsMargins( getMargins( props[ "Margins" ] ) );
+    lyt->setSpacing( getSpacing( props[ "Spacing" ] ) );
+
+    double width = getWidth( props[ "Width" ] );
+    if ( width ) {
+        if ( width < 1.0 )
+            lyt->addStrut( width * mScreenSize.width() );
+
+        else
+            lyt->addStrut( (int)width );
+    }
+
+    for( int idx = 0; idx < (int)col.size(); ++idx ) {
+
+        QString key( col[ idx ].to_string().c_str() );
+        Hjson::Value properties = mProperties[ key.toStdString() ];
+
+        /** Vertical Layout: Each key will leat to new rows */
+        if ( rows.match( key ).hasMatch() ) {
+            Hjson::Value row = mLayout[ key.toUtf8().data() ];
+            lyt->addWidget( addRow( row, key, properties, space + "  " ) );
+        }
+
+        /** Horizontal Layout: Each key will leat to new columns */
+        else if ( cols.match( key ).hasMatch() ) {
+            Hjson::Value col = mLayout[ key.toUtf8().data() ];
+            lyt->addWidget( addColumn( col, key, properties, space + "  " ) );
+        }
+
+        /** Initialize the widget */
+        else {
+            qDebug() << (space + key).toUtf8().data();
+
+            if ( key == "Stretch" ) {
+                lyt->addStretch();
+                continue;
+            }
+
+            QString widget = key.split( "-" ).at( 0 );
+
+            QWidget *w = WidgetFactory::createWidget( widget, getType( properties[ "Type" ] ), properties );
+            lyt->addWidget( w, 0, getAlignment( props[ "Alignment" ] ) );
+        }
+    }
+
+    Container *cw = new Container( props[ "BGColor" ], name );
+    cw->setLayout( lyt );
+
+    return cw;
 };

@@ -27,21 +27,26 @@
 	*
 */
 
-#pragma once
-
 #include "Global.hpp"
-
 #include "hjson.h"
 
-class WidgetFactory {
+/** Check if the Hjson value is numeric */
+bool isNumeric( Hjson::Value val );
 
-    public:
-        /* Create a widget, given its name, and apply the properties given in the map */
-        static QWidget *createWidget( QString name, QString type, Hjson::Value properties );
+/** Convert Hjson::Value to QMargins */
+QMargins getMargins( Hjson::Value margins );
 
-    private:
-        /* Most of the properties given can be applied directly, like width and height */
-        /* Some properties like text, or icon need to be applied after casting them into suitable types. */
-        /* Invalid properties will be ignored. Ex. icon for a label */
-        static void applyWidgetProperties( QWidget*, QString, QString, Hjson::Value );
-};
+/** Convert Hjson::Value to int */
+int getSpacing( Hjson::Value spacing );
+
+/** Convert two-char alignment value to Qt::Alignment */
+Qt::Alignment getAlignment( Hjson::Value obj );
+
+/** Convert Hjson::Value to width */
+int getWidth( Hjson::Value obj );
+
+/** Convert Hjson::Value to height */
+int getHeight( Hjson::Value obj );
+
+/** Get the widget type */
+QString getType( Hjson::Value type );

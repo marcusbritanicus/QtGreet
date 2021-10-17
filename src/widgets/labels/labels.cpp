@@ -107,12 +107,39 @@ UserIcon::UserIcon() : QLabel() {
     setAlignment( Qt::AlignCenter );
     setFixedSize( QSize( 72, 72 ) );
 
-    setPixmap( QIcon( ":/icons/user.png" ).pixmap( QSize( 64, 64 ) ) );
+    iconSize = QSize( 64, 64 );
+
+    img = QImage( ":/icons/user.png" );
 };
 
-void UserIcon::setPixmap( const QPixmap &pix ) {
+void UserIcon::setPixmap( QString path ) {
 
-    QLabel::setPixmap( pix.scaled( size() - QSize( 8, 8 ), Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
+    img = QImage( path );
+    update();
+};
+
+void UserIcon::paintEvent( QPaintEvent *pEvent ) {
+
+    QPainter painter( this );
+    painter.setRenderHints( QPainter::Antialiasing | QPainter::SmoothPixmapTransform );
+
+    QImage brush = img.scaled( iconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation );
+    if ( brush.isNull() )
+        brush = QImage( ":/icons/user.png" ).scaled( iconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation );
+
+    painter.save();
+    painter.setPen( QPen( Qt::gray, 2.0 ) );
+    painter.drawRoundedRect( rect().adjusted( 1, 1, -1, -1 ), 5.0, 5.0 );
+    painter.restore();
+
+    painter.save();
+    painter.translate( 4, 4 );
+    painter.setBrush( brush );
+    painter.setPen( Qt::NoPen );
+    painter.drawRoundedRect( QRectF( QPointF( 0, 0 ), iconSize ), 5.0, 5.0 );
+    painter.restore();
+
+    painter.end();
 };
 
 Logo::Logo() : QWidget() {

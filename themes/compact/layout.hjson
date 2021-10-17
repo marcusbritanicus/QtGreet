@@ -187,7 +187,7 @@
 																						Stretch: {}
 																					}
 																					{
-																						SessionList: {
+																						SessionName: {
 																							Type: Combo
 																							FixedHeight: 27
 																						}

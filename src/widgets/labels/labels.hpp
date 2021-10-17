@@ -59,7 +59,14 @@ class UserIcon: public QLabel {
     public:
         UserIcon();
 
-        void setPixmap( const QPixmap & );
+        void setPixmap( QString );
+
+    private:
+        QImage img;
+        QSize iconSize;
+
+    protected:
+        void paintEvent( QPaintEvent * );
 };
 
 class Logo: public QWidget {

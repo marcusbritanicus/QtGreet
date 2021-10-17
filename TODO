@@ -2,21 +2,38 @@ QtGreet v2.0.0
 
 1. Custom User Icons
     We will use ~/.face or ~/.face.icon file to get the user icon failing which we will use the default image.
-    To make the image have rounded corners use: https://www.qtcentre.org/threads/64382-Display-image-in-Qt-with-rounder-corners
+    To make the image have rounded corners use: Use the image as a brush, then draw a rounded rect with no pen.
 
 2. QtGreet Widegt Factory
-    Generate a widget given the name, apply the selected theme and style settings
+    Generate a widget given the name and type. Read the properties, and request the widget to apply the properties by itself.
+    Following are the list of the widgets:
+    1. UserName
+    2. SessionName
+    3. Password
+    4. LoginButton
+    5.
+    6.
+    7.
+    8.
+    9.
+    10.
 
-3. Layout Manager uing JSON
-    A simple JSON file with a predefined set of keys will define the layout
+    Every layout.json file should contain the first 4 widgets. Without them, the layout file will be considered as invalid.
+
+3. Layout Manager uing HJSON
+    A simple HJSON file with a predefined set of keys will define the layout. We will use QBoxLayout to perform the actual layout of the
+    widgets. Trials with default and sidebar themes have proved that this method is very effective.
 
 4. Decouple GUI from Backends
     Currently, the greetd code in integrated with the GUI class. We have to decouple it and use a generic QtGreetBackend class to perform the
     various authenticaion/session lauching work.
 
 5. Develop Backends
-    We have to develop two backends, one for QtGreet and the other for LightDM.
+    We have to develop two backends, one for QGreetd and the other for LightDM.
 
 6. Build a few default themes
 
-7. Write a complete Theming and Layout Guide
+7. Write a complete Theme and Layout Guide
+
+8. Refactor all the widgets. Currently WidgetFactory applies all the widget properties. Each of the widgets should handle the properties by
+    themselves.

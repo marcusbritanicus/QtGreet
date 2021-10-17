@@ -34,16 +34,20 @@
 
 #include "user.hpp"
 
-static inline QPixmap getIcon( QString name ) {
+static inline QString getIcon( QString name ) {
+
+    QString iconPath = QString( "/home/%1/.face" ).arg( name );
 
     QPixmap pix( QString( "/home/%1/.face" ).arg( name ) );
-    if ( pix.isNull() )
+    if ( pix.isNull() ) {
         pix = QPixmap( QString( "/home/%1/.face.icon" ).arg( name ) );
+        iconPath = QString( "/home/%1/.face.icon" ).arg( name );
+    }
 
     if ( pix.isNull() )
-        pix = QPixmap( ":/icons/user.png" );
+        iconPath = QString( ":/icons/user.png" );
 
-    return pix;
+    return iconPath;
 }
 
 static inline Users getUsers() {

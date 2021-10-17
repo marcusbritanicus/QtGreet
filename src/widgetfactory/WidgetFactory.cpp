@@ -41,7 +41,7 @@
 
 const QSettings sett( "QtGreet", "QtGreet" );
 
-QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap properties ) {
+QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value properties ) {
 
     if ( name == "QWidget" ) {
         // qWarning() << "Creating QWidget";
@@ -58,6 +58,17 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
 
         QLabel *w = new QLabel();
         applyWidgetProperties( w, "QLabel", "Label", properties );
+
+        return w;
+    }
+
+    else if ( name == "Battery" ) {
+
+        QLabel *w = new QLabel();
+        w->setObjectName( "Battery" );
+        w->setPixmap( QIcon::fromTheme( "battery-full-symbolic" ).pixmap( 24 ) );
+        w->resize( 24, 24 );
+        applyWidgetProperties( w, name, type, properties );
 
         return w;
     }
@@ -146,7 +157,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         }
 
         else if ( type == "Combo" ) {
-            UserList *cb = new UserList();
+            UserListCombo *cb = new UserListCombo();
             applyWidgetProperties( cb, name, type, properties );
 
             return cb;
@@ -184,7 +195,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         QToolButton *btn = new QToolButton();
         btn->setIcon( QIcon::fromTheme( ":/icons/arrow-right.png" ) );
         btn->setIconSize( QSize( 22, 22 ) );
-        btn->setFixedSize( QSize( 27, 27 ) );
+        btn->resize( QSize( 27, 27 ) );
 
         QHBoxLayout *hlyt = new QHBoxLayout();
         hlyt->setContentsMargins( QMargins() );
@@ -210,16 +221,9 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
 
         bool custom = sett.value( "AllowCustomSessions" ).toBool();
 
-        QStringList sessions = {
-            "DesQ (Wayland)", "Paper (Wayland)", "Wayfire (Wayland)", "Sway (Wayland)", "Plasma Wayland", "Weston (Wayland)",
-            "Awesome (X11)", "I3-with-shmlog (X11)", "LXQt (X11)", "MWM (X11)", "Oyster (X11)", "TinyWM (X11)", "XFCE (X11)",
-            "Enlightenment (X11)", "I3 (X11)", "MatchBox (X11)", "OpenBox (X11)", "Plasma (X11)", "Win7 (X11)"
-        };
-
         if ( type == "List" ) {
             SessionList *lw = new SessionList( custom );
             applyWidgetProperties( lw, name, type, properties );
-
 
             return lw;
         }
@@ -241,6 +245,15 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         else if ( type == "PushButton" ) {
 
             SessionNameButton *btn = new SessionNameButton( custom );
+            applyWidgetProperties( btn, name, type, properties );
+
+            return btn;
+        }
+
+        else if ( type == "ToolButton" ) {
+
+            QToolButton *btn = new QToolButton();
+            btn->setIcon( QIcon( ":/icons/session.png" ) );
             applyWidgetProperties( btn, name, type, properties );
 
             return btn;
@@ -269,6 +282,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         // qWarning() << "PowerButton";
 
         PowerButton *btn = new PowerButton( type );
+        btn->setObjectName( "PowerButton" );
         applyWidgetProperties( btn, name, type, properties );
 
         return btn;
@@ -318,6 +332,17 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
         }
     }
 
+    else if ( name == "VirtualKeyboard" ) {
+
+        QToolButton *w = new QToolButton();
+        w->setIcon( QIcon::fromTheme( "input-keyboard-virtual", QIcon::fromTheme( "input-keyboard" ) ) );
+        w->setObjectName( "VirtualKeyboard" );
+        w->resize( 24, 24 );
+        applyWidgetProperties( w, name, type, properties );
+
+        return w;
+    }
+
     else if ( name == "Separator" ) {
         // qWarning() << "Separator";
 
@@ -339,80 +364,122 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, QVariantMap pr
 
     else {
 
-        // qWarning() << name << type;
+        qWarning() << name << type;
     }
 
     return new QWidget();
 };
 
-void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QString type, QVariantMap properties ) {
+void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QString type, Hjson::Value properties ) {
 
-    for( QString key: properties.keys() ) {
+    for( size_t i = 0; i < properties.size(); i++ ) {
+        QString key( properties.key( i ).c_str() );
+
         /* Width */
-        if ( key == "Width" )
-            widget->resize( properties[ key ].toInt(), widget->height() );
+        if ( key == "Width" ) {
+            double width = properties[ key.toStdString() ].to_double();
+            if ( width <= 1.0 )
+                width *= mScreenSize.width();
 
-        else if ( key == "MinimumWidth" )
-            widget->setMinimumWidth( properties[ key ].toInt() );
+            widget->setFixedWidth( width );
+        }
 
-        else if ( key == "MaximumWidth" )
-            widget->setMaximumWidth( properties[ key ].toInt() );
+        else if ( key == "MinimumWidth" ) {
+            double width = properties[ key.toStdString() ].to_double();
+            if ( width <= 1.0 )
+                width *= mScreenSize.width();
 
-        else if ( key == "FixedWidth" )
-            widget->setFixedWidth( properties[ key ].toInt() );
+            widget->setMinimumWidth( width );
+        }
+
+        else if ( key == "MaximumWidth" ) {
+            double width = properties[ key.toStdString() ].to_double();
+            if ( width <= 1.0 )
+                width *= mScreenSize.width();
+
+            widget->setMaximumWidth( width );
+        }
+
+        else if ( key == "FixedWidth" ) {
+            double width = properties[ key.toStdString() ].to_double();
+            if ( width <= 1.0 )
+                width *= mScreenSize.width();
+
+            widget->setFixedWidth( width );
+        }
 
         /* Height */
-        else if ( key == "Height" )
-            widget->resize( widget->width(), properties[ key ].toInt() );
+        else if ( key == "Height" ) {
+            double height = properties[ key.toStdString() ].to_double();
+            if ( height <= 1.0 )
+                height *= mScreenSize.height();
 
-        else if ( key == "MinimumHeight" )
-            widget->setMinimumHeight( properties[ key ].toInt() );
+            widget->setFixedHeight( height );
+        }
 
-        else if ( key == "MaximumHeight" )
-            widget->setMaximumHeight( properties[ key ].toInt() );
+        else if ( key == "MinimumHeight" ) {
+            double height = properties[ key.toStdString() ].to_double();
+            if ( height <= 1.0 )
+                height *= mScreenSize.height();
 
-        else if ( key == "FixedHeight" )
-            widget->setFixedHeight( properties[ key ].toInt() );
+            widget->setMinimumHeight( height );
+        }
+
+        else if ( key == "MaximumHeight" ) {
+            double height = properties[ key.toStdString() ].to_double();
+            if ( height <= 1.0 )
+                height *= mScreenSize.height();
+
+            widget->setMaximumHeight( height );
+        }
+
+        else if ( key == "FixedHeight" ) {
+            double height = properties[ key.toStdString() ].to_double();
+            if ( height <= 1.0 )
+                height *= mScreenSize.height();
+
+            widget->setFixedHeight( height );
+        }
 
         /* Text */
         else if ( key == "Text" ) {
             if ( type == "Label" )
-                qobject_cast<QLabel*>( widget )->setText( properties[ key ].toString() );
+                qobject_cast<QLabel*>( widget )->setText( properties[ key.toStdString() ].to_string().c_str() );
 
             else if ( type == "Combo" )
-                qobject_cast<QComboBox*>( widget )->setCurrentText( properties[ key ].toString() );
+                qobject_cast<QComboBox*>( widget )->setCurrentText( properties[ key.toStdString() ].to_string().c_str() );
 
             else if ( type == "PushButton" )
-                qobject_cast<QPushButton*>( widget )->setText( properties[ key ].toString() );
+                qobject_cast<QPushButton*>( widget )->setText( properties[ key.toStdString() ].to_string().c_str() );
 
             else if ( type == "ToolButton" )
-                qobject_cast<QToolButton*>( widget )->setText( properties[ key ].toString() );
+                qobject_cast<QToolButton*>( widget )->setText( properties[ key.toStdString() ].to_string().c_str() );
         }
 
         /* Icon */
         else if ( key == "Icon" ) {
             if ( type == "PushButton" )
-                qobject_cast<QPushButton*>( widget )->setIcon( QIcon( properties[ key ].toString() ) );
+                qobject_cast<QPushButton*>( widget )->setIcon( QIcon( properties[ key.toStdString() ].to_string().c_str() ) );
 
             else if ( type == "ToolButton" )
-                qobject_cast<QToolButton*>( widget )->setIcon( QIcon( properties[ key ].toString() ) );
+                qobject_cast<QToolButton*>( widget )->setIcon( QIcon( properties[ key.toStdString() ].to_string().c_str() ) );
 
             else if ( name == "Logo" )
-                qobject_cast<QToolButton*>( widget )->setIcon   ( QIcon( properties[ key ].toString() ) );
+                qobject_cast<QToolButton*>( widget )->setIcon   ( QIcon( properties[ key.toStdString() ].to_string().c_str() ) );
         }
 
         /* Theme Icon */
         else if ( key == "ThemeIcon" ) {
             if ( type == "PushButton" )
-                qobject_cast<QPushButton*>( widget )->setIcon( QIcon::fromTheme( properties[ key ].toString() ) );
+                qobject_cast<QPushButton*>( widget )->setIcon( QIcon::fromTheme( properties[ key.toStdString() ].to_string().c_str() ) );
 
             else if ( ( type == "ToolButton" ) or ( name == "PowerButton" ) )
-                qobject_cast<QToolButton*>( widget )->setIcon( QIcon::fromTheme( properties[ key ].toString() ) );
+                qobject_cast<QToolButton*>( widget )->setIcon( QIcon::fromTheme( properties[ key.toStdString() ].to_string().c_str() ) );
         }
 
         /* Font */
         else if ( key == "Font" ) {
-            QStringList fontBits = properties[ key ].toString().split( ", ", Qt::SkipEmptyParts );
+            QStringList fontBits = QString( properties[ key.toStdString() ].to_string().c_str() ).split( ", ", Qt::SkipEmptyParts );
             QFont font(
                 fontBits[ 0 ],
                 fontBits[ 1 ].toInt(),
@@ -422,17 +489,29 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
             widget->setFont( font );
         }
 
+        /* FontSize */
+        else if ( key == "FontSize" ) {
+            QFont font( widget->font() );
+
+            double fs = properties[ key.toStdString() ].to_double();
+            if ( properties[ key.toStdString() ].type() == Hjson::Type::Double )
+                fs *= font.pointSize();
+
+            font.setPointSize( (int)fs );
+            widget->setFont( font );
+        }
+
         /* Format string for Clock */
         else if ( name == "Clock" and key == "Format" ) {
             if ( type == "Time" )
-                qobject_cast<SimpleClock *>( widget )->setTimeFormat( properties[ key ].toString() );
+                qobject_cast<SimpleClock *>( widget )->setTimeFormat( properties[ key.toStdString() ].to_string().c_str() );
 
             else if ( type == "Date" )
-                qobject_cast<SimpleClock *>( widget )->setDateFormat( properties[ key ].toString() );
+                qobject_cast<SimpleClock *>( widget )->setDateFormat( properties[ key.toStdString() ].to_string().c_str() );
         }
 
         else if ( key == "IconSize" ) {
-            QSize iSize = QSize( properties[ key ].toInt(), properties[ key ].toInt() );
+            QSize iSize = QSize( properties[ key.toStdString() ].to_int64(), properties[ key.toStdString() ].to_int64() );
 
             if ( type == "List" )
                 qobject_cast<QListWidget *>( widget  )->setIconSize( iSize );
@@ -447,21 +526,21 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
                 qobject_cast<Logo*>( widget )->setIconSize( iSize );
         }
 
-        else if ( key == "Alignment" ) {
+        else if ( key == "TextAlign" ) {
             if ( name == "QLabel" or type == "Label" ) {
-                if ( properties[ key ].toString() == "Center" )
+                if ( properties[ key.toStdString() ].to_string() == "Center" )
                     qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignCenter );
 
-                else if ( properties[ key ].toString() == "Left" )
-                    qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignLeft );
+                else if ( properties[ key.toStdString() ].to_string() == "Left" )
+                    qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
-                else if ( properties[ key ].toString() == "Right" )
-                    qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignRight );
+                else if ( properties[ key.toStdString() ].to_string() == "Right" )
+                    qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
             }
         }
 
         else if ( key == "ToolTip" ) {
-            widget->setToolTip( properties[ key ].toString() );
+            widget->setToolTip( properties[ key.toStdString() ].to_string().c_str() );
         }
     }
 }

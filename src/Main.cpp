@@ -30,6 +30,9 @@
 // Local Headers
 #include "Global.hpp"
 #include "QtGreet.hpp"
+#include "LayoutManager.hpp"
+
+QSize mScreenSize;
 
 int main( int argc, char **argv ) {
 
@@ -37,8 +40,14 @@ int main( int argc, char **argv ) {
 
 	QApplication app( argc, argv );
 
-	QtGreet *qtgreet = new QtGreet();
+	/** Screen Size */
+	mScreenSize = app.primaryScreen()->size();
+
+	QtGreet::UI *qtgreet = new QtGreet::UI();
 	qtgreet->showFullScreen();
+
+	// QtGreet::Layout *lyt = new QtGreet::Layout();
+    // lyt->generateLayout( argv[ 1 ] );
 
 	return app.exec();
 };

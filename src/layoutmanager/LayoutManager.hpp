@@ -35,22 +35,33 @@
 
 #include "hjson.h"
 
-class LayoutManager {
+namespace QtGreet {
+    class LayoutManager;
+};
+
+class QtGreet::LayoutManager {
 
     public:
-        LayoutManager( QString layoutFile );
-        void applyLayout( QWidget *w );
+        LayoutManager();
+        QBoxLayout* generateLayout( QString layoutFile );
 
     private:
-        QVBoxLayout* getVLayout( Hjson::Value layout );
-        QHBoxLayout* getHLayout( Hjson::Value layout );
+        /** Screen size */
+        QSize mScreenSize;
 
-        QWidget *getWidget( std::string objName, Hjson::Value obj );
+        /** Original layout file URL */
+        QString mLytFile;
 
-        /* Initalize the screen size */
-        QSize screenSize;
-
-        /* Layout */
+        /** Parsed layout file */
         Hjson::Value mLayout;
-        QLayout *lyt = nullptr;
+        Hjson::Value mProperties;
+
+        /** Parse the layout */
+        void readLayout( Hjson::Value layout );
+
+        /** Initialize a row and it's widgets */
+        QWidget* addRow( Hjson::Value row, QString name, Hjson::Value props, QString space );
+
+        /** Initialize a column and it's widgets */
+        QWidget* addColumn( Hjson::Value row, QString name, Hjson::Value props, QString space );
 };

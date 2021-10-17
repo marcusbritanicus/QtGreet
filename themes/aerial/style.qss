@@ -3,7 +3,7 @@ QWidget {
 }
 
 #Panel {
-    background-color: rgba(0, 0, 0, 30);
+    background-color: rgba(0, 0, 0, 60);
     border-bottom: 1px solid rgba(80, 80, 80, 60);
 }
 
@@ -99,7 +99,7 @@ QLabel#UserIcon {
 
 QComboBox {
     border: none;
-    background-color: rgba(0, 0, 0, 60);
+    background-color: rgba(0, 0, 0, 0);
 }
 
 QComboBox::drop-down {
@@ -107,7 +107,7 @@ QComboBox::drop-down {
     subcontrol-position: top right;
     width: 27px;
 
-    background-color: rgba(255, 255, 255, 60);
+    background-color: rgba(255, 255, 255, 0);
     border: none;
  }
 

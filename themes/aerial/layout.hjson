@@ -1,138 +1,89 @@
 {
-	VerticalLayout: {
-		Margins: {
-			Left    : 5
-			Top     : 5
-			Right   : 5
-			Bottom  : 5
+	Layout: {
+		Direction: Vertical
+		Keys: [ "R1", "R2" ]
+		R1: [ "SessionName", "QLabel-1", "Stretch", "NumLock", "CapsLock" ]
+		R2: [ "C1" ]
+		C1: [ "Stretch", "Clock-1", "Clock-2", "QLabel-2", "R3", "R4" ]
+		R3: [ "QLabel-3", "UserName", "Stretch" ]
+		R4: [ "QLabel-4", "Password", "LoginButton", "Stretch" ]
+	}
+
+	Properties: {
+		R1: {
+			Height: 24
 		}
-
-		Spacing: 0
-
-		Objects: [
-			# Top Panel
-			{
-				HorizontalLayout: {
-					Objects: [
-						{
-							SessionList: {
-								Alignment: Left
-								Type: Combo
-								FixedHeight: 27
-								MaximumWidth: 150
-							}
-						}
-						{
-							HorizontalLayout: {
-								Objects: [
-									{
-										Stretch: {}
-									}
-								]
-							}
-						}
-					]
-				}
-			}
-			{
-				VerticalLayout: {
-					Margins: {
-						Left    : 0.08
-						Top     : 0.30
-						Right   : 0
-						Bottom  : 0.09
-					}
-
-					Spacing: 10
-
-					Objects: [
-						{
-							VerticalLayout: {
-								Objects: [
-									{
-										Stretch: {}
-									}
-								]
-							}
-						}
-						{
-							QWidget: {
-								FixedWidth: 0.25
-								Alignment: Left
-								VerticalLayout: {
-									Spacing: 10
-
-									Objects: [
-										{
-											Clock: {
-												Alignment: Left
-												Type: Time
-												Font: Quicksand, 40, Normal, Normal
-												Format: "HH : mm"
-											}
-										}
-										{
-											Clock: {
-												Alignment: Left
-												Type: Date
-												Font: Quicksand, 14, Normal, Normal
-												Format: dddd, MMMM dd, yyyy
-											}
-										}
-										{
-											HorizontalLayout: {
-												Alignment: Left
-												Objects: [
-													{
-														QLabel: {
-															Text: Username
-															FixedHeight: 27
-															FixedWidth: 75
-														}
-													}
-													{
-														UserList: {
-															Type: Combo
-															FixedHeight: 27
-														}
-													}
-												]
-											}
-										}
-										{
-											HorizontalLayout: {
-												Alignment: Left
-												Objects: [
-													{
-														QLabel: {
-															Text: Password
-															FixedHeight: 27
-															FixedWidth: 75
-														}
-													}
-													{
-														Password: {
-															Type: LineEdit
-															FixedHeight: 27
-														}
-													}
-													{
-														LoginButton: {
-															Type: ToolButton
-															FixedHeight: 27
-															FixedWidth: 27
-														}
-													}
-												]
-											}
-										}
-									]
-								}
-							}
-						}
-					]
-				}
-			}
-		]
+		C1: {
+			Spacing: 10
+			Margins: 100
+			Alignment: BL
+		}
+		R3: {
+			Spacing: 0
+		}
+		R4: {
+			Spacing: 0
+		}
+		SessionName: {
+			Height: 24
+			Type: Combo
+			MaximumWidth: 150
+		}
+		QLabel-1: {
+			Text: en_us
+			Width: 80
+			TextAlign: Right
+		}
+		NumLock: {
+			Font: Monospace, 12, Normal, Normal
+			Width: 15
+			Height: 24
+			ToolTip: NumLock status
+		}
+		CapsLock: {
+			Font: Monospace, 12, Normal, Normal
+			Width: 15
+			Height: 24
+			ToolTip: CapsLock status
+		}
+		Clock-1: {
+			Type: Time
+			Font: Quicksand, 40, Normal, Normal
+			Format: "HH : mm"
+			Width: 300
+		}
+		Clock-2: {
+			Type: Date
+			Font: Quicksand, 14, Normal, Normal
+			Format: dddd, MMMM dd, yyyy
+			Width: 300
+		}
+		QLabel-2: {
+			Text: " "
+			Width: 75
+		}
+		QLabel-3: {
+			Text: "Username"
+			Width: 75
+		}
+		QLabel-4: {
+			Text: "Password"
+			Width: 75
+			Height: 25
+		}
+		UserName: {
+			Type: LineEdit
+			Width: 225
+			Height: 25
+		}
+		Password: {
+			Width: 200
+			Height: 25
+		}
+		LoginButton: {
+			Type: ToolButton
+			Width: 25
+			Height: 25
+		}
 	}
 }

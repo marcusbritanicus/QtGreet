@@ -93,7 +93,7 @@ static inline QString getStyleSheet( QString fn ) {
     return ss;
 };
 
-QtGreet::QtGreet() {
+QtGreet::UI::UI() {
 
 	sett = new QSettings( "QtGreet", "QtGreet" );
 
@@ -101,32 +101,33 @@ QtGreet::QtGreet() {
     createUI();
 	prepareUIforUse();
 
-	setStyleSheet( getStyleSheet( sett->value( "StyleSheet" ).toString() ) );
+	setStyleSheet( getStyleSheet( qApp->arguments()[ 1 ].replace( "layout.hjson", "style.qss" ) ) );
 
-	if ( sett->contains( "VideoBG" ) ) {
-		QStringList vbg = sett->value( "VideoBG" ).toString().split( "\\s+" );
-		QProcess::startDetached( vbg.takeFirst(), vbg );
-	}
+	// if ( sett->contains( "VideoBG" ) ) {
+	// 	QStringList vbg = sett->value( "VideoBG" ).toString().split( "\\s+" );
+	// 	QProcess::startDetached( vbg.takeFirst(), vbg );
+	// }
 
-	else {
-		QString bgStr( sett->value( "Background" ).toString() );
-	    background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
-	}
+	// else {
+	// 	QString bgStr( sett->value( "Background" ).toString() );
+	//     background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
+	// }
 };
 
-void QtGreet::createUI() {
+void QtGreet::UI::createUI() {
 
-    LayoutManager lytMgr( sett->value( "LayoutFile" ).toString() );
+    QtGreet::LayoutManager lytMgr;
+	QBoxLayout *lyt = lytMgr.generateLayout( qApp->arguments()[ 1 ] );
 
     QWidget *w = new QWidget();
-    lytMgr.applyLayout( w );
+	w->setLayout( lyt );
 
     setCentralWidget( w );
 
 	QMetaObject::connectSlotsByName( this );
 };
 
-void QtGreet::prepareUIforUse() {
+void QtGreet::UI::prepareUIforUse() {
 
 	UserListCombo *ulc = findChild<UserListCombo *>( "UserName" );
 	if ( ulc ) {
@@ -153,10 +154,10 @@ void QtGreet::prepareUIforUse() {
 	}
 };
 
-void QtGreet::updateUser( UserName *un ) {
+void QtGreet::UI::updateUser( UserName *un ) {
 
 	User usr = un->currentUser();
-	int uid = usr.uid;
+	uint uid = usr.uid;
 
 	/* Update the 'UserIcon' */
 	UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
@@ -173,7 +174,7 @@ void QtGreet::updateUser( UserName *un ) {
 	updateSession( target );
 };
 
-void QtGreet::updateSession( QString sessFile ) {
+void QtGreet::UI::updateSession( QString sessFile ) {
 
 	SessionListCombo *slc = findChild<SessionListCombo *>( "SessionName" );
 	if ( slc ) {
@@ -220,7 +221,7 @@ void QtGreet::updateSession( QString sessFile ) {
 	}
 };
 
-void QtGreet::paintEvent( QPaintEvent *pEvent ) {
+void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
 
 	QPainter painter( this );
 
@@ -242,7 +243,7 @@ void QtGreet::paintEvent( QPaintEvent *pEvent ) {
     QMainWindow::paintEvent( pEvent );
 };
 
-void QtGreet::keyPressEvent( QKeyEvent *kEvent ) {
+void QtGreet::UI::keyPressEvent( QKeyEvent *kEvent ) {
 
     switch ( kEvent->key() ) {
         case Qt::Key_CapsLock : {
@@ -276,7 +277,7 @@ void QtGreet::keyPressEvent( QKeyEvent *kEvent ) {
 
 /* Auto Slots */
 
-void QtGreet::on_UserNavRight_clicked() {
+void QtGreet::UI::on_UserNavRight_clicked() {
 
 	UserListCombo *ulc = findChild<UserListCombo *>( "UserName" );
 	if ( ulc ) {
@@ -303,7 +304,7 @@ void QtGreet::on_UserNavRight_clicked() {
 	}
 };
 
-void QtGreet::on_UserNavLeft_clicked() {
+void QtGreet::UI::on_UserNavLeft_clicked() {
 
 	UserListCombo *ulc = findChild<UserListCombo *>( "UserName" );
 	if ( ulc ) {
@@ -330,51 +331,51 @@ void QtGreet::on_UserNavLeft_clicked() {
 	}
 };
 
-void QtGreet::on_SessionNavRight_clicked() {
+void QtGreet::UI::on_SessionNavRight_clicked() {
 
 	SessionNameButton *btn = findChild<SessionNameButton *>( "SessionName" );
 	if ( btn )
 		btn->switchToNextSession();
 };
 
-void QtGreet::on_SessionNavLeft_clicked() {
+void QtGreet::UI::on_SessionNavLeft_clicked() {
 
 	SessionNameButton *btn = findChild<SessionNameButton *>( "SessionName" );
 	if ( btn )
 		btn->switchToPreviousSession();
 };
 
-void QtGreet::on_SessionEditButton_clicked() {
+void QtGreet::UI::on_SessionEditButton_clicked() {
 };
 
-void QtGreet::on_LoginButton_clicked() {
+void QtGreet::UI::on_LoginButton_clicked() {
 };
 
-void QtGreet::on_SessionName_clicked() {
+void QtGreet::UI::on_SessionName_clicked() {
 };
 
-void QtGreet::on_SessionName_curremtIndexChanged( int ) {
+void QtGreet::UI::on_SessionName_currentIndexChanged( int ) {
 };
 
-void QtGreet::on_SessionName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
+void QtGreet::UI::on_SessionName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
 
 	Session sess( cur->data( Qt::UserRole + 1 ).value<Session>() );
 };
 
-void QtGreet::on_UserName_clicked() {
+void QtGreet::UI::on_UserName_clicked() {
 
 	// Show the user dialog!!
 };
 
-void QtGreet::on_UserName_curremtIndexChanged( int ) {
+void QtGreet::UI::on_UserName_currentIndexChanged( int ) {
 
 	// Reset the password and change the login session
 };
 
-void QtGreet::on_UserName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
+void QtGreet::UI::on_UserName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
 
 	User usr( cur->data( Qt::UserRole + 1 ).value<User>() );
-	int uid = usr.uid;
+	uint uid = usr.uid;
 
 	/* Update the 'UserName' label */
 	UserNameLabel *un = findChild<UserNameLabel *>( "UserName" );

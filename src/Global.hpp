@@ -32,3 +32,6 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
+
+/** Screen Size - so that we can access it anywhere we want */
+extern QSize mScreenSize;

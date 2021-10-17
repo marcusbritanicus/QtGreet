@@ -34,6 +34,10 @@ QToolButton {
     background-color: rgba(255, 255, 255, 60);
 }
 
+QToolButton#PowerButton {
+    background-color: rgba(0, 0, 0, 0);
+}
+
 QToolButton:hover {
     background-color: rgba(255, 255, 255, 30);
 }
@@ -92,7 +96,10 @@ QWidget#OverLay {
     background-color: rgba(0, 0, 0, 230);
 }
 
-QLabel#userIcon {
-    border: 2px solid gray;
-    border-radius: 6px;
+QWidget#R1 {
+    background-color: rgba(0, 0, 0, 230);
+}
+
+QWidget#C1 {
+    background-color: rgba(0, 0, 0, 230);
 }

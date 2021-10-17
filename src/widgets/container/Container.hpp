@@ -29,19 +29,21 @@
 
 #pragma once
 
-#include "Global.hpp"
+#include <QtCore>
+#include <QtGui>
+#include <QtWidgets>
 
 #include "hjson.h"
 
-class WidgetFactory {
+class Container: public QWidget {
+    Q_OBJECT;
 
     public:
-        /* Create a widget, given its name, and apply the properties given in the map */
-        static QWidget *createWidget( QString name, QString type, Hjson::Value properties );
+        Container( Hjson::Value value, QString name );
 
     private:
-        /* Most of the properties given can be applied directly, like width and height */
-        /* Some properties like text, or icon need to be applied after casting them into suitable types. */
-        /* Invalid properties will be ignored. Ex. icon for a label */
-        static void applyWidgetProperties( QWidget*, QString, QString, Hjson::Value );
+        QColor bgColor;
+
+    protected:
+        void paintEvent( QPaintEvent * );
 };

@@ -41,7 +41,7 @@ typedef struct user_t {
     QString name;
     QString homePath;
     QString shell;
-    QPixmap icon;
+    QString icon;
 } User;
 
 Q_DECLARE_METATYPE( User );

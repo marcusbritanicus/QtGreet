@@ -35,11 +35,15 @@
 
 class UserName;
 
-class QtGreet : public QMainWindow {
+namespace QtGreet {
+    class UI;
+}
+
+class QtGreet::UI : public QMainWindow {
     Q_OBJECT;
 
     public:
-        QtGreet();
+        UI();
 
     private:
         /* Create UI */
@@ -95,14 +99,14 @@ class QtGreet : public QMainWindow {
         // PushButton
         void on_SessionName_clicked();
         // ComboBox
-        void on_SessionName_curremtIndexChanged( int );
+        void on_SessionName_currentIndexChanged( int );
         // ListWidget
         void on_SessionName_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
 
         // PushButton
         void on_UserName_clicked();
         // ComboBox
-        void on_UserName_curremtIndexChanged( int );
+        void on_UserName_currentIndexChanged( int );
         // ListWidget
         void on_UserName_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
 };

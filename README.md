@@ -9,8 +9,7 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 
 ### Dependencies:
 - Qt5 (duh...)
-- Qt5Wayland
-- WLR based compositor (wayfire, sway etc..)
+- A wayland based compositor (wayfire, sway, cage etc..)
 - CMake (to build this project)
 - Make or Ninja (to compile this project)
 

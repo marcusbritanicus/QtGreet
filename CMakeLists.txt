@@ -31,8 +31,9 @@ include_directories(
     src/ui
     src/widgetfactory
     src/widgets
-    src/widgets/clock
     src/widgets/buttons
+    src/widgets/clock
+    src/widgets/container
     src/widgets/labels
     src/widgets/power
     src/widgets/session
@@ -43,10 +44,12 @@ set ( HDRS
 	src/Global.hpp
     src/layoutmanager/parser/hjson.h
     src/layoutmanager/LayoutManager.hpp
+    src/layoutmanager/LayoutUtils.hpp
     src/ui/QtGreet.hpp
     src/widgetfactory/WidgetFactory.hpp
-    src/widgets/clock/ClockWidget.hpp
     src/widgets/buttons/buttons.hpp
+    src/widgets/clock/ClockWidget.hpp
+    src/widgets/container/Container.hpp
     src/widgets/labels/labels.hpp
     src/widgets/power/power.hpp
     src/widgets/session/session.hpp
@@ -55,6 +58,7 @@ set ( HDRS
 
 set ( SRCS
     src/layoutmanager/LayoutManager.cpp
+    src/layoutmanager/LayoutUtils.cpp
     src/layoutmanager/parser/hjson_decode.cpp
     src/layoutmanager/parser/hjson_encode.cpp
     src/layoutmanager/parser/hjson_parsenumber.cpp
@@ -62,8 +66,9 @@ set ( SRCS
     src/Main.cpp
     src/ui/QtGreet.cpp
     src/widgetfactory/WidgetFactory.cpp
-    src/widgets/clock/ClockWidget.cpp
     src/widgets/buttons/buttons.cpp
+    src/widgets/clock/ClockWidget.cpp
+    src/widgets/container/Container.cpp
     src/widgets/labels/labels.cpp
     src/widgets/power/power.cpp
     src/widgets/session/session.cpp

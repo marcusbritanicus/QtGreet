@@ -27,21 +27,36 @@
 	*
 */
 
-#pragma once
+#include <iostream>
 
-#include "Global.hpp"
+#include "Container.hpp"
 
-#include "hjson.h"
+Container::Container( Hjson::Value bgClr, QString name ) {
 
-class WidgetFactory {
+    /** Object Name */
+    setObjectName( name );
 
-    public:
-        /* Create a widget, given its name, and apply the properties given in the map */
-        static QWidget *createWidget( QString name, QString type, Hjson::Value properties );
+    /** Default Background will be transparent */
+    bgColor = QColor( Qt::transparent );
 
-    private:
-        /* Most of the properties given can be applied directly, like width and height */
-        /* Some properties like text, or icon need to be applied after casting them into suitable types. */
-        /* Invalid properties will be ignored. Ex. icon for a label */
-        static void applyWidgetProperties( QWidget*, QString, QString, Hjson::Value );
+    if ( not bgClr.empty() ) {
+        int red, green, blue, alpha;
+        red   = bgClr[ "Red" ].to_double() * 255;
+        green = bgClr[ "Green" ].to_double() * 255;
+        blue  = bgClr[ "Blue" ].to_double() * 255;
+        alpha = bgClr[ "Alpha" ].to_double() * 255;
+
+        bgColor = QColor( red, green, blue, alpha );
+    }
+};
+
+void Container::paintEvent( QPaintEvent *pEvent ) {
+
+    QPainter painter( this );
+    painter.setBrush( bgColor );
+    painter.setPen( Qt::NoPen );
+
+    painter.drawRect( rect() );
+
+    painter.end();
 };
