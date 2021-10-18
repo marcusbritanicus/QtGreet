@@ -29,11 +29,8 @@
 
 #pragma once
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
-
-class UserName;
+#include "Global.hpp"
+#include "user.hpp"
 
 namespace QtGreet {
     class UI;
@@ -53,17 +50,15 @@ class QtGreet::UI : public QMainWindow {
         void prepareUIforUse();
 
         /* Update the username on the screen */
-        void updateUser( UserName * );
+        void updateUser( User );
 
         /* Update the session on the screen */
-        void updateSession( QString );
+        void updateSession( uint );
 
         uint curUser = 0;
         uint curSess = 0;
 
         QImage background;
-
-        QSettings *sett;
 
     protected:
         void paintEvent( QPaintEvent *pEvent );
@@ -76,15 +71,20 @@ class QtGreet::UI : public QMainWindow {
 
         /* Auto Slots */
 
-        // SessionNavButton - Right - Next User
-        void on_SessionNavRight_clicked();
-        // SessionNavButton - Left - Previous User
-        void on_SessionNavLeft_clicked();
+        // ComboBox
+        void on_UserCombo_currentIndexChanged( int );
+        // ListWidget
+        void on_UserList_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
 
         // UserNavButton - Right - Next User
         void on_UserNavRight_clicked();
         // UserNavButton - Left - Previous User
         void on_UserNavLeft_clicked();
+
+        // SessionNavButton - Right - Next User
+        void on_SessionNavRight_clicked();
+        // SessionNavButton - Left - Previous User
+        void on_SessionNavLeft_clicked();
 
         // Generic okay button - Not implemented
         // void on_OkayButton_clicked();
@@ -102,11 +102,4 @@ class QtGreet::UI : public QMainWindow {
         void on_SessionName_currentIndexChanged( int );
         // ListWidget
         void on_SessionName_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
-
-        // PushButton
-        void on_UserName_clicked();
-        // ComboBox
-        void on_UserName_currentIndexChanged( int );
-        // ListWidget
-        void on_UserName_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
 };

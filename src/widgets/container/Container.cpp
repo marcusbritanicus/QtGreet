@@ -31,7 +31,7 @@
 
 #include "Container.hpp"
 
-Container::Container( Hjson::Value bgClr, QString name ) {
+Container::Container( Hjson::Value bgClr, QString name ) : QWidget() {
 
     /** Object Name */
     setObjectName( name );
@@ -59,4 +59,6 @@ void Container::paintEvent( QPaintEvent *pEvent ) {
     painter.drawRect( rect() );
 
     painter.end();
+
+    QWidget::paintEvent( pEvent );
 };

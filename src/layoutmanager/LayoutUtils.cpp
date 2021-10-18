@@ -159,3 +159,72 @@ QString getType( Hjson::Value type ) {
 
     return type.to_string().c_str();
 };
+
+QFont::Weight getFontWeight( Hjson::Value weight ) {
+
+    if ( weight.type() == Hjson::Type::String ) {
+        std::string w( weight );
+        if ( w == "Thin" )
+            return QFont::Thin;
+
+        else if ( w == "ExtraLight" )
+            return QFont::ExtraLight;
+
+        else if ( w == "Light" )
+            return QFont::Light;
+
+        else if ( w == "Normal" )
+            return QFont::Normal;
+
+        else if ( w == "Medium" )
+            return QFont::Medium;
+
+        else if ( w == "DemiBold" )
+            return QFont::DemiBold;
+
+        else if ( w == "Bold" )
+            return QFont::Bold;
+
+        else if ( w == "ExtraBold" )
+            return QFont::ExtraBold;
+
+        else if ( w == "Black" )
+            return QFont::Black;
+
+        else
+            return QFont::Normal;
+    }
+
+    else if ( weight.type() == Hjson::Type::Int64 ) {
+        int w( weight );
+
+        if ( w >= 87 )
+            return QFont::Black;
+
+        else if ( w >= 81 )
+            return QFont::ExtraBold;
+
+        else if ( w >= 75 )
+            return QFont::Bold;
+
+        else if ( w >= 63 )
+            return QFont::DemiBold;
+
+        else if ( w >= 57 )
+            return QFont::Medium;
+
+        else if ( w >= 50 )
+            return QFont::Normal;
+
+        else if ( w >= 25 )
+            return QFont::Light;
+
+        else if ( w >= 12 )
+            return QFont::ExtraLight;
+
+        else
+            return QFont::Thin;
+    }
+
+    return QFont::Normal;
+};

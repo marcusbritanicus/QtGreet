@@ -50,3 +50,6 @@ int getHeight( Hjson::Value obj );
 
 /** Get the widget type */
 QString getType( Hjson::Value type );
+
+/** Get the font weigth from string/number */
+QFont::Weight getFontWeight( Hjson::Value weight );

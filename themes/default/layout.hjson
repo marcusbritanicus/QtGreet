@@ -5,15 +5,18 @@
 		C1: [ "R1", "Stretch", "R2", "Stretch", "R3", "R4", "Stretch", "R5", "Stretch", "R6", "R7", "Stretch", "R8" ]
 		R1: [ "Battery", "Stretch", "Clock", "Stretch", "NumLock", "CapsLock" ]
 		R2: [ "UserIcon" ]
-		R3: [ "UserName" ]
+		R3: [ "Stretch", "UserNav-1", "UserName", "UserNav-2", "Stretch" ]
 		R4: [ "Password" ]
 		R5: [ "LoginButton" ]
-		R6: [ "SessionName" ]
+		R6: [ "Stretch", "SessionNav-1", "SessionName", "SessionNav-2", "Stretch" ]
 		R7: [ "SessionEdit" ]
 		R8: [ "VirtualKeyboard", "Stretch", "PowerButton" ]
 	}
 
 	Properties: {
+		C1: {
+			Spacing: 10
+		}
 		R1: {
 			BGColor: {
 				Red: 0.0
@@ -28,6 +31,7 @@
 		}
 		R3: {
 			Alignment: MM
+			Spacing: 10
 		}
 		R4: {
 			Alignment: MM
@@ -37,6 +41,7 @@
 		}
 		R6: {
 			Alignment: MM
+			Spacing: 10
 		}
 		Battery: {
 			Width: 	36
@@ -65,14 +70,26 @@
 			Type: Label
 			Height: 72
 			Width: 72
-			Alignment: Center
+			TextAlign: Center
+		},
+		UserNav-1: {
+			Type: Left
+			Width: 36
+			Height: 36
+			IconSize: 24
+		},
+		UserNav-2: {
+			Type: Right
+			Width: 36
+			Height: 36
+			IconSize: 24
 		},
 		UserName: {
-			Type: PushButton
+			Type: Label
 			Width: 270
 			Height: 36
-			Alignment: Center
-			ShowNav: true
+			TextAlign: Center
+			Font: Noto Sans, 12, Bold, Normal
 		},
 		Password: {
 			Width: 270
@@ -82,29 +99,41 @@
 			Width: 100
 			Height: 36
 			Type: PushButton
-			Alignment: Center
+			TextAlign: Center
 		},
 		SessionName: {
 			Type: PushButton
 			Width: 270
 			Height: 36
-			Alignment: Center
+			TextAlign: Center
 			ShowNav: true
+		},
+		SessionNav-1: {
+			Type: Left
+			Width: 36
+			Height: 36
+			IconSize: 24
+		},
+		SessionNav-2: {
+			Type: Right
+			Width: 36
+			Height: 36
+			IconSize: 24
 		},
 		SessionEdit: {
 			Width: 270
 			Height: 36
-			Alignment: Center
+			TextAlign: Center
 		},
 		VirtualKeyboard: {
 			Width: 36
 			Height: 36
-			Alignment: Center
+			TextAlign: Center
 		},
 		PowerButton: {
 			Width: 36
 			Height: 36
-			Alignment: Right
+			TextAlign: Right
 			Type: Menu
 		},
 	}

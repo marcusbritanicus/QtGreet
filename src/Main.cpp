@@ -33,6 +33,8 @@
 #include "LayoutManager.hpp"
 
 QSize mScreenSize;
+QSettings *sett;
+QSettings *users;
 
 int main( int argc, char **argv ) {
 
@@ -43,6 +45,10 @@ int main( int argc, char **argv ) {
 	/** Screen Size */
 	mScreenSize = app.primaryScreen()->size();
 
+	/** Settings Objects */
+	sett = new QSettings( "/etc/qtgreet/config.ini", QSettings::IniFormat );
+	users = new QSettings( "/etc/qtgreet/users.conf", QSettings::IniFormat );
+
 	QtGreet::UI *qtgreet = new QtGreet::UI();
 	qtgreet->showFullScreen();
 
@@ -51,3 +57,5 @@ int main( int argc, char **argv ) {
 
 	return app.exec();
 };
+
+/***//* ==> <== *//***/

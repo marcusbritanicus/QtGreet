@@ -95,23 +95,37 @@ static inline QString getStyleSheet( QString fn ) {
 
 QtGreet::UI::UI() {
 
-	sett = new QSettings( "QtGreet", "QtGreet" );
-
 	setFixedSize( qApp->primaryScreen()->size() );
     createUI();
-	prepareUIforUse();
 
 	setStyleSheet( getStyleSheet( qApp->arguments()[ 1 ].replace( "layout.hjson", "style.qss" ) ) );
 
-	// if ( sett->contains( "VideoBG" ) ) {
-	// 	QStringList vbg = sett->value( "VideoBG" ).toString().split( "\\s+" );
-	// 	QProcess::startDetached( vbg.takeFirst(), vbg );
-	// }
+	if ( sett->contains( "VideoBG" ) ) {
+		QStringList vbg = sett->value( "VideoBG" ).toString().split( "\\s+" );
+		QProcess::startDetached( vbg.takeFirst(), vbg );
+	}
 
-	// else {
-	// 	QString bgStr( sett->value( "Background" ).toString() );
-	//     background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
-	// }
+	else {
+		QString bgStr( sett->value( "Background" ).toString() );
+	    background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
+		if ( sett->value( "BlurBackground" ).toBool() ) {
+			QPixmap img = QPixmap::fromImage( background );
+			QGraphicsPixmapItem item( img );
+
+			QGraphicsBlurEffect *blur = new QGraphicsBlurEffect();
+			blur->setBlurRadius( 5.0 );
+			item.setGraphicsEffect( blur );
+
+			QGraphicsScene *scene = new QGraphicsScene();
+			scene->addItem( &item );
+
+			background.fill( Qt::transparent );
+			QPainter p( &background );
+			scene->render( &p, rect(), rect() );
+		}
+	}
+
+	prepareUIforUse();
 };
 
 void QtGreet::UI::createUI() {
@@ -129,35 +143,34 @@ void QtGreet::UI::createUI() {
 
 void QtGreet::UI::prepareUIforUse() {
 
-	UserListCombo *ulc = findChild<UserListCombo *>( "UserName" );
+	UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 	if ( ulc ) {
-		ulc->switchToNextUser();
-		updateUser( ulc );
+		User usr( ulc->currentUser() );
+		updateUser( usr );
+		updateSession( usr.uid );
 	}
 
-	UserList *ul = findChild<UserList *>( "UserName" );
+	UserList *ul = findChild<UserList *>( "UserList" );
 	if ( ul ) {
-		ul->switchToNextUser();
-		updateUser( ul );
+		User usr( ul->currentUser() );
+		updateUser( usr );
+		updateSession( usr.uid );
 	}
 
-	UserNameLabel *unl = findChild<UserNameLabel *>( "UserName" );
+	UserLabel *unl = findChild<UserLabel *>( "UserLabel" );
 	if ( unl ) {
-		unl->switchToNextUser();
-		updateUser( unl );
-	}
-
-	UserNameButton *unb = findChild<UserNameButton *>( "UserName" );
-	if ( unb ) {
-		unb->switchToNextUser();
-		updateUser( unb );
+		User usr( unl->currentUser() );
+		updateUser( usr );
+		updateSession( usr.uid );
 	}
 };
 
-void QtGreet::UI::updateUser( UserName *un ) {
+void QtGreet::UI::updateUser( User usr ) {
 
-	User usr = un->currentUser();
-	uint uid = usr.uid;
+	/* Update the 'UserLabel' */
+	UserLabel *un = findChild<UserLabel *>( "UserLabel" );
+	if ( un )
+		un->setText( QString( "%1 (%2)" ).arg( usr.name ).arg( usr.username ) );
 
 	/* Update the 'UserIcon' */
 	UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
@@ -170,17 +183,25 @@ void QtGreet::UI::updateUser( UserName *un ) {
 		pwd->clear();
 
 	/* Session updates */
-	QString target = sett->value( QString( "Users/%1" ).arg( usr.uid ) ).toString();
-	updateSession( target );
+	updateSession( usr.uid );
 };
 
-void QtGreet::UI::updateSession( QString sessFile ) {
+void QtGreet::UI::updateSession( uint uid ) {
+
+	QString sessFile = users->value( QString( "LastUsed/%1" ).arg( uid ) ).toString();
+	Session curSess;
+	if ( sessFile.isEmpty() ) {
+		SessionName sessnm( true );
+		curSess = sessnm.sessions().at( 0 );
+		sessFile = curSess.file;
+	}
 
 	SessionListCombo *slc = findChild<SessionListCombo *>( "SessionName" );
 	if ( slc ) {
 		for( int i = 0; i < slc->sessions().count(); i++ ) {
 			Session sess = slc->sessions().at( i );
 			if ( sess.file == sessFile ) {
+				curSess = sess;
 				slc->setCurrentIndex( i );
 				break;
 			}
@@ -192,6 +213,7 @@ void QtGreet::UI::updateSession( QString sessFile ) {
 		for( int i = 0; i < snb->sessions().count(); i++ ) {
 			Session sess = snb->sessions().at( i );
 			if ( sess.file == sessFile ) {
+				curSess = sess;
 				snb->setText( sess.name );
 				break;
 			}
@@ -203,6 +225,7 @@ void QtGreet::UI::updateSession( QString sessFile ) {
 		for( int i = 0; i < snl->sessions().count(); i++ ) {
 			Session sess = snl->sessions().at( i );
 			if ( sess.file == sessFile ) {
+				curSess = sess;
 				snl->setText( sess.name );
 				break;
 			}
@@ -214,11 +237,16 @@ void QtGreet::UI::updateSession( QString sessFile ) {
 		for( int i = 0; i < sl->sessions().count(); i++ ) {
 			Session sess = sl->sessions().at( i );
 			if ( sess.file == sessFile ) {
+				curSess = sess;
 				sl->setCurrentRow( i );
 				break;
 			}
 		}
 	}
+
+	SessionEdit *se = findChild<SessionEdit *>( "SessionEdit" );
+	if ( se )
+		se->setText( curSess.exec );
 };
 
 void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
@@ -226,17 +254,17 @@ void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
 	QPainter painter( this );
 
 	/* Base color */
-    painter.save();
-    painter.setPen( Qt::NoPen );
-    painter.setBrush( QColor( "#00000060" ) );
-    painter.drawRect( rect() );
-    painter.restore();
 
 	painter.save();
-	painter.setOpacity( 0.5 );
 	painter.drawImage( QPointF( 0, 0 ), background );
 	painter.setOpacity( 1.0 );
 	painter.restore();
+
+    painter.save();
+    painter.setPen( Qt::NoPen );
+    painter.setBrush( QColor( 0, 0, 0, 150 ) );
+    painter.drawRect( rect() );
+    painter.restore();
 
     painter.end();
 
@@ -279,70 +307,116 @@ void QtGreet::UI::keyPressEvent( QKeyEvent *kEvent ) {
 
 void QtGreet::UI::on_UserNavRight_clicked() {
 
-	UserListCombo *ulc = findChild<UserListCombo *>( "UserName" );
+	UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 	if ( ulc ) {
 		ulc->switchToNextUser();
-		updateUser( ulc );
+		updateUser( ulc->currentUser() );
+		updateSession( ulc->currentUser().uid );
 	}
 
-	UserList *ul = findChild<UserList *>( "UserName" );
+	UserList *ul = findChild<UserList *>( "UserList" );
 	if ( ul ) {
 		ul->switchToNextUser();
-		updateUser( ul );
+		updateUser( ul->currentUser() );
+		updateSession( ul->currentUser().uid );
 	}
 
-	UserNameLabel *unl = findChild<UserNameLabel *>( "UserName" );
+	UserLabel *unl = findChild<UserLabel *>( "UserLabel" );
 	if ( unl ) {
 		unl->switchToNextUser();
-		updateUser( unl );
-	}
-
-	UserNameButton *unb = findChild<UserNameButton *>( "UserName" );
-	if ( unb ) {
-		unb->switchToNextUser();
-		updateUser( unb );
+		updateUser( unl->currentUser() );
+		updateSession( unl->currentUser().uid );
 	}
 };
 
 void QtGreet::UI::on_UserNavLeft_clicked() {
 
-	UserListCombo *ulc = findChild<UserListCombo *>( "UserName" );
+	UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 	if ( ulc ) {
 		ulc->switchToPreviousUser();
-		updateUser( ulc );
+		updateUser( ulc->currentUser() );
+		updateSession( ulc->currentUser().uid );
 	}
 
-	UserList *ul = findChild<UserList *>( "UserName" );
+	UserList *ul = findChild<UserList *>( "UserList" );
 	if ( ul ) {
 		ul->switchToPreviousUser();
-		updateUser( ul );
+		updateUser( ul->currentUser() );
+		updateSession( ul->currentUser().uid );
 	}
 
-	UserNameLabel *unl = findChild<UserNameLabel *>( "UserName" );
+	UserLabel *unl = findChild<UserLabel *>( "UserLabel" );
 	if ( unl ) {
 		unl->switchToPreviousUser();
-		updateUser( unl );
-	}
-
-	UserNameButton *unb = findChild<UserNameButton *>( "UserName" );
-	if ( unb ) {
-		unb->switchToPreviousUser();
-		updateUser( unb );
+		updateUser( unl->currentUser() );
+		updateSession( unl->currentUser().uid );
 	}
 };
 
 void QtGreet::UI::on_SessionNavRight_clicked() {
 
-	SessionNameButton *btn = findChild<SessionNameButton *>( "SessionName" );
-	if ( btn )
-		btn->switchToNextSession();
+	QString curSess;
+
+	SessionListCombo *slc = findChild<SessionListCombo *>( "SessionName" );
+	if ( slc ) {
+		slc->switchToNextSession();
+		curSess = slc->currentSession().exec;
+	}
+
+	SessionNameButton *snb = findChild<SessionNameButton *>( "SessionName" );
+	if ( snb ) {
+		snb->switchToNextSession();
+		curSess = snb->currentSession().exec;
+	}
+
+	SessionNameLabel *snl = findChild<SessionNameLabel *>( "SessionName" );
+	if ( snl ) {
+		snl->switchToNextSession();
+		curSess = snl->currentSession().exec;
+	}
+
+	SessionList *sl  = findChild<SessionList *>( "SessionName" );
+	if ( sl ) {
+		sl->switchToNextSession();
+		curSess = sl->currentSession().exec;
+	}
+
+	SessionEdit *se = findChild<SessionEdit *>( "SessionEdit" );
+	if ( se )
+		se->setText( curSess );
 };
 
 void QtGreet::UI::on_SessionNavLeft_clicked() {
 
-	SessionNameButton *btn = findChild<SessionNameButton *>( "SessionName" );
-	if ( btn )
-		btn->switchToPreviousSession();
+	QString curSess;
+
+	SessionListCombo *slc = findChild<SessionListCombo *>( "SessionName" );
+	if ( slc ) {
+		slc->switchToPreviousSession();
+		curSess = slc->currentSession().exec;
+	}
+
+	SessionNameButton *snb = findChild<SessionNameButton *>( "SessionName" );
+	if ( snb ) {
+		snb->switchToPreviousSession();
+		curSess = snb->currentSession().exec;
+	}
+
+	SessionNameLabel *snl = findChild<SessionNameLabel *>( "SessionName" );
+	if ( snl ) {
+		snl->switchToPreviousSession();
+		curSess = snl->currentSession().exec;
+	}
+
+	SessionList *sl  = findChild<SessionList *>( "SessionName" );
+	if ( sl ) {
+		sl->switchToPreviousSession();
+		curSess = sl->currentSession().exec;
+	}
+
+	SessionEdit *se = findChild<SessionEdit *>( "SessionEdit" );
+	if ( se )
+		se->setText( curSess );
 };
 
 void QtGreet::UI::on_SessionEditButton_clicked() {
@@ -362,32 +436,30 @@ void QtGreet::UI::on_SessionName_currentItemChanged( QListWidgetItem *cur, QList
 	Session sess( cur->data( Qt::UserRole + 1 ).value<Session>() );
 };
 
-void QtGreet::UI::on_UserName_clicked() {
-
-	// Show the user dialog!!
-};
-
-void QtGreet::UI::on_UserName_currentIndexChanged( int ) {
+void QtGreet::UI::on_UserCombo_currentIndexChanged( int idx ) {
 
 	// Reset the password and change the login session
+	UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
+	if ( not ulc )
+		return;
+
+	User usr( ulc->users().at( idx ) );
+	updateUser( usr );
 };
 
-void QtGreet::UI::on_UserName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
+void QtGreet::UI::on_UserList_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
 
 	User usr( cur->data( Qt::UserRole + 1 ).value<User>() );
-	uint uid = usr.uid;
 
 	/* Update the 'UserName' label */
-	UserNameLabel *un = findChild<UserNameLabel *>( "UserName" );
-	if ( un ) {
-		un->setText( usr.name );
-	}
+	UserLabel *un = findChild<UserLabel *>( "UserLabel" );
+	if ( un )
+		un->setText( QString( "%1 (%2)" ).arg( usr.name ).arg( usr.username ) );
 
 	/* Update the 'UserIcon' */
 	UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
-	if ( ui ) {
+	if ( ui )
 		ui->setPixmap( usr.icon );
-	}
 
 	/* Clear the password field */
 	QLineEdit *pwd = findChild<QLineEdit *>( "Password" );

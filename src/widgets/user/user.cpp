@@ -112,6 +112,7 @@ static inline Users getUsers() {
 UserName::UserName() {
 
     mUserList = getUsers();
+    switchToNextUser();
 };
 
 void UserName::switchToNextUser() {
@@ -138,18 +139,30 @@ User UserName::currentUser() {
     return mUserList.at( curUser );
 };
 
+void UserName::setCurrentUser( User usr ) {
+
+    /** Check name and uid. */
+    for( int i = 0; i < mUserList.count(); i++ ) {
+        User xusr = mUserList.at( i );
+        if ( ( xusr.username == usr.username ) and ( xusr.uid == usr.uid ) ) {
+            curUser = i;
+            break;
+        }
+    }
+};
+
 /* User ComboBox */
 
-UserListCombo::UserListCombo() : QComboBox(), UserName() {
+UserCombo::UserCombo() : QComboBox(), UserName() {
 
-    setObjectName( "UserList" );
+    setObjectName( "UserCombo" );
     mUserList = getUsers();
 
     for( User usr: mUserList )
         addItem( QIcon( usr.icon ), usr.username );
 };
 
-void UserListCombo::switchToNextUser() {
+void UserCombo::switchToNextUser() {
 
     UserName::switchToNextUser();
 
@@ -157,7 +170,7 @@ void UserListCombo::switchToNextUser() {
     setToolTip( mUserList.at( curUser ).username );
 };
 
-void UserListCombo::switchToPreviousUser() {
+void UserCombo::switchToPreviousUser() {
 
     UserName::switchToPreviousUser();
 
@@ -169,14 +182,17 @@ void UserListCombo::switchToPreviousUser() {
 
 UserList::UserList() : QListWidget(), UserName() {
 
-    setObjectName( "UserName" );
+    setObjectName( "UserList" );
     setIconSize( QSize( 24, 24 ) );
     setFont( QFont( "Quicksand", 12 ) );
     setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-    for( User usr: mUserList )
-        addItem( new QListWidgetItem( QIcon( usr.icon ), usr.username, this ) );
+    for( User usr: mUserList ) {
+        QListWidgetItem *item = new QListWidgetItem( QIcon( usr.icon ), usr.username, this );
+        item->setData( Qt::UserRole + 1, QVariant::fromValue( usr ) );
+        addItem( item );
+    }
 };
 
 void UserList::switchToNextUser() {
@@ -197,13 +213,13 @@ void UserList::switchToPreviousUser() {
 
 /* User Label */
 
-UserNameLabel::UserNameLabel() : QLabel(), UserName() {
+UserLabel::UserLabel() : QLabel(), UserName() {
 
-    setObjectName( "UserName" );
+    setObjectName( "UserLabel" );
     setFixedHeight( 27 );
 };
 
-void UserNameLabel::switchToNextUser() {
+void UserLabel::switchToNextUser() {
 
     UserName::switchToNextUser();
 
@@ -211,33 +227,7 @@ void UserNameLabel::switchToNextUser() {
     setToolTip( mUserList.at( curUser ).username );
 };
 
-void UserNameLabel::switchToPreviousUser() {
-
-    UserName::switchToPreviousUser();
-
-    setText( mUserList.at( curUser ).name );
-    setToolTip( mUserList.at( curUser ).username );
-};
-
-/* User Button */
-
-UserNameButton::UserNameButton() : QPushButton(), UserName() {
-
-    setObjectName( "UserName" );
-
-    setFixedHeight( 27 );
-    setText( "Hello, Marcus" );
-};
-
-void UserNameButton::switchToNextUser() {
-
-    UserName::switchToNextUser();
-
-    setText( mUserList.at( curUser ).name );
-    setToolTip( mUserList.at( curUser ).username );
-};
-
-void UserNameButton::switchToPreviousUser() {
+void UserLabel::switchToPreviousUser() {
 
     UserName::switchToPreviousUser();
 

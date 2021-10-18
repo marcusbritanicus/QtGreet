@@ -35,3 +35,7 @@
 
 /** Screen Size - so that we can access it anywhere we want */
 extern QSize mScreenSize;
+
+/** Multiple classes require these */
+extern QSettings *sett;
+extern QSettings *users;

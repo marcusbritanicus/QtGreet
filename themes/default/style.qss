@@ -7,6 +7,11 @@ QPushButton {
     border-radius: 18px;
 }
 
+#UserLabel {
+    border: 1px solid gray;
+    border-radius: 18px;
+}
+
 QPushButton:hover {
     background-color: rgba(255, 255, 255, 30);
 }
