@@ -31,7 +31,10 @@
 
 #include "Global.hpp"
 #include "user.hpp"
+#include "session.hpp"
 #include "ThemeManager.hpp"
+
+class LoginManager;
 
 namespace QtGreet {
     class UI;
@@ -56,8 +59,8 @@ class QtGreet::UI : public QMainWindow {
         /* Update the session on the screen */
         void updateSession( uint );
 
-        uint curUser = 0;
-        uint curSess = 0;
+        User mCurUser;
+        Session mCurSession;
 
         QImage background;
 
@@ -65,13 +68,15 @@ class QtGreet::UI : public QMainWindow {
 
         QStackedWidget *base;
 
-        // LoginManager *login;
+        LoginManager *login;
 
     protected:
         void paintEvent( QPaintEvent *pEvent );
         void keyPressEvent( QKeyEvent *kEvent );
 
     private Q_SLOTS:
+        //
+        void tryLogin();
 
         // ComboBox
         void on_UserCombo_currentIndexChanged( int );
@@ -90,8 +95,13 @@ class QtGreet::UI : public QMainWindow {
 
         // SessionEditButton - Convert the SessionEdit from ReadOnly to ReadWrite
         void on_SessionEditButton_clicked();
+
         // LoginButton - ToolButton and PushButton - Perform the login: tryLogin()
         void on_LoginButton_clicked();
+        // Password - Return pressed - Perform the login: tryLogin()
+        void on_Password_returnPressed();
+        // SessionEdit - Return pressed - Perform the login: tryLogin()
+        void on_SessionEdit_returnPressed();
 
         // ComboBox
         void on_SessionName_currentIndexChanged( int );

@@ -16,22 +16,14 @@ project(
 add_global_arguments( '-DPROJECT_VERSION="v@0@"'.format( meson.project_version() ), language : 'cpp' )
 add_project_link_arguments( ['-rdynamic','-fPIC'], language:'cpp' )
 
-conf_data = configuration_data()
-conf_data.set('INSTALL_PREFIX', get_option('prefix'))
-conf_data.set('LIBDIR', join_paths(get_option('prefix'), get_option('libdir'), 'wayfire'))
-metadata_dir_suffix = 'share/wayfire/metadata'
-conf_data.set('PLUGIN_XML_DIR', join_paths(get_option('prefix'), metadata_dir_suffix))
-sysconfdir = join_paths(get_option('prefix'), get_option('sysconfdir'))
-conf_data.set('SYSCONFDIR', sysconfdir)
-pkgdatadir = join_paths(get_option('prefix'), 'share', 'wayfire', 'protocols')
-
 Qt5 = import( 'qt5' )
 Qt5Deps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ] )
-DesQCore = dependency( 'desq-core' )
+json = dependency( 'json-c' )
 
 Includes = [
 		'src',
 		'src/backends',
+		'src/backends/greetd',
 		'src/layoutmanager',
 		'src/layoutmanager/parser',
 		'src/thememanager',
@@ -49,6 +41,8 @@ Includes = [
 
 Headers = [
 		'src/Global.hpp',
+		'src/backends/greetd/proto.h',
+		'src/backends/greetd/LoginManager.hpp',
 		'src/layoutmanager/parser/hjson.h',
 		'src/layoutmanager/LayoutManager.hpp',
 		'src/layoutmanager/LayoutUtils.hpp',
@@ -65,6 +59,8 @@ Headers = [
 ]
 
 Sources = [
+		'src/backends/greetd/proto.c',
+		'src/backends/greetd/LoginManager.cpp',
 		'src/layoutmanager/LayoutManager.cpp',
 		'src/layoutmanager/LayoutUtils.cpp',
 		'src/layoutmanager/parser/hjson_decode.cpp',
@@ -96,7 +92,7 @@ Resources = Qt5.compile_resources(
 
 qtgreet = executable(
     'qtgreet', [ Sources, Mocs, Resources ],
-    dependencies: [ Qt5Deps ],
+    dependencies: [ Qt5Deps, json ],
 		include_directories: [ Includes ],
     install: false
 )

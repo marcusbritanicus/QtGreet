@@ -28,6 +28,7 @@
 */
 
 #include "QtGreet.hpp"
+#include "LoginManager.hpp"
 #include "LayoutManager.hpp"
 
 #include "buttons.hpp"
@@ -40,6 +41,8 @@
 #include <QtDBus>
 
 QtGreet::UI::UI() {
+
+	login = new LoginManager();
 
 	themeManager = new ThemeManager( sett->value( "Theme" ).toString() );
 
@@ -118,6 +121,8 @@ void QtGreet::UI::prepareUIforUse() {
 
 void QtGreet::UI::updateUser( User usr ) {
 
+	mCurUser = usr;
+
 	/* Update the 'UserLabel' */
 	UserLabel *un = findChild<UserLabel *>( "UserLabel" );
 	if ( un )
@@ -186,6 +191,8 @@ void QtGreet::UI::updateSession( uint uid ) {
 	SessionEdit *se = findChild<SessionEdit *>( "SessionEdit" );
 	if ( se )
 		se->setText( curSess.exec );
+
+	mCurSession = curSess;
 };
 
 void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
@@ -240,6 +247,44 @@ void QtGreet::UI::keyPressEvent( QKeyEvent *kEvent ) {
     }
 
     return;
+};
+
+void QtGreet::UI::tryLogin() {
+
+	QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
+	if ( not pwd )
+		return;
+
+	setDisabled( true );
+	bool auth = login->authenticate( mCurUser.username, pwd->text() );
+	bool sess = false;
+	if ( auth ) {
+		sess = login->startSession( mCurSession.exec, mCurSession.type );
+		if ( sess )
+			qApp->quit();
+	}
+
+	QString errTitle;
+	QString errMsg;
+	if ( not auth ) {
+		errTitle = "Authentication failure";
+		errMsg = "We failed to authenticate you. Did you enter the correct password?";
+	}
+
+	else {
+		errTitle = "Failed to start Session";
+		errMsg = "We failed to start the selected session. Perhaps a wrong command?";
+	}
+
+	QMessageBox::critical(
+		this,
+		"QtGreet | Failure",
+		// errTitle,
+		errMsg,
+		QMessageBox::Ok
+	);
+
+	setEnabled( true );
 };
 
 /* Auto Slots */
@@ -304,18 +349,21 @@ void QtGreet::UI::on_SessionNavRight_clicked() {
 	if ( slc ) {
 		slc->switchToNextSession();
 		curSess = slc->currentSession().exec;
+		mCurSession = slc->currentSession();
 	}
 
 	SessionLabel *snl = findChild<SessionLabel *>( "SessionLabel" );
 	if ( snl ) {
 		snl->switchToNextSession();
 		curSess = snl->currentSession().exec;
+		mCurSession = snl->currentSession();
 	}
 
 	SessionList *sl  = findChild<SessionList *>( "SessionList" );
 	if ( sl ) {
 		sl->switchToNextSession();
 		curSess = sl->currentSession().exec;
+		mCurSession = sl->currentSession();
 	}
 
 	SessionEdit *se = findChild<SessionEdit *>( "SessionEdit" );
@@ -331,18 +379,21 @@ void QtGreet::UI::on_SessionNavLeft_clicked() {
 	if ( slc ) {
 		slc->switchToPreviousSession();
 		curSess = slc->currentSession().exec;
+		mCurSession = slc->currentSession();
 	}
 
 	SessionLabel *snl = findChild<SessionLabel *>( "SessionLabel" );
 	if ( snl ) {
 		snl->switchToPreviousSession();
 		curSess = snl->currentSession().exec;
+		mCurSession = snl->currentSession();
 	}
 
 	SessionList *sl  = findChild<SessionList *>( "SessionList" );
 	if ( sl ) {
 		sl->switchToPreviousSession();
 		curSess = sl->currentSession().exec;
+		mCurSession = sl->currentSession();
 	}
 
 	SessionEdit *se = findChild<SessionEdit *>( "SessionEdit" );
@@ -354,6 +405,18 @@ void QtGreet::UI::on_SessionEditButton_clicked() {
 };
 
 void QtGreet::UI::on_LoginButton_clicked() {
+
+	tryLogin();
+};
+
+void QtGreet::UI::on_Password_returnPressed() {
+
+	tryLogin();
+};
+
+void QtGreet::UI::on_SessionEdit_returnPressed() {
+
+	tryLogin();
 };
 
 void QtGreet::UI::on_SessionName_currentIndexChanged( int ) {
