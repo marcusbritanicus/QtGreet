@@ -2,16 +2,17 @@
 Name = Aerial
 
 [Files]
-Layout = layout.json
+Layout = layout.hjson
 StyleSheet = style.qss
 
 [Theme]
 Background = mpvpaper
 BaseColor = ffffffff
 TextColor = ffffff
+Type = Video
 
 [mpvpaper]
 Playlist = 4k.m3u, all_sd.m3u, day.m3u, night.m3u
 
 [cache]
-Location = $HOME/.cache/qtgreet/
+Location = $HOME/.cache/qtgreet/aerial

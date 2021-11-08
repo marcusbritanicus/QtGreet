@@ -2,10 +2,11 @@
 Name = Compact
 
 [Files]
-Layout = layout.json
+Layout = layout.hjson
 StyleSheet = style.qss
 
 [Theme]
-Background = /usr/share/qtgreet/backgrounds/Christmas.svg
+Background = ../../backgrounds/Christmas.svg
 BaseColor = ffffffff
 TextColor = ffffff
+Type = Image

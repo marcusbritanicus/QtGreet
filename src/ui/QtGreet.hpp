@@ -31,6 +31,7 @@
 
 #include "Global.hpp"
 #include "user.hpp"
+#include "ThemeManager.hpp"
 
 namespace QtGreet {
     class UI;
@@ -59,6 +60,8 @@ class QtGreet::UI : public QMainWindow {
         uint curSess = 0;
 
         QImage background;
+
+        ThemeManager *themeManager;
 
     protected:
         void paintEvent( QPaintEvent *pEvent );

@@ -39,66 +39,14 @@
 #include <unistd.h>
 #include <QtDBus>
 
-#define CONSOLEKIT_SERVICE      "org.freedesktop.ConsoleKit"
-#define CONSOLEKIT_PATH         "/org/freedesktop/ConsoleKit/Manager"
-#define CONSOLEKIT_INTERFACE    "org.freedesktop.ConsoleKit.Manager"
-
-#define SYSTEMD_SERVICE         "org.freedesktop.login1"
-#define SYSTEMD_PATH            "/org/freedesktop/login1"
-#define SYSTEMD_INTERFACE       "org.freedesktop.login1.Manager"
-
-static inline int getFormFactor() {
-	/*
-		*
-		* Form Factors
-		* ------------
-		*
-		* 0: Desktop - Typically 14" to 16" screens
-		* 1: Tablets - Typically  7" to 10" screens
-		* 2: Mobiles - Typically  4" to  6" screens
-		* 3: Monitor - Typically larger than 16" - huge sizes, we're not built for these screens.
-		*
-	*/
-
-	QSizeF screenSize = QGuiApplication::primaryScreen()->physicalSize();
-	double diag = sqrt( pow( screenSize.width(), 2 ) + pow( screenSize.height(), 2 ) );
-
-	//- Deadly large screen mobiles
-	if ( diag <= 6.5 )
-		return 2;
-
-	//- Tablets and small netbooks
-	else if ( diag <= 10.1 )
-		return 1;
-
-	//- Typical desktops
-	else if ( diag <= 16.0 )
-		return 0;
-
-	// Large displays
-	else
-		return 3;
-
-	/* Default value */
-	return 0;
-};
-
-static inline QString getStyleSheet( QString fn ) {
-
-    QFile qss( fn );
-    qss.open( QFile::ReadOnly );
-    QString ss = QString::fromLocal8Bit( qss.readAll() );
-    qss.close();
-
-    return ss;
-};
-
 QtGreet::UI::UI() {
+
+	themeManager = new ThemeManager( "compact" );
 
 	setFixedSize( qApp->primaryScreen()->size() );
     createUI();
 
-	setStyleSheet( getStyleSheet( qApp->arguments()[ 1 ].replace( "layout.hjson", "style.qss" ) ) );
+	setStyleSheet( themeManager->getStyleSheet() );
 
 	if ( sett->contains( "VideoBG" ) ) {
 		QStringList vbg = sett->value( "VideoBG" ).toString().split( "\\s+" );
@@ -106,7 +54,7 @@ QtGreet::UI::UI() {
 	}
 
 	else {
-		QString bgStr( sett->value( "Background" ).toString() );
+		QString bgStr( themeManager->background() );
 	    background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 		if ( sett->value( "BlurBackground" ).toBool() ) {
 			QPixmap img = QPixmap::fromImage( background );
@@ -131,7 +79,7 @@ QtGreet::UI::UI() {
 void QtGreet::UI::createUI() {
 
     QtGreet::LayoutManager lytMgr;
-	QBoxLayout *lyt = lytMgr.generateLayout( qApp->arguments()[ 1 ] );
+	QBoxLayout *lyt = lytMgr.generateLayout( themeManager->getLayout() );
 
     QWidget *w = new QWidget();
 	w->setLayout( lyt );

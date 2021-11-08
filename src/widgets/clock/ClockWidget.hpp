@@ -33,6 +33,9 @@
 #pragma once
 
 #include <QWidget>
+#include <QLabel>
+#include <QLCDNumber>
+#include <QBasicTimer>
 #include <QVariantMap>
 
 class QDBusInterface;

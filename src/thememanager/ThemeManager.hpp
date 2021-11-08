@@ -34,5 +34,37 @@
 class ThemeManager {
 
     public:
-        ThemeManager();
+        ThemeManager( QString themeName );
+
+        /** Get the layout path */
+        QString getLayout();
+
+        /** Get the stylesheet path */
+        QString getStyleSheet();
+
+        /** Path to background image/video */
+        QString background();
+
+        /** Base Color */
+        QColor baseColor();
+
+        /** Base Color */
+        QColor textColor();
+
+        /** Does the theme require video bg? */
+        bool isVideoBG();
+
+        /** All the available themes */
+        static QStringList availableThemes();
+
+    private:
+        void readTheme( QString );
+
+        QString imageBG;
+        QString mLayout;
+        QString mQSS;
+        bool mIsVideoBG;
+
+        QColor mBaseColor;
+        QColor mTextColor;
 };
