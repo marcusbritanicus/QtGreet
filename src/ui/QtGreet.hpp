@@ -63,16 +63,15 @@ class QtGreet::UI : public QMainWindow {
 
         ThemeManager *themeManager;
 
+        QStackedWidget *base;
+
+        // LoginManager *login;
+
     protected:
         void paintEvent( QPaintEvent *pEvent );
         void keyPressEvent( QKeyEvent *kEvent );
 
     private Q_SLOTS:
-
-        /* Try to login */
-        void tryLogin() {};
-
-        /* Auto Slots */
 
         // ComboBox
         void on_UserCombo_currentIndexChanged( int );
@@ -89,18 +88,11 @@ class QtGreet::UI : public QMainWindow {
         // SessionNavButton - Left - Previous User
         void on_SessionNavLeft_clicked();
 
-        // Generic okay button - Not implemented
-        // void on_OkayButton_clicked();
-        // Generic cancel button - Not implemented
-        // void on_CancelButton_clicked();
-
         // SessionEditButton - Convert the SessionEdit from ReadOnly to ReadWrite
         void on_SessionEditButton_clicked();
         // LoginButton - ToolButton and PushButton - Perform the login: tryLogin()
         void on_LoginButton_clicked();
 
-        // PushButton
-        void on_SessionName_clicked();
         // ComboBox
         void on_SessionName_currentIndexChanged( int );
         // ListWidget

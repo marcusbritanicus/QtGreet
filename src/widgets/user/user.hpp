@@ -86,12 +86,25 @@ class UserList: public QListWidget, public UserName {
         void switchToPreviousUser();
 };
 
-class UserLabel: public QLabel, public UserName {
+class UserLabel: public QWidget, public UserName {
     Q_OBJECT;
 
     public:
         UserLabel();
 
+        void setText( QString );
+
+        void setAlignment( Qt::Alignment );
+
         void switchToNextUser();
         void switchToPreviousUser();
+
+        void setShowNavButtons( bool show );
+        void setIconSize( QSize );
+
+        void setFixedHeight( int );
+
+    private:
+        QLabel *lbl;
+        QToolButton *prevBtn, *nextBtn;
 };

@@ -182,25 +182,17 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         }
 
         else if ( type == "Combo" ) {
-            SessionListCombo *cb = new SessionListCombo( custom );
+            SessionCombo *cb = new SessionCombo( custom );
             applyWidgetProperties( cb, name, type, properties );
 
             return cb;
         }
 
         else if ( type == "Label" ) {
-            SessionNameLabel *sess = new SessionNameLabel( custom );
+            SessionLabel *sess = new SessionLabel( custom );
             applyWidgetProperties( sess, name, type, properties );
 
             return sess;
-        }
-
-        else if ( type == "PushButton" ) {
-
-            SessionNameButton *btn = new SessionNameButton( custom );
-            applyWidgetProperties( btn, name, type, properties );
-
-            return btn;
         }
 
         else if ( type == "ToolButton" ) {
@@ -353,14 +345,29 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
             else if ( key == "MaximumHeight" )
                 widget->setMaximumHeight( h );
 
-            else
-                widget->setFixedHeight( h );
+            else {
+                if ( name == "UserName" and type == "Label" )
+                    qobject_cast<UserLabel*>( widget )->setFixedHeight( h );
+
+                else if ( name == "SessionName" and type == "Label" )
+                    qobject_cast<SessionLabel*>( widget )->setFixedHeight( h );
+
+                else
+                    widget->setFixedHeight( h );
+            }
         }
 
         /** Text */
         else if ( key == "Text" ) {
             QString text( properties[ stdKey ].to_string().c_str() );
-            if ( type == "Label" )
+
+            if ( name == "UserName" and type == "Label" )
+                qobject_cast<UserLabel*>( widget )->setText( text );
+
+            else if ( name == "SessionName" and type == "Label" )
+                qobject_cast<SessionLabel*>( widget )->setText( text );
+
+            else if ( type == "Label" )
                 qobject_cast<QLabel*>( widget )->setText( text );
 
             else if ( type == "Combo" )
@@ -466,7 +473,29 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
         }
 
         else if ( key == "TextAlign" ) {
-            if ( name == "QLabel" or type == "Label" ) {
+            if ( name == "UserName" and type == "Label" ) {
+                if ( properties[ stdKey ].to_string() == "Center" )
+                    qobject_cast<UserLabel *>( widget )->setAlignment( Qt::AlignCenter );
+
+                else if ( properties[ stdKey ].to_string() == "Left" )
+                    qobject_cast<UserLabel *>( widget )->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+                else if ( properties[ stdKey ].to_string() == "Right" )
+                    qobject_cast<UserLabel *>( widget )->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+            }
+
+            else if ( name == "SessionName" and type == "Label" ) {
+                if ( properties[ stdKey ].to_string() == "Center" )
+                    qobject_cast<SessionLabel *>( widget )->setAlignment( Qt::AlignCenter );
+
+                else if ( properties[ stdKey ].to_string() == "Left" )
+                    qobject_cast<SessionLabel *>( widget )->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+                else if ( properties[ stdKey ].to_string() == "Right" )
+                    qobject_cast<SessionLabel *>( widget )->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+            }
+
+            else if ( name == "QLabel" or type == "Label" ) {
                 if ( properties[ stdKey ].to_string() == "Center" )
                     qobject_cast<QLabel *>( widget )->setAlignment( Qt::AlignCenter );
 
@@ -480,6 +509,14 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
 
         else if ( key == "ToolTip" ) {
             widget->setToolTip( properties[ stdKey ].to_string().c_str() );
+        }
+
+        else if ( key == "NavButtons" and name == "UserName" and type == "Label" ) {
+            qobject_cast<UserLabel *>( widget )->setShowNavButtons( true );
+        }
+
+        else if ( key == "NavButtons" and name == "SessionName" and type == "Label" ) {
+            qobject_cast<SessionLabel *>( widget )->setShowNavButtons( true );
         }
     }
 }

@@ -11,16 +11,16 @@ QtGreet v2.0.0
     2. SessionName
     3. Password
     4. LoginButton
-    5.
+    5. Date/Time
     6.
     7.
     8.
     9.
     10.
 
-    Every layout.json file should contain the first 4 widgets. Without them, the layout file will be considered as invalid.
+    Every layout.hjson file should contain the first 4 widgets. Without them, you'll not be able to login properly.
 
-3. Layout Manager uing HJSON
+3. Layout Manager using HJSON
     A simple HJSON file with a predefined set of keys will define the layout. We will use QBoxLayout to perform the actual layout of the
     widgets. Trials with default and sidebar themes have proved that this method is very effective.
 
@@ -32,6 +32,11 @@ QtGreet v2.0.0
     We have to develop two backends, one for QGreetd and the other for LightDM.
 
 6. Build a few default themes
+   Currently, we have the following 4 themes
+   1. Default
+   2. Aerial
+   3. Compact
+   4. SideBar
 
 7. Write a complete Theme and Layout Guide
 

@@ -7,7 +7,7 @@ QPushButton {
     border-radius: 18px;
 }
 
-#UserLabel {
+#UserLabel, #SessionLabel {
     border: 1px solid gray;
     border-radius: 18px;
 }

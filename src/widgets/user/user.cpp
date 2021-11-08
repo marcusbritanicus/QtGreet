@@ -213,17 +213,52 @@ void UserList::switchToPreviousUser() {
 
 /* User Label */
 
-UserLabel::UserLabel() : QLabel(), UserName() {
+UserLabel::UserLabel() : QWidget(), UserName() {
 
     setObjectName( "UserLabel" );
+
+    prevBtn = new QToolButton();
+    prevBtn->setObjectName( "UserNavLeft" );
+    prevBtn->setIcon( QIcon( ":/icons/arrow-left.png" ) );
+
+    lbl = new QLabel();
+    lbl->setObjectName( "UserLabel" );
+
+    nextBtn = new QToolButton();
+    nextBtn->setObjectName( "UserNavRight" );
+    nextBtn->setIcon( QIcon( ":/icons/arrow-right.png" ) );
+
+    QHBoxLayout *lyt = new QHBoxLayout();
+    lyt->setContentsMargins( QMargins() );
+    lyt->setSpacing( 5 );
+
+    lyt->addWidget( prevBtn );
+    lyt->addWidget( lbl );
+    lyt->addWidget( nextBtn );
+
+    setLayout( lyt );
+
+    nextBtn->hide();
+    prevBtn->hide();
+
     setFixedHeight( 27 );
+};
+
+void UserLabel::setText( QString text ) {
+
+    lbl->setText( text );
+};
+
+void UserLabel::setAlignment( Qt::Alignment a ) {
+
+    lbl->setAlignment( a );
 };
 
 void UserLabel::switchToNextUser() {
 
     UserName::switchToNextUser();
 
-    setText( mUserList.at( curUser ).name );
+    lbl->setText( mUserList.at( curUser ).name );
     setToolTip( mUserList.at( curUser ).username );
 };
 
@@ -231,6 +266,36 @@ void UserLabel::switchToPreviousUser() {
 
     UserName::switchToPreviousUser();
 
-    setText( mUserList.at( curUser ).name );
+    lbl->setText( mUserList.at( curUser ).name );
     setToolTip( mUserList.at( curUser ).username );
+};
+
+void UserLabel::setShowNavButtons( bool show ) {
+
+    if ( show ) {
+        prevBtn->show();
+        nextBtn->show();
+    }
+
+    else {
+        prevBtn->hide();
+        nextBtn->hide();
+    }
+};
+
+void UserLabel::setIconSize( QSize size ) {
+
+    nextBtn->setIconSize( size );
+    prevBtn->setIconSize( size );
+};
+
+void UserLabel::setFixedHeight( int h ) {
+
+    QWidget::setFixedHeight( h );
+
+    nextBtn->setFixedWidth( h );
+    nextBtn->setFixedHeight( h );
+
+    prevBtn->setFixedWidth( h );
+    prevBtn->setFixedHeight( h );
 };

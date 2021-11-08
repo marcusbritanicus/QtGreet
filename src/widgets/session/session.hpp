@@ -67,31 +67,11 @@ class SessionName {
         int curSess = 0;
 };
 
-class SessionListCombo: public QComboBox, public SessionName {
+class SessionCombo: public QComboBox, public SessionName {
     Q_OBJECT;
 
     public:
-        SessionListCombo( bool );
-
-        void switchToNextSession();
-        void switchToPreviousSession();
-};
-
-class SessionNameButton : public QPushButton, public SessionName {
-    Q_OBJECT;
-
-    public:
-        SessionNameButton( bool );
-
-        void switchToNextSession();
-        void switchToPreviousSession();
-};
-
-class SessionNameLabel : public QLabel, public SessionName {
-    Q_OBJECT;
-
-    public:
-        SessionNameLabel( bool );
+        SessionCombo( bool );
 
         void switchToNextSession();
         void switchToPreviousSession();
@@ -105,4 +85,28 @@ class SessionList : public QListWidget, public SessionName {
 
         void switchToNextSession();
         void switchToPreviousSession();
+};
+
+class SessionLabel: public QWidget, public SessionName {
+    Q_OBJECT;
+
+    public:
+        SessionLabel( bool );
+
+        void setText( QString );
+
+        void setAlignment( Qt::Alignment );
+
+        void switchToNextSession();
+        void switchToPreviousSession();
+
+        void setShowNavButtons( bool show );
+
+        void setIconSize( QSize );
+
+        void setFixedHeight( int );
+
+    private:
+        QLabel *lbl;
+        QToolButton *prevBtn, *nextBtn;
 };

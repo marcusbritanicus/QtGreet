@@ -133,7 +133,7 @@ QWidget* QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson::
 
         /** Initialize the widget */
         else {
-            printf( "%s%s ", space.toUtf8().data(), key.toUtf8().data() );
+            // printf( "%s%s ", space.toUtf8().data(), key.toUtf8().data() );
 
             if ( key == "Stretch" ) {
                 lyt->addStretch();
@@ -148,7 +148,7 @@ QWidget* QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson::
         }
     }
 
-    printf( "\n" );
+    // printf( "\n" );
 
     Container *cw = new Container( props[ "BGColor" ], name );
     cw->setLayout( lyt );
@@ -195,7 +195,7 @@ QWidget* QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjso
 
         /** Initialize the widget */
         else {
-            qDebug() << (space + key).toUtf8().data();
+            // qDebug() << (space + key).toUtf8().data();
 
             if ( key == "Stretch" ) {
                 lyt->addStretch();

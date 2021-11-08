@@ -139,75 +139,31 @@ Session SessionName::currentSession() {
 
 /* Session ComboBox */
 
-SessionListCombo::SessionListCombo( bool custom ) : QComboBox(), SessionName( custom ) {
+SessionCombo::SessionCombo( bool custom ) : QComboBox(), SessionName( custom ) {
 
-    setObjectName( "SessionName" );
+    setObjectName( "SessionCombo" );
     for( Session sess: mSessionList ) {
         addItem( QIcon( sess.icon ), sess.name );
     }
 };
 
-void SessionListCombo::switchToNextSession() {
+void SessionCombo::switchToNextSession() {
 
     SessionName::switchToNextSession();
     setCurrentIndex( curSess );
 };
 
-void SessionListCombo::switchToPreviousSession() {
+void SessionCombo::switchToPreviousSession() {
 
     SessionName::switchToPreviousSession();
     setCurrentIndex( curSess );
-};
-
-/* Session Button */
-
-SessionNameButton::SessionNameButton( bool custom ) : QPushButton(), SessionName( custom ) {
-
-    setObjectName( "SessionName" );
-    setFixedHeight( 27 );
-    setIcon( QIcon( ":/icons/session.png" ) );
-    setText( "DesQ (Wayland)" );
-    setFlat( true );
-};
-
-void SessionNameButton::switchToNextSession() {
-
-    SessionName::switchToNextSession();
-    setText( mSessionList.at( curSess ).name );
-};
-
-void SessionNameButton::switchToPreviousSession() {
-
-    SessionName::switchToPreviousSession();
-    setText( mSessionList.at( curSess ).name );
-};
-
-/* Session Label */
-
-SessionNameLabel::SessionNameLabel( bool custom ) : QLabel(), SessionName( custom ) {
-
-    setObjectName( "SessionName" );
-    setFixedHeight( 27 );
-    setText( "DesQ (Wayland)" );
-};
-
-void SessionNameLabel::switchToNextSession() {
-
-    SessionName::switchToNextSession();
-    setText( mSessionList.at( curSess ).name );
-};
-
-void SessionNameLabel::switchToPreviousSession() {
-
-    SessionName::switchToPreviousSession();
-    setText( mSessionList.at( curSess ).name );
 };
 
 /* Session List */
 
 SessionList::SessionList( bool custom ) : QListWidget(), SessionName( custom ) {
 
-    setObjectName( "SessionName" );
+    setObjectName( "SessionList" );
     setIconSize( QSize( 24, 24 ) );
     setFont( QFont( "Quicksand", 12 ) );
     setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
@@ -227,4 +183,89 @@ void SessionList::switchToPreviousSession() {
 
     SessionName::switchToPreviousSession();
     setCurrentRow( curSess );
+};
+
+/* Session Label */
+
+SessionLabel::SessionLabel( bool custom ) : QWidget(), SessionName( custom ) {
+
+    setObjectName( "SessionLabel" );
+
+    prevBtn = new QToolButton();
+    prevBtn->setObjectName( "SessionNavLeft" );
+    prevBtn->setIcon( QIcon( ":/icons/arrow-left.png" ) );
+
+    lbl = new QLabel();
+    lbl->setObjectName( "SessionLabel" );
+
+    nextBtn = new QToolButton();
+    nextBtn->setObjectName( "SessionNavRight" );
+    nextBtn->setIcon( QIcon( ":/icons/arrow-right.png" ) );
+
+    QHBoxLayout *lyt = new QHBoxLayout();
+    lyt->setContentsMargins( QMargins() );
+    lyt->setSpacing( 5 );
+
+    lyt->addWidget( prevBtn );
+    lyt->addWidget( lbl );
+    lyt->addWidget( nextBtn );
+
+    setLayout( lyt );
+
+    nextBtn->hide();
+    prevBtn->hide();
+
+    setFixedHeight( 27 );
+};
+
+void SessionLabel::setText( QString text ) {
+
+    lbl->setText( text );
+};
+
+void SessionLabel::setAlignment( Qt::Alignment a ) {
+
+    lbl->setAlignment( a );
+};
+
+void SessionLabel::switchToNextSession() {
+
+    SessionName::switchToNextSession();
+    setText( mSessionList.at( curSess ).name );
+};
+
+void SessionLabel::switchToPreviousSession() {
+
+    SessionName::switchToPreviousSession();
+    setText( mSessionList.at( curSess ).name );
+};
+
+void SessionLabel::setShowNavButtons( bool show ) {
+
+    if ( show ) {
+        prevBtn->show();
+        nextBtn->show();
+    }
+
+    else {
+        prevBtn->hide();
+        nextBtn->hide();
+    }
+};
+
+void SessionLabel::setIconSize( QSize size ) {
+
+    nextBtn->setIconSize( size );
+    prevBtn->setIconSize( size );
+};
+
+void SessionLabel::setFixedHeight( int h ) {
+
+    QWidget::setFixedHeight( h );
+
+    nextBtn->setFixedWidth( h );
+    nextBtn->setFixedHeight( h );
+
+    prevBtn->setFixedWidth( h );
+    prevBtn->setFixedHeight( h );
 };

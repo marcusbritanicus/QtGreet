@@ -81,8 +81,6 @@ QStringList ThemeManager::availableThemes() {
         }
     }
 
-    qDebug() << "Available themes:" << themes;
-
     return themes;
 };
 

@@ -41,7 +41,7 @@
 
 QtGreet::UI::UI() {
 
-	themeManager = new ThemeManager( "compact" );
+	themeManager = new ThemeManager( sett->value( "Theme" ).toString() );
 
 	setFixedSize( qApp->primaryScreen()->size() );
     createUI();
@@ -78,13 +78,16 @@ QtGreet::UI::UI() {
 
 void QtGreet::UI::createUI() {
 
-    QtGreet::LayoutManager lytMgr;
-	QBoxLayout *lyt = lytMgr.generateLayout( themeManager->getLayout() );
+	base = new QStackedWidget();
+    setCentralWidget( base );
 
-    QWidget *w = new QWidget();
+    QtGreet::LayoutManager lytMgr;
+
+	QWidget *w = new QWidget( base );
+	QBoxLayout *lyt = lytMgr.generateLayout( themeManager->getLayout() );
 	w->setLayout( lyt );
 
-    setCentralWidget( w );
+	base->addWidget( w );
 
 	QMetaObject::connectSlotsByName( this );
 };
@@ -144,7 +147,7 @@ void QtGreet::UI::updateSession( uint uid ) {
 		sessFile = curSess.file;
 	}
 
-	SessionListCombo *slc = findChild<SessionListCombo *>( "SessionName" );
+	SessionCombo *slc = findChild<SessionCombo *>( "SessionCombo" );
 	if ( slc ) {
 		for( int i = 0; i < slc->sessions().count(); i++ ) {
 			Session sess = slc->sessions().at( i );
@@ -156,19 +159,7 @@ void QtGreet::UI::updateSession( uint uid ) {
 		}
 	}
 
-	SessionNameButton *snb = findChild<SessionNameButton *>( "SessionName" );
-	if ( snb ) {
-		for( int i = 0; i < snb->sessions().count(); i++ ) {
-			Session sess = snb->sessions().at( i );
-			if ( sess.file == sessFile ) {
-				curSess = sess;
-				snb->setText( sess.name );
-				break;
-			}
-		}
-	}
-
-	SessionNameLabel *snl = findChild<SessionNameLabel *>( "SessionName" );
+	SessionLabel *snl = findChild<SessionLabel *>( "SessionLabel" );
 	if ( snl ) {
 		for( int i = 0; i < snl->sessions().count(); i++ ) {
 			Session sess = snl->sessions().at( i );
@@ -180,7 +171,7 @@ void QtGreet::UI::updateSession( uint uid ) {
 		}
 	}
 
-	SessionList *sl  = findChild<SessionList *>( "SessionName" );
+	SessionList *sl  = findChild<SessionList *>( "SessionList" );
 	if ( sl ) {
 		for( int i = 0; i < sl->sessions().count(); i++ ) {
 			Session sess = sl->sessions().at( i );
@@ -255,6 +246,8 @@ void QtGreet::UI::keyPressEvent( QKeyEvent *kEvent ) {
 
 void QtGreet::UI::on_UserNavRight_clicked() {
 
+	qDebug() << "Loading next user";
+
 	UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 	if ( ulc ) {
 		ulc->switchToNextUser();
@@ -278,6 +271,8 @@ void QtGreet::UI::on_UserNavRight_clicked() {
 };
 
 void QtGreet::UI::on_UserNavLeft_clicked() {
+
+	qDebug() << "Loading prev user";
 
 	UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 	if ( ulc ) {
@@ -305,25 +300,19 @@ void QtGreet::UI::on_SessionNavRight_clicked() {
 
 	QString curSess;
 
-	SessionListCombo *slc = findChild<SessionListCombo *>( "SessionName" );
+	SessionCombo *slc = findChild<SessionCombo *>( "SessionCombo" );
 	if ( slc ) {
 		slc->switchToNextSession();
 		curSess = slc->currentSession().exec;
 	}
 
-	SessionNameButton *snb = findChild<SessionNameButton *>( "SessionName" );
-	if ( snb ) {
-		snb->switchToNextSession();
-		curSess = snb->currentSession().exec;
-	}
-
-	SessionNameLabel *snl = findChild<SessionNameLabel *>( "SessionName" );
+	SessionLabel *snl = findChild<SessionLabel *>( "SessionLabel" );
 	if ( snl ) {
 		snl->switchToNextSession();
 		curSess = snl->currentSession().exec;
 	}
 
-	SessionList *sl  = findChild<SessionList *>( "SessionName" );
+	SessionList *sl  = findChild<SessionList *>( "SessionList" );
 	if ( sl ) {
 		sl->switchToNextSession();
 		curSess = sl->currentSession().exec;
@@ -338,25 +327,19 @@ void QtGreet::UI::on_SessionNavLeft_clicked() {
 
 	QString curSess;
 
-	SessionListCombo *slc = findChild<SessionListCombo *>( "SessionName" );
+	SessionCombo *slc = findChild<SessionCombo *>( "SessionCombo" );
 	if ( slc ) {
 		slc->switchToPreviousSession();
 		curSess = slc->currentSession().exec;
 	}
 
-	SessionNameButton *snb = findChild<SessionNameButton *>( "SessionName" );
-	if ( snb ) {
-		snb->switchToPreviousSession();
-		curSess = snb->currentSession().exec;
-	}
-
-	SessionNameLabel *snl = findChild<SessionNameLabel *>( "SessionName" );
+	SessionLabel *snl = findChild<SessionLabel *>( "SessionLabel" );
 	if ( snl ) {
 		snl->switchToPreviousSession();
 		curSess = snl->currentSession().exec;
 	}
 
-	SessionList *sl  = findChild<SessionList *>( "SessionName" );
+	SessionList *sl  = findChild<SessionList *>( "SessionList" );
 	if ( sl ) {
 		sl->switchToPreviousSession();
 		curSess = sl->currentSession().exec;
@@ -373,13 +356,10 @@ void QtGreet::UI::on_SessionEditButton_clicked() {
 void QtGreet::UI::on_LoginButton_clicked() {
 };
 
-void QtGreet::UI::on_SessionName_clicked() {
-};
-
 void QtGreet::UI::on_SessionName_currentIndexChanged( int ) {
 };
 
-void QtGreet::UI::on_SessionName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
+void QtGreet::UI::on_SessionName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem * ) {
 
 	Session sess( cur->data( Qt::UserRole + 1 ).value<Session>() );
 };
@@ -395,7 +375,7 @@ void QtGreet::UI::on_UserCombo_currentIndexChanged( int idx ) {
 	updateUser( usr );
 };
 
-void QtGreet::UI::on_UserList_currentItemChanged( QListWidgetItem *cur, QListWidgetItem *old ) {
+void QtGreet::UI::on_UserList_currentItemChanged( QListWidgetItem *cur, QListWidgetItem * ) {
 
 	User usr( cur->data( Qt::UserRole + 1 ).value<User>() );
 

@@ -34,6 +34,14 @@ QToolButton {
     background-color: rgba(255, 255, 255, 60);
 }
 
+#UserNavRight {
+    background-color: transparent;
+}
+
+#UserNavLeft {
+    background-color: transparent;
+}
+
 QToolButton#PowerButton {
     background-color: rgba(0, 0, 0, 0);
 }
