@@ -41,8 +41,9 @@ Includes = [
 
 Headers = [
 		'src/Global.hpp',
+		'src/backends/LoginManager.hpp',
 		'src/backends/greetd/proto.h',
-		'src/backends/greetd/LoginManager.hpp',
+		'src/backends/greetd/GreetdManager.hpp',
 		'src/layoutmanager/parser/hjson.h',
 		'src/layoutmanager/LayoutManager.hpp',
 		'src/layoutmanager/LayoutUtils.hpp',
@@ -60,7 +61,8 @@ Headers = [
 
 Sources = [
 		'src/backends/greetd/proto.c',
-		'src/backends/greetd/LoginManager.cpp',
+		'src/backends/LoginManager.cpp',
+		'src/backends/greetd/GreetdManager.cpp',
 		'src/layoutmanager/LayoutManager.cpp',
 		'src/layoutmanager/LayoutUtils.cpp',
 		'src/layoutmanager/parser/hjson_decode.cpp',
@@ -94,7 +96,7 @@ qtgreet = executable(
     'qtgreet', [ Sources, Mocs, Resources ],
     dependencies: [ Qt5Deps, json ],
 		include_directories: [ Includes ],
-    install: false
+    install: true
 )
 
 # Backgrounds

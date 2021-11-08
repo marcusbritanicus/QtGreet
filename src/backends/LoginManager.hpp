@@ -37,9 +37,6 @@ class LoginManager : public QObject {
     public:
         LoginManager();
 
-        bool authenticate( QString user, QString passwd );
-        bool startSession( QString command, QString type );
-
-    private:
-        QString getX11Session( QString command );
+        virtual bool authenticate( QString user, QString passwd ) = 0;
+        virtual bool startSession( QString command, QString type ) = 0;
 };

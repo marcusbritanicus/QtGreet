@@ -29,6 +29,8 @@
 
 #include "QtGreet.hpp"
 #include "LoginManager.hpp"
+#include "GreetdManager.hpp"
+
 #include "LayoutManager.hpp"
 
 #include "buttons.hpp"
@@ -42,7 +44,7 @@
 
 QtGreet::UI::UI() {
 
-	login = new LoginManager();
+	login = new GreetDLogin();
 
 	themeManager = new ThemeManager( sett->value( "Theme" ).toString() );
 

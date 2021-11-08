@@ -27,17 +27,17 @@
 	*
 */
 
-#include "LoginManager.hpp"
+#include "GreetdManager.hpp"
 extern "C" {
     #include "proto.h"
 }
 
-LoginManager::LoginManager() {
+GreetDLogin::GreetDLogin() : LoginManager() {
 
 	/** Nothing much */
 };
 
-bool LoginManager::authenticate( QString username, QString password ) {
+bool GreetDLogin::authenticate( QString username, QString password ) {
 
 	/** Let's ask greetd to create a session */
 	request req_create_sess = {
@@ -72,7 +72,7 @@ bool LoginManager::authenticate( QString username, QString password ) {
 	return false;
 };
 
-bool LoginManager::startSession( QString baseCmd, QString type ) {
+bool GreetDLogin::startSession( QString baseCmd, QString type ) {
 
 	/** We now request greetd to start the selected session */
 	request req = {
@@ -103,7 +103,7 @@ bool LoginManager::startSession( QString baseCmd, QString type ) {
 	return false;
 };
 
-QString LoginManager::getX11Session( QString base ) {
+QString GreetDLogin::getX11Session( QString base ) {
 
 	QString xinit( "xinit %1 -- /etc/X11/xinit/xserverrc :%2 vt%3 -keeptty -noreset -novtswitch -auth /tmp/Xauth.%4" );
 

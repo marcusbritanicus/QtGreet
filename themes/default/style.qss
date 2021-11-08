@@ -2,7 +2,7 @@ QWidget {
     color: #ffffff;
 }
 
-QPushButton {
+#LoginButton {
     border: 1px solid gray;
     border-radius: 18px;
 }

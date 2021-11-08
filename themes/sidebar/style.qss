@@ -12,7 +12,7 @@ QWidget {
     border-right: 1px solid rgba(80, 80, 80, 60);
 }
 
-QPushButton {
+#LoginButton {
     border: none;
     border-radius: 0px;
     background-color: rgba(255, 255, 255, 60);
