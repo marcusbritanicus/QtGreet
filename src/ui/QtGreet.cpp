@@ -279,12 +279,16 @@ void QtGreet::UI::tryLogin() {
 	QMessageBox::critical(
 		this,
 		"QtGreet | Failure",
-		// errTitle,
-		errMsg,
+		QString( "<b>%1</b><p>%2</p>" ).arg( errTitle ).arg( errMsg ),
 		QMessageBox::Ok
 	);
 
 	setEnabled( true );
+
+	if ( not auth ) {
+		pwd->selectAll();
+		pwd->setFocus();
+	}
 };
 
 /* Auto Slots */
@@ -419,10 +423,10 @@ void QtGreet::UI::on_SessionEdit_returnPressed() {
 	tryLogin();
 };
 
-void QtGreet::UI::on_SessionName_currentIndexChanged( int ) {
+void QtGreet::UI::on_SessionCombo_currentIndexChanged( int ) {
 };
 
-void QtGreet::UI::on_SessionName_currentItemChanged( QListWidgetItem *cur, QListWidgetItem * ) {
+void QtGreet::UI::on_SessionList_currentItemChanged( QListWidgetItem *cur, QListWidgetItem * ) {
 
 	Session sess( cur->data( Qt::UserRole + 1 ).value<Session>() );
 };

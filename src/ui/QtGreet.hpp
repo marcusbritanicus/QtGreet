@@ -104,7 +104,7 @@ class QtGreet::UI : public QMainWindow {
         void on_SessionEdit_returnPressed();
 
         // ComboBox
-        void on_SessionName_currentIndexChanged( int );
+        void on_SessionCombo_currentIndexChanged( int );
         // ListWidget
-        void on_SessionName_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
+        void on_SessionList_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
 };
