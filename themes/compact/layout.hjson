@@ -4,13 +4,14 @@
 		Keys: [ "R1" ]
 		R1: [ "C1", "C2" ]
 		C1: [ "Logo", "Stretch", "UserName-1", "Stretch", "Stretch", "R2" ]
-		C2: [ "R3", "Stretch", "R4", "R5", "R6", "Stretch", "Stretch", "R7" ]
+		C2: [ "R3", "Stretch", "R4", "R5", "R6", "R7", "Stretch", "Stretch", "R8" ]
 		R2: [ "Stretch", "PowerButton-1", "PowerButton-2", "PowerButton-3", "PowerButton-4", "Stretch" ]
 		R3: [ "Battery", "Stretch", "Clock-1", "Stretch", "NumLock", "CapsLock" ]
 		R4: [ "Stretch", "UserIcon", "Stretch" ]
 		R5: [ "Stretch", "UserName-2", "Stretch" ]
-		R6: [ "Stretch", "SessionName", "Password", "LoginButton", "Stretch" ]
-		R7: [ "Stretch", "Clock-2", "Stretch" ]
+		R6: [ "Stretch", "SessionName", "Stretch" ]
+		R7: [ "Stretch", "Password", "LoginButton", "Stretch" ]
+		R8: [ "Stretch", "Clock-2", "Stretch" ]
 		Margins: 0.25
 		Spacing: 0
 	}
@@ -50,7 +51,7 @@
 		R5: {
 			Alignment: MM
 		}
-		R6: {
+		R7: {
 			Alignment: MM
 			Spacing: 5
 		}
@@ -101,7 +102,7 @@
 		},
 		UserName-2: {
 			Type: Label
-			Width: 270
+			Width: 0.18
 			Height: 36
 			FixedHeight: 27
 			Font: Quicksand, 15, Bold, Italic
@@ -116,15 +117,14 @@
 			Width: 36
 			Height: 36
 			Type: ToolButton
-			Alignment: Center
+			TextAlign: Center
 			IconSize: 16
 		},
 		SessionName: {
-			Type: ToolButton
-			Width: 36
-			Height: 36
-			Alignment: Center
-			ShowNav: true
+			Type: Combo
+			Width: 0.12
+			Height: 27
+			TextAlign: Center
 			IconSize: 24
 		},
 		PowerButton-1: {

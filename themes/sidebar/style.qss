@@ -34,11 +34,11 @@ QToolButton {
     background-color: rgba(255, 255, 255, 60);
 }
 
-#UserNavRight {
+#UserNavRight, #UserNavLeft {
     background-color: transparent;
 }
 
-#UserNavLeft {
+#SessionNavRight, #SessionNavLeft {
     background-color: transparent;
 }
 
