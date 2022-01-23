@@ -118,3 +118,9 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
 QComboBox QAbstractItemView {
     background-color: rgba(0, 0, 0, 60);
 }
+
+QMessageBox {
+    background-color: rgba(0, 0, 0, 230);
+    border: 2px solid gray;
+    border-radius: 5px;
+}

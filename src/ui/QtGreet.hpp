@@ -1,31 +1,22 @@
-/*
-	*
-	* Copyright 2020 Britanicus <marcusbritanicus@gmail.com>
-	*
-	* This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/QtGreet)
-	*
-
-	*
-	* This program is free software; you can redistribute it and/or modify
-	* it under the terms of the GNU General Public License as published by
-	* the Free Software Foundation; either version 3 of the License, or
-	* (at your option) any later version.
-	*
-
-	*
-	* This program is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
-	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	* GNU General Public License for more details.
-	*
-
-	*
-	* You should have received a copy of the GNU General Public License
-	* along with this program; if not, write to the Free Software
-	* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-	* MA 02110-1301, USA.
-	*
-*/
+/**
+ * Copyright 2020-2022 Britanicus <marcusbritanicus@gmail.com>
+ * This file is a part of QtGreet project (https://gitlab.com/marcusbritanicus/QtGreet)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ **/
 
 #pragma once
 
@@ -80,16 +71,19 @@ class QtGreet::UI : public QMainWindow {
 
         // ComboBox
         void on_UserCombo_currentIndexChanged( int );
+
         // ListWidget
         void on_UserList_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
 
         // UserNavButton - Right - Next User
         void on_UserNavRight_clicked();
+
         // UserNavButton - Left - Previous User
         void on_UserNavLeft_clicked();
 
         // SessionNavButton - Right - Next User
         void on_SessionNavRight_clicked();
+
         // SessionNavButton - Left - Previous User
         void on_SessionNavLeft_clicked();
 
@@ -98,13 +92,16 @@ class QtGreet::UI : public QMainWindow {
 
         // LoginButton - ToolButton and PushButton - Perform the login: tryLogin()
         void on_LoginButton_clicked();
+
         // Password - Return pressed - Perform the login: tryLogin()
         void on_Password_returnPressed();
+
         // SessionEdit - Return pressed - Perform the login: tryLogin()
         void on_SessionEdit_returnPressed();
 
         // ComboBox
         void on_SessionCombo_currentIndexChanged( int );
+
         // ListWidget
         void on_SessionList_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
 };
