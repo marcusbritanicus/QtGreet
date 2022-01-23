@@ -99,7 +99,7 @@ namespace Hjson {
             return -1;
         }
 
-        if ( *pnS < nS ) {
+        if ( *pnS < (size_t)nS ) {
             return -1;
         }
 
@@ -183,7 +183,7 @@ namespace Hjson {
                 std::smatch match  = *it;
                 auto        indent = e->indent + 1;
 
-                if ( match.position() == uIndexStart ) {
+                if ( (size_t)match.position() == uIndexStart ) {
                     indent = 0;
                 }
 
@@ -435,7 +435,7 @@ namespace Hjson {
 
                 if ( e->opt.preserveInsertionOrder ) {
                     size_t limit = value.size();
-                    for (int index = 0; index < limit; index++) {
+                    for (int index = 0; (size_t)index < limit; index++) {
                         if ( value[ index ].defined() ) {
                             _objElem( e, value.key( index ), value[ index ], &isFirst, isRootObject, commentAfter );
                             commentAfter = value[ index ].get_comment_after();
