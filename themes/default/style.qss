@@ -90,3 +90,9 @@ QLabel#UserIcon {
     border: 2px solid gray;
     border-radius: 6px;
 }
+
+QMessageBox {
+    background-color: rgba(0, 0, 0, 230);
+    border: 2px solid gray;
+    border-radius: 5px;
+}
