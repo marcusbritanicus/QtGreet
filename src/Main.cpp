@@ -23,6 +23,13 @@
 #include "QtGreet.hpp"
 #include "LayoutManager.hpp"
 
+#include <unistd.h>
+
+#include <wlrootsqt/WlGlobal.hpp>
+#include <wlrootsqt/Application.hpp>
+#include <wlrootsqt/Registry.hpp>
+#include <wlrootsqt/WindowManager.hpp>
+
 QSize     mScreenSize;
 QSettings *sett;
 QSettings *users;
@@ -117,25 +124,73 @@ void Logger( QtMsgType type, const QMessageLogContext& context, const QString& m
 }
 
 
+void setupWindow( QScreen *screen, WlrootsQt::WindowHandle *hndl ) {
+    wl_output *output = WlrootsQt::getWlOutput( screen );
+    hndl->setFullScreen( output );
+
+    while( hndl->appId().isEmpty() ) {
+        qApp->processEvents();
+        usleep( 10 * 1000 );
+    }
+
+    qDebug() << hndl->appId();
+}
+
+
 int main( int argc, char **argv ) {
     QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
     qInstallMessageHandler( Logger );
 
-    QApplication app( argc, argv );
-
-    /** Screen Size */
-    mScreenSize = app.primaryScreen()->size();
+    WlrootsQt::Application *app = new WlrootsQt::Application( "QtGreet", argc, argv );
 
     /** Settings Objects */
     sett  = new QSettings( "/etc/qtgreet/config.ini", QSettings::IniFormat );
     users = new QSettings( "/etc/qtgreet/users.conf", QSettings::IniFormat );
 
-    QtGreet::UI *qtgreet = new QtGreet::UI();
+    QList<QScreen *> screens;
+    for( QScreen *scrn: app->screens() ) {
+        screens << scrn;
+    }
 
-    qtgreet->showFullScreen();
+    WlrootsQt::WindowManager *wm = app->waylandRegistry()->windowManager();
+    QObject::connect(
+        wm, &WlrootsQt::WindowManager::newTopLevelHandle, [=] ( WlrootsQt::WindowHandle *hndl ) mutable {
+            /** Wait for app ID to be set */
+            while( hndl->appId().isEmpty() ) {
+                qApp->processEvents();
+                usleep( 10 * 1000 );
+            }
 
-    // QtGreet::Layout *lyt = new QtGreet::Layout();
-    // lyt->generateLayout( argv[ 1 ] );
+            /** If we have used up all the screens, then this is probably a dialog */
+            if ( not screens.count() ) {
+                return;
+            }
 
-    return app.exec();
+            /** Ensure that this handle is indeed qtrgeet */
+            if ( not hndl->appId().contains( "qtgreet" ) ) {
+                return;
+            }
+
+            QScreen *scrn = screens.takeAt( 0 );
+            setupWindow( scrn, hndl );
+        }
+    );
+
+    /** Open a window for every existing screen */
+    for( int i = 0; i < screens.count(); i++ ) {
+        QtGreet::UI *ui = new QtGreet::UI();
+        ui->showFullScreen();
+    }
+
+    /** Now we can wait for new screens to be added */
+    QObject::connect(
+        app, &QApplication::screenAdded, [=] ( QScreen *scrn ) mutable {
+            screens << scrn;
+
+            QtGreet::UI *ui = new QtGreet::UI();
+            ui->show();
+        }
+    );
+
+    return app->exec();
 }

@@ -17,8 +17,9 @@ add_global_arguments( '-DPROJECT_VERSION="v@0@"'.format( meson.project_version()
 add_project_link_arguments( ['-rdynamic','-fPIC'], language:'cpp' )
 
 Qt5 = import( 'qt5' )
-Qt5Deps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ] )
+Qt5Deps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Network' ] )
 json = dependency( 'json-c' )
+wlrqt = dependency( 'wlrootsqt' )
 
 Includes = [
 		'src',
@@ -94,7 +95,7 @@ Resources = Qt5.compile_resources(
 
 qtgreet = executable(
     'qtgreet', [ Sources, Mocs, Resources ],
-    dependencies: [ Qt5Deps, json ],
+    dependencies: [ Qt5Deps, json, wlrqt ],
 		include_directories: [ Includes ],
     install: true
 )
