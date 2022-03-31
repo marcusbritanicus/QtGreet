@@ -21,10 +21,7 @@
 // Local Headers
 #include "ThemeManager.hpp"
 
-static QStringList themePaths{
-    "/usr/local/share/qtgreet/themes",
-    "/usr/share/qtgreet/themes",
-};
+static QStringList themePaths = QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "qtgreet/themes", QStandardPaths::LocateDirectory );
 
 ThemeManager::ThemeManager( QString themeName ) {
     /** If this theme does not exist, use the 'default' theme */
