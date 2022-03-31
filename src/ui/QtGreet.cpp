@@ -36,7 +36,7 @@
 QtGreet::UI::UI() {
     login = new GreetDLogin();
 
-    themeManager = new ThemeManager( sett->value( "Theme" ).toString() );
+    themeManager = new ThemeManager( sett->value( "Theme", "default" ).toString() );
 
     setFixedSize( qApp->primaryScreen()->size() );
     createUI();
@@ -52,7 +52,7 @@ QtGreet::UI::UI() {
         QString bgStr( themeManager->background() );
         background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 
-        if ( sett->value( "BlurBackground" ).toBool() ) {
+        if ( sett->value( "BlurBackground", false ).toBool() ) {
             QPixmap             img = QPixmap::fromImage( background );
             QGraphicsPixmapItem item( img );
 
