@@ -45,43 +45,43 @@ static bool IsExec( QString exec ) {
 Sessions getSessions( bool custom ) {
     Sessions mSessions;
 
-    QDir wlSessDir( "/usr/share/wayland-sessions" );
+    for ( QString wlSessDir: QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "wayland-sessions", QStandardPaths::LocateDirectory ) ) {
+        for ( QFileInfo sess: QDir( wlSessDir ).entryInfoList( { "*.desktop" } ) ) {
+            QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );
 
-    for ( QString sess: wlSessDir.entryList( { "*.desktop" } ) ) {
-        QSettings session( wlSessDir.filePath( sess ), QSettings::IniFormat );
+            if ( IsExec( session.value( "Desktop Entry/TryExec" ).toString() ) ) {
+                Session s = Session{
+                    session.value( "Desktop Entry/Name" ).toString(),
+                    session.value( "Desktop Entry/Icon", ":/icons/session.png" ).toString(),
+                    "wayland",
+                    session.value( "Desktop Entry/Exec" ).toString(),
+                    sess.absoluteFilePath()
+                };
 
-        if ( IsExec( session.value( "Desktop Entry/TryExec" ).toString() ) ) {
-            Session s = Session{
-                session.value( "Desktop Entry/Name" ).toString(),
-                session.value( "Desktop Entry/Icon", ":/icons/session.png" ).toString(),
-                "wayland",
-                session.value( "Desktop Entry/Exec" ).toString(),
-                wlSessDir.filePath( sess )
-            };
+                if ( not s.name.contains( "wayland", Qt::CaseInsensitive ) ) {
+                    s.name += " (Wayland)";
+                }
 
-            if ( not s.name.contains( "wayland", Qt::CaseInsensitive ) ) {
-                s.name += " (Wayland)";
+                mSessions << s;
             }
-
-            mSessions << s;
         }
     }
 
-    QDir xSessDir( "/usr/share/xsessions" );
+    for ( QString xSessDir: QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "xsessions", QStandardPaths::LocateDirectory ) ) {
+        for ( QFileInfo sess: QDir( xSessDir ).entryInfoList( { "*.desktop" } ) ) {
+            QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );
 
-    for ( QString sess: xSessDir.entryList( { "*.desktop" } ) ) {
-        QSettings session( xSessDir.filePath( sess ), QSettings::IniFormat );
+            if ( IsExec( session.value( "Desktop Entry/TryExec" ).toString() ) ) {
+                Session s = Session{
+                    session.value( "Desktop Entry/Name" ).toString() + " (X11)",
+                    session.value( "Desktop Entry/Icon", ":/icons/session.png" ).toString(),
+                    "X11",
+                    session.value( "Desktop Entry/Exec" ).toString(),
+                    sess.absoluteFilePath()
+                };
 
-        if ( IsExec( session.value( "Desktop Entry/TryExec" ).toString() ) ) {
-            Session s = Session{
-                session.value( "Desktop Entry/Name" ).toString() + " (X11)",
-                session.value( "Desktop Entry/Icon", ":/icons/session.png" ).toString(),
-                "X11",
-                session.value( "Desktop Entry/Exec" ).toString(),
-                xSessDir.filePath( sess )
-            };
-
-            mSessions << s;
+                mSessions << s;
+            }
         }
     }
 
