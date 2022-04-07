@@ -102,15 +102,18 @@ void ThemeManager::readTheme( QString name ) {
     mTextColor = QColor( QString( "#%1" ).arg( theme.value( "Theme/TextColor" ).toString() ) );
 
     /** Overrides */
-    if ( sett->value( "Overrides/Background" ) != "Theme" ) {
-        imageBG = sett->value( "Overrides/Background" ).toString();
+    QString background = sett->value( "Overrides/Background", "Theme" ).toString();
+    if ( background != "Theme" ) {
+        imageBG = background;
     }
 
-    if ( sett->value( "Overrides/BaseColor" ) != "Theme" ) {
-        mBaseColor = QColor( QString( "#%1" ).arg( sett->value( "Overrides/BaseColor" ).toString() ) );
+    QString baseColor = sett->value( "Overrides/BaseColor", "Theme" ).toString();
+    if ( baseColor != "Theme" ) {
+        mBaseColor = QColor( QString( "#%1" ).arg( baseColor ) );
     }
 
-    if ( sett->value( "Overrides/TextColor" ) != "Theme" ) {
-        mTextColor = QColor( QString( "#%1" ).arg( sett->value( "Overrides/TextColor" ).toString() ) );
+    QString textColor = sett->value( "Overrides/TextColor", "Theme" ).toString();
+    if ( textColor != "Theme" ) {
+        mTextColor = QColor( QString( "#%1" ).arg( textColor ) );
     }
 }

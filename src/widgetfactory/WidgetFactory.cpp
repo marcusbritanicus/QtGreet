@@ -159,7 +159,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
     else if ( name == "SessionName" ) {
         // qWarning() << "Session name";
 
-        bool custom = sett->value( "AllowCustomSessions" ).toBool();
+        bool custom = sett->value( "AllowCustomSessions", false ).toBool();
 
         if ( type == "List" ) {
             SessionList *lw = new SessionList( custom );
