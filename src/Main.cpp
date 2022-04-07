@@ -126,9 +126,10 @@ void Logger( QtMsgType type, const QMessageLogContext& context, const QString& m
 
 void setupWindow( QScreen *screen, WlrootsQt::WindowHandle *hndl ) {
     wl_output *output = WlrootsQt::getWlOutput( screen );
+
     hndl->setFullScreen( output );
 
-    while( hndl->appId().isEmpty() ) {
+    while ( hndl->appId().isEmpty() ) {
         qApp->processEvents();
         usleep( 10 * 1000 );
     }
@@ -148,15 +149,17 @@ int main( int argc, char **argv ) {
     users = new QSettings( "/etc/qtgreet/users.conf", QSettings::IniFormat );
 
     QList<QScreen *> screens;
-    for( QScreen *scrn: app->screens() ) {
+
+    for ( QScreen *scrn: app->screens() ) {
         screens << scrn;
     }
 
     WlrootsQt::WindowManager *wm = app->waylandRegistry()->windowManager();
+
     QObject::connect(
-        wm, &WlrootsQt::WindowManager::newTopLevelHandle, [=] ( WlrootsQt::WindowHandle *hndl ) mutable {
+        wm, &WlrootsQt::WindowManager::newTopLevelHandle, [ = ] ( WlrootsQt::WindowHandle *hndl ) mutable {
             /** Wait for app ID to be set */
-            while( hndl->appId().isEmpty() ) {
+            while ( hndl->appId().isEmpty() ) {
                 qApp->processEvents();
                 usleep( 10 * 1000 );
             }
@@ -177,14 +180,14 @@ int main( int argc, char **argv ) {
     );
 
     /** Open a window for every existing screen */
-    for( int i = 0; i < screens.count(); i++ ) {
+    for ( int i = 0; i < screens.count(); i++ ) {
         QtGreet::UI *ui = new QtGreet::UI();
         ui->showFullScreen();
     }
 
     /** Now we can wait for new screens to be added */
     QObject::connect(
-        app, &QApplication::screenAdded, [=] ( QScreen *scrn ) mutable {
+        app, &QApplication::screenAdded, [ = ] ( QScreen *scrn ) mutable {
             screens << scrn;
 
             QtGreet::UI *ui = new QtGreet::UI();

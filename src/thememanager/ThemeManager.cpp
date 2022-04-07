@@ -103,16 +103,19 @@ void ThemeManager::readTheme( QString name ) {
 
     /** Overrides */
     QString background = sett->value( "Overrides/Background", "Theme" ).toString();
+
     if ( background != "Theme" ) {
         imageBG = background;
     }
 
     QString baseColor = sett->value( "Overrides/BaseColor", "Theme" ).toString();
+
     if ( baseColor != "Theme" ) {
         mBaseColor = QColor( QString( "#%1" ).arg( baseColor ) );
     }
 
     QString textColor = sett->value( "Overrides/TextColor", "Theme" ).toString();
+
     if ( textColor != "Theme" ) {
         mTextColor = QColor( QString( "#%1" ).arg( textColor ) );
     }
