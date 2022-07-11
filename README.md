@@ -9,9 +9,10 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 
 ### Dependencies:
 - Qt5 (duh...)
+- WayQt (https://gitlab.com/desqktop-frameworks/wayqt/)
 - A wayland based compositor (wayfire, sway, cage etc..)
-- CMake (to build this project)
-- Make or Ninja (to compile this project)
+- Meson (to build this project)
+- Ninja (to compile this project)
 
 ### Compiling and installing
 
@@ -19,14 +20,10 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
   * Git: `git clone https://gitlab.com/marcusbritanicus/QtGreet.git`
 - Enter the `QtGreet` folder
   * `cd QtGreet`
-- Create the build folder and enter it
-  * `mkdir .build && cd .build`
--  Generate the make file using CMake
-  * `cmake .. `
-  * If you wish to use `ninja`, add `-GNinja` at the end of the above command
-- Compile and install the project
-  * Make: `make -kj$(nproc) && sudo make install`     
-  * Ninja: `ninja -j 4 -k 0 && sudo ninja install`
+- Configure the project - we use meson for project management
+  * `meson .build --prefix=/usr --buildtype=release`
+- Compile and install - we use ninja
+  * `ninja -C .build -k 0 -j $(nproc) && sudo ninja -C .build install`
 
 ### Configure greetd to run QtGreet using wayfire
 

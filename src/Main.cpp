@@ -25,10 +25,10 @@
 
 #include <unistd.h>
 
-#include <wlrootsqt/WlGlobal.hpp>
-#include <wlrootsqt/Application.hpp>
-#include <wlrootsqt/Registry.hpp>
-#include <wlrootsqt/WindowManager.hpp>
+#include <wayqt/WlGlobal.hpp>
+#include <wayqt/Application.hpp>
+#include <wayqt/Registry.hpp>
+#include <wayqt/WindowManager.hpp>
 
 QSize     mScreenSize;
 QSettings *sett;
@@ -124,17 +124,14 @@ void Logger( QtMsgType type, const QMessageLogContext& context, const QString& m
 }
 
 
-void setupWindow( QScreen *screen, WlrootsQt::WindowHandle *hndl ) {
-    wl_output *output = WlrootsQt::getWlOutput( screen );
-
+void setupWindow( QScreen *screen, WQt::WindowHandle *hndl ) {
+    wl_output *output = WQt::getWlOutput( screen );
     hndl->setFullScreen( output );
 
     while ( hndl->appId().isEmpty() ) {
         qApp->processEvents();
         usleep( 10 * 1000 );
     }
-
-    qDebug() << hndl->appId();
 }
 
 
@@ -142,7 +139,7 @@ int main( int argc, char **argv ) {
     QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
     qInstallMessageHandler( Logger );
 
-    WlrootsQt::Application *app = new WlrootsQt::Application( "QtGreet", argc, argv );
+    WQt::Application *app = new WQt::Application( "QtGreet", argc, argv );
 
     /** Settings Objects */
     sett  = new QSettings( "/etc/qtgreet/config.ini", QSettings::IniFormat );
@@ -154,10 +151,9 @@ int main( int argc, char **argv ) {
         screens << scrn;
     }
 
-    WlrootsQt::WindowManager *wm = app->waylandRegistry()->windowManager();
-
+    WQt::WindowManager *wm = app->waylandRegistry()->windowManager();
     QObject::connect(
-        wm, &WlrootsQt::WindowManager::newTopLevelHandle, [ = ] ( WlrootsQt::WindowHandle *hndl ) mutable {
+        wm, &WQt::WindowManager::newTopLevelHandle, [=] ( WQt::WindowHandle *hndl ) mutable {
             /** Wait for app ID to be set */
             while ( hndl->appId().isEmpty() ) {
                 qApp->processEvents();
