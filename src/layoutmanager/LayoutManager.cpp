@@ -58,8 +58,8 @@ QBoxLayout * QtGreet::LayoutManager::generateLayout( QString lytFile ) {
         topLyt = new QBoxLayout( QBoxLayout::LeftToRight );
     }
 
-    topLyt->setContentsMargins( getMargins( mLayout[ "Margins" ] ) );
-    topLyt->setSpacing( getSpacing( mLayout[ "Spacing" ] ) );
+    topLyt->setContentsMargins( getMargins( mLayout[ "Margins" ], mScreenSize ) );
+    topLyt->setSpacing( getSpacing( mLayout[ "Spacing" ], mScreenSize ) );
 
     topLyt->setGeometry( QRect( QPoint( 0, 0 ), mScreenSize ) );
 
@@ -96,10 +96,10 @@ QWidget * QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson:
 
     QBoxLayout *lyt = new QBoxLayout( QBoxLayout::LeftToRight );
 
-    lyt->setContentsMargins( getMargins( props[ "Margins" ] ) );
-    lyt->setSpacing( getSpacing( props[ "Spacing" ] ) );
+    lyt->setContentsMargins( getMargins( props[ "Margins" ], mScreenSize ) );
+    lyt->setSpacing( getSpacing( props[ "Spacing" ], mScreenSize ) );
 
-    double height = getHeight( props[ "Height" ] );
+    double height = getHeight( props[ "Height" ], mScreenSize );
 
     if ( height ) {
         if ( height < 1.0 ) {
@@ -139,7 +139,7 @@ QWidget * QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson:
             /** We can have multiple widgets with same name (ex: Clock(Time), Clock(Date)) */
             QString widget = key.split( "-" ).at( 0 );
 
-            QWidget *w = WidgetFactory::createWidget( widget, getType( properties[ "Type" ] ), properties );
+            QWidget *w = WidgetFactory::createWidget( widget, getType( properties[ "Type" ] ), properties, mScreenSize );
             lyt->addWidget( w, 0, getAlignment( props[ "Alignment" ] ) );
         }
     }
@@ -162,20 +162,11 @@ QWidget * QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjs
 
     QBoxLayout *lyt = new QBoxLayout( QBoxLayout::TopToBottom );
 
-    lyt->setContentsMargins( getMargins( props[ "Margins" ] ) );
-    lyt->setSpacing( getSpacing( props[ "Spacing" ] ) );
+    lyt->setContentsMargins( getMargins( props[ "Margins" ], mScreenSize ) );
+    lyt->setSpacing( getSpacing( props[ "Spacing" ], mScreenSize ) );
 
-    double width = getWidth( props[ "Width" ] );
-
-    if ( width ) {
-        if ( width < 1.0 ) {
-            lyt->addStrut( width * mScreenSize.width() );
-        }
-
-        else {
-            lyt->addStrut( (int)width );
-        }
-    }
+    double width = getWidth( props[ "Width" ], mScreenSize );
+    lyt->addStrut( (int)width );
 
     for ( int idx = 0; idx < (int)col.size(); ++idx ) {
         QString      key( col[ idx ].to_string().c_str() );
@@ -195,8 +186,6 @@ QWidget * QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjs
 
         /** Initialize the widget */
         else {
-            // qDebug() << (space + key).toUtf8().data();
-
             if ( key == "Stretch" ) {
                 lyt->addStretch();
                 continue;
@@ -204,7 +193,7 @@ QWidget * QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjs
 
             QString widget = key.split( "-" ).at( 0 );
 
-            QWidget *w = WidgetFactory::createWidget( widget, getType( properties[ "Type" ] ), properties );
+            QWidget *w = WidgetFactory::createWidget( widget, getType( properties[ "Type" ] ), properties, mScreenSize );
             lyt->addWidget( w, 0, getAlignment( props[ "Alignment" ] ) );
         }
     }

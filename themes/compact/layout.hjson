@@ -83,13 +83,13 @@
 			Font: Quicksand, 10, Bold, Normal
 		},
 		NumLock: {
-			Font: Monospace, 12, Normal, Normal
+			Font: monospace, 11, Normal, Normal
 			Width: 15
 			Height: 36
 			ToolTip: NumLock status
 		},
 		CapsLock: {
-			Font: Monospace, 12, Normal, Normal
+			Font: monospace, 11, Normal, Normal
 			Width: 15
 			Height: 36
 			ToolTip: CapsLock status
@@ -105,7 +105,7 @@
 			Width: 0.18
 			Height: 36
 			FixedHeight: 27
-			Font: Quicksand, 15, Bold, Italic
+			Font: DejaVu Sans, 12, Bold, Italic
 			TextAlign: Center
 			ShowNav: false
 		},

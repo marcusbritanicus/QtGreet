@@ -27,7 +27,7 @@
 class WidgetFactory {
     public:
         /* Create a widget, given its name, and apply the properties given in the map */
-        static QWidget *createWidget( QString name, QString type, Hjson::Value properties );
+        static QWidget *createWidget( QString name, QString type, Hjson::Value properties, QSize size );
 
     private:
 
@@ -36,5 +36,5 @@ class WidgetFactory {
          * Some properties like text, or icon need to be applied after casting them into suitable types.
          * Invalid properties will be ignored. Ex. icon for a label
          */
-        static void applyWidgetProperties( QWidget *, QString, QString, Hjson::Value );
+        static void applyWidgetProperties( QWidget *, QString, QString, Hjson::Value, QSize size );
 };

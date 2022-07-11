@@ -25,19 +25,19 @@
 bool isNumeric( Hjson::Value val );
 
 /** Convert Hjson::Value to QMargins */
-QMargins getMargins( Hjson::Value margins );
+QMargins getMargins( Hjson::Value margins, QSize screenSize );
 
 /** Convert Hjson::Value to int */
-int getSpacing( Hjson::Value spacing );
+int getSpacing( Hjson::Value spacing, QSize screenSize );
 
 /** Convert two-char alignment value to Qt::Alignment */
 Qt::Alignment getAlignment( Hjson::Value obj );
 
 /** Convert Hjson::Value to width */
-int getWidth( Hjson::Value obj );
+int getWidth( Hjson::Value obj, QSize screenSize );
 
 /** Convert Hjson::Value to height */
-int getHeight( Hjson::Value obj );
+int getHeight( Hjson::Value obj, QSize screenSize );
 
 /** Get the widget type */
 QString getType( Hjson::Value type );

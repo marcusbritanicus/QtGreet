@@ -39,7 +39,7 @@ bool isNumeric( Hjson::Value val ) {
 }
 
 
-QMargins getMargins( Hjson::Value margins ) {
+QMargins getMargins( Hjson::Value margins, QSize screenSize ) {
     if ( margins.empty() or not margins.defined() ) {
         return QMargins();
     }
@@ -85,26 +85,26 @@ QMargins getMargins( Hjson::Value margins ) {
     }
 
     if ( left < 1.0 ) {
-        left *= mScreenSize.width();
+        left *= screenSize.width();
     }
 
     if ( right < 1.0 ) {
-        right *= mScreenSize.width();
+        right *= screenSize.width();
     }
 
     if ( top < 1.0 ) {
-        top *= mScreenSize.height();
+        top *= screenSize.height();
     }
 
     if ( bottom < 1.0 ) {
-        bottom *= mScreenSize.height();
+        bottom *= screenSize.height();
     }
 
     return QMargins( left, top, right, bottom );
 }
 
 
-int getSpacing( Hjson::Value value ) {
+int getSpacing( Hjson::Value value, QSize screenSize ) {
     if ( value.empty() or not value.defined() ) {
         return 0;
     }
@@ -149,22 +149,30 @@ Qt::Alignment getAlignment( Hjson::Value value ) {
 }
 
 
-int getWidth( Hjson::Value obj ) {
+int getWidth( Hjson::Value obj, QSize screenSize ) {
     double width = obj.to_double();
 
     if ( width <= 1.0 ) {
-        width *= mScreenSize.width();
+        width *= screenSize.width();
+    }
+
+    if ( width < 0 ) {
+        width = 0;
     }
 
     return (int)width;
 }
 
 
-int getHeight( Hjson::Value obj ) {
+int getHeight( Hjson::Value obj, QSize screenSize ) {
     double height = obj.to_double();
 
     if ( height <= 1.0 ) {
-        height *= mScreenSize.height();
+        height *= screenSize.height();
+    }
+
+    if ( height < 0 ) {
+        height = 0;
     }
 
     return (int)height;

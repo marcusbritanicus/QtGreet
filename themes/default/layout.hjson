@@ -55,13 +55,13 @@
 			Alignment: Center
 		},
 		NumLock: {
-			Font: Monospace, 12, Normal, Normal
+			Font: monospace, 11, Normal, Normal
 			Width: 15
 			Height: 36
 			ToolTip: NumLock status
 		},
 		CapsLock: {
-			Font: Monospace, 12, Normal, Normal
+			Font: monospace, 11, Normal, Normal
 			Width: 15
 			Height: 36
 			ToolTip: CapsLock status
@@ -77,7 +77,7 @@
 			Width: 352
 			Height: 36
 			TextAlign: Center
-			Font: Noto Sans, 12, Bold, Normal
+			Font: DejaVu Sans, 11, Bold, Normal
 			NavButtons: true
 		},
 		Password: {

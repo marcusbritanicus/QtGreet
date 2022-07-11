@@ -31,12 +31,12 @@
 #include "session.hpp"
 #include "user.hpp"
 
-QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value properties ) {
+QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value properties, QSize size ) {
     if ( name == "QWidget" ) {
         // qWarning() << "Creating QWidget";
 
         QWidget *w = new QWidget();
-        applyWidgetProperties( w, name, type, properties );
+        applyWidgetProperties( w, name, type, properties, size );
         w->setObjectName( type );
 
         return w;
@@ -46,7 +46,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "Creating QLabel";
 
         QLabel *w = new QLabel();
-        applyWidgetProperties( w, "QLabel", "Label", properties );
+        applyWidgetProperties( w, "QLabel", "Label", properties, size );
 
         return w;
     }
@@ -56,7 +56,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         w->setObjectName( "Battery" );
         w->setPixmap( QIcon::fromTheme( "battery-full-symbolic" ).pixmap( 24 ) );
         w->resize( 24, 24 );
-        applyWidgetProperties( w, name, type, properties );
+        applyWidgetProperties( w, name, type, properties, size );
 
         return w;
     }
@@ -67,7 +67,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
             AnalogClock *cw = new AnalogClock( "#ffffff" );
             cw->setObjectName( "Clock" );
-            applyWidgetProperties( cw, name, type, properties );
+            applyWidgetProperties( cw, name, type, properties, size );
 
             return cw;
         }
@@ -77,7 +77,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
             DigitalClock *cw = new DigitalClock();
             cw->setObjectName( "Clock" );
-            applyWidgetProperties( cw, name, type, properties );
+            applyWidgetProperties( cw, name, type, properties, size );
 
             return cw;
         }
@@ -95,7 +95,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
             SimpleClock *cw = new SimpleClock( time, date );
             cw->setObjectName( "Clock" );
-            applyWidgetProperties( cw, name, type, properties );
+            applyWidgetProperties( cw, name, type, properties, size );
 
             return cw;
         }
@@ -105,7 +105,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "UserIcon";
 
         UserIcon *lbl = new UserIcon();
-        applyWidgetProperties( lbl, name, type, properties );
+        applyWidgetProperties( lbl, name, type, properties, size );
 
         return lbl;
     }
@@ -116,28 +116,28 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         if ( type == "LineEdit" ) {
             QLineEdit *le = new QLineEdit();
             le->setObjectName( "UserEdit" );
-            applyWidgetProperties( le, name, type, properties );
+            applyWidgetProperties( le, name, type, properties, size );
 
             return le;
         }
 
         else if ( type == "Label" ) {
             UserLabel *lbl = new UserLabel();
-            applyWidgetProperties( lbl, name, type, properties );
+            applyWidgetProperties( lbl, name, type, properties, size );
 
             return lbl;
         }
 
         else if ( type == "List" ) {
             UserList *lw = new UserList();
-            applyWidgetProperties( lw, name, type, properties );
+            applyWidgetProperties( lw, name, type, properties, size );
 
             return lw;
         }
 
         else if ( type == "Combo" ) {
             UserCombo *cb = new UserCombo();
-            applyWidgetProperties( cb, name, type, properties );
+            applyWidgetProperties( cb, name, type, properties, size );
 
             return cb;
         }
@@ -151,7 +151,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         le->setPlaceholderText( "Password" );
         le->setEchoMode( QLineEdit::Password );
         le->setAlignment( Qt::AlignCenter );
-        applyWidgetProperties( le, name, type, properties );
+        applyWidgetProperties( le, name, type, properties, size );
 
         return le;
     }
@@ -163,21 +163,21 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
         if ( type == "List" ) {
             SessionList *lw = new SessionList( custom );
-            applyWidgetProperties( lw, name, type, properties );
+            applyWidgetProperties( lw, name, type, properties, size );
 
             return lw;
         }
 
         else if ( type == "Combo" ) {
             SessionCombo *cb = new SessionCombo( custom );
-            applyWidgetProperties( cb, name, type, properties );
+            applyWidgetProperties( cb, name, type, properties, size );
 
             return cb;
         }
 
         else if ( type == "Label" ) {
             SessionLabel *sess = new SessionLabel( custom );
-            applyWidgetProperties( sess, name, type, properties );
+            applyWidgetProperties( sess, name, type, properties, size );
 
             return sess;
         }
@@ -186,7 +186,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
             QToolButton *btn = new QToolButton();
             btn->setObjectName( "SessionName" );
             btn->setIcon( QIcon( ":/icons/session.png" ) );
-            applyWidgetProperties( btn, name, type, properties );
+            applyWidgetProperties( btn, name, type, properties, size );
 
             return btn;
         }
@@ -196,7 +196,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "Session Edit";
 
         SessionEdit *le = new SessionEdit();
-        applyWidgetProperties( le, name, type, properties );
+        applyWidgetProperties( le, name, type, properties, size );
 
         return le;
     }
@@ -205,7 +205,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "SessionEdit Button";
 
         SessionEditButton *editBtn = new SessionEditButton();
-        applyWidgetProperties( editBtn, name, type, properties );
+        applyWidgetProperties( editBtn, name, type, properties, size );
 
         return editBtn;
     }
@@ -215,7 +215,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
         PowerButton *btn = new PowerButton( type );
         btn->setObjectName( "PowerButton" );
-        applyWidgetProperties( btn, name, type, properties );
+        applyWidgetProperties( btn, name, type, properties, size );
 
         return btn;
     }
@@ -224,14 +224,14 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "CapsLock";
 
         LockState *lock = new LockState( name );
-        applyWidgetProperties( lock, name, type, properties );
+        applyWidgetProperties( lock, name, type, properties, size );
 
         return lock;
     }
 
     else if ( (name == "UserNav") or (name == "SessionNav") ) {
         NavButton *nav = new NavButton( name, type );
-        applyWidgetProperties( nav, name, type, properties );
+        applyWidgetProperties( nav, name, type, properties, size );
 
         return nav;
     }
@@ -240,7 +240,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "Logo";
 
         Logo *logo = new Logo();
-        applyWidgetProperties( logo, name, type, properties );
+        applyWidgetProperties( logo, name, type, properties, size );
 
         return logo;
     }
@@ -250,14 +250,14 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
         if ( type == "ToolButton" ) {
             LoginToolButton *btn = new LoginToolButton();
-            applyWidgetProperties( btn, name, type, properties );
+            applyWidgetProperties( btn, name, type, properties, size );
 
             return btn;
         }
 
         else {
             LoginPushButton *btn = new LoginPushButton();
-            applyWidgetProperties( btn, name, type, properties );
+            applyWidgetProperties( btn, name, type, properties, size );
 
             return btn;
         }
@@ -267,8 +267,9 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         QToolButton *w = new QToolButton();
         w->setIcon( QIcon::fromTheme( "input-keyboard-virtual", QIcon::fromTheme( "input-keyboard" ) ) );
         w->setObjectName( "VirtualKeyboard" );
+        w->setAutoRaise( true );
         w->resize( 24, 24 );
-        applyWidgetProperties( w, name, type, properties );
+        applyWidgetProperties( w, name, type, properties, size );
 
         return w;
     }
@@ -300,14 +301,14 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 }
 
 
-void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QString type, Hjson::Value properties ) {
+void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QString type, Hjson::Value properties, QSize size ) {
     for ( size_t i = 0; i < properties.size(); i++ ) {
         std::string stdKey( properties.key( i ) );
         QString     key( properties.key( i ).c_str() );
 
         /** Width */
         if ( key.contains( "Width" ) ) {
-            int w = getWidth( properties[ stdKey ] );
+            int w = getWidth( properties[ stdKey ], size );
 
             if ( key == "MinimumWidth" ) {
                 widget->setMinimumWidth( w );
@@ -323,7 +324,7 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
         }
 
         else if ( key.contains( "Height" ) ) {
-            int h = getHeight( properties[ stdKey ] );
+            int h = getHeight( properties[ stdKey ], size );
 
             if ( key == "MinimumHeight" ) {
                 widget->setMinimumHeight( h );

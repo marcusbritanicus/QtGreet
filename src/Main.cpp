@@ -25,12 +25,11 @@
 
 #include <unistd.h>
 
-#include <wayqt/WlGlobal.hpp>
+#include <wayqt/WayQtUtils.hpp>
 #include <wayqt/Application.hpp>
 #include <wayqt/Registry.hpp>
 #include <wayqt/WindowManager.hpp>
 
-QSize     mScreenSize;
 QSettings *sett;
 QSettings *users;
 
@@ -125,7 +124,8 @@ void Logger( QtMsgType type, const QMessageLogContext& context, const QString& m
 
 
 void setupWindow( QScreen *screen, WQt::WindowHandle *hndl ) {
-    wl_output *output = WQt::getWlOutput( screen );
+    wl_output *output = WQt::Utils::wlOutputFromQScreen( screen );
+
     hndl->setFullScreen( output );
 
     while ( hndl->appId().isEmpty() ) {
@@ -145,6 +145,8 @@ int main( int argc, char **argv ) {
     sett  = new QSettings( "/etc/qtgreet/config.ini", QSettings::IniFormat );
     users = new QSettings( "/etc/qtgreet/users.conf", QSettings::IniFormat );
 
+    QIcon::setThemeName( sett->value( "IconTheme", "hicolor" ).toString() );
+
     QList<QScreen *> screens;
 
     for ( QScreen *scrn: app->screens() ) {
@@ -153,7 +155,7 @@ int main( int argc, char **argv ) {
 
     WQt::WindowManager *wm = app->waylandRegistry()->windowManager();
     QObject::connect(
-        wm, &WQt::WindowManager::newTopLevelHandle, [=] ( WQt::WindowHandle *hndl ) mutable {
+        wm, &WQt::WindowManager::newTopLevelHandle, [ = ] ( WQt::WindowHandle *hndl ) mutable {
             /** Wait for app ID to be set */
             while ( hndl->appId().isEmpty() ) {
                 qApp->processEvents();
