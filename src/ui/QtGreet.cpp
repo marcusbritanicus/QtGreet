@@ -70,6 +70,15 @@ QtGreet::UI::UI() {
     }
 
     prepareUIforUse();
+
+    QAction *act = new QAction( "Quit" );
+    act->setShortcut( QKeySequence( Qt::SHIFT | Qt::CTRL | Qt::Key_Q ) );
+    connect( act, &QAction::triggered, [=]() {
+        qInfo() << "Quitting";
+        qApp->quit();
+    } );
+
+    addAction( act );
 }
 
 
@@ -85,6 +94,8 @@ void QtGreet::UI::createUI() {
     w->setLayout( lyt );
 
     base->addWidget( w );
+
+    setWindowFlags( Qt::FramelessWindowHint );
 
     QMetaObject::connectSlotsByName( this );
 }
@@ -270,6 +281,9 @@ void QtGreet::UI::keyPressEvent( QKeyEvent *kEvent ) {
 
 
 void QtGreet::UI::tryLogin() {
+    /** Save the user info */
+    users->setValue( QString( "LastUsed/%1" ).arg( mCurUser.uid ), mCurSession.file );
+
     QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
 
     if ( not pwd ) {

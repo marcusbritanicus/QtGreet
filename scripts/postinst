@@ -1,11 +1,15 @@
 #!/bin/bash
 
-# Create the system user: greeter
-useradd -r -M -G video greeter
+
+/bin/egrep  -i "^greeter:" /etc/passwd
+if [ $? -neq 0 ]; then
+    # Create the system user: greeter
+    useradd -r -M -G video greeter
+fi
 
 # Create the default
-chown -R greeter:greeter /etc/greetd/
-chown -R greeter:greeter /etc/qtgreet/
+chown -R greeter:greeter /etc/xdg/greetd/
+chown -R greeter:greeter /etc/xdg/qtgreet/
 
-# Enable greetd as the display manager
+# Enable greetd as the display manager - we need it
 systemctl enable greetd

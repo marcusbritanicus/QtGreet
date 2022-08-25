@@ -16,10 +16,18 @@ project(
 add_global_arguments( '-DPROJECT_VERSION="v@0@"'.format( meson.project_version() ), language : 'cpp' )
 add_project_link_arguments( ['-rdynamic','-fPIC'], language:'cpp' )
 
-Qt5 = import( 'qt5' )
-Qt5Deps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Network' ] )
-json = dependency( 'json-c' )
-wlrqt = dependency( 'wayqt' )
+Qt5     = import( 'qt5' )
+Qt5Deps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Network', 'WaylandCompositor' ] )
+json    = dependency( 'json-c' )
+wlr     = dependency( 'wlroots' )
+wlrqt   = dependency( 'wayqt' )
+
+wayland_server = dependency( 'wayland-server' )
+wayland_client = dependency( 'wayland-client' )
+xkbcommon      = dependency( 'xkbcommon' )
+rt             = meson.get_compiler( 'cpp' ).find_library( 'rt' )
+
+subdir( 'src/protocols' )
 
 Includes = [
 	'src',
@@ -95,8 +103,15 @@ Resources = Qt5.compile_resources(
 
 qtgreet = executable(
     'qtgreet', [ Sources, Mocs, Resources ],
-    dependencies: [ Qt5Deps, json, wlrqt ],
+    dependencies: [ Qt5Deps, json, wlr, wlrqt, wayland_server, wayland_client, xkbcommon, rt, protos ],
 	include_directories: [ Includes ],
+    install: true
+)
+
+tinywl = executable(
+    'greetwl', [ 'src/compositor/main.cpp', 'src/compositor/tinywl.c' ],
+    dependencies: [ Qt5Deps, wlr, wayland_server, wayland_client, xkbcommon, rt, protos ],
+	include_directories: [ 'src/compositor' ],
     install: true
 )
 
@@ -120,8 +135,8 @@ install_data(
 
 # Configuration files
 install_data(
-	[ 'configs/config.ini', 'configs/wayfire.ini' ],
-	install_dir : get_option( 'sysconfdir' ) / 'qtgreet'
+	[ 'configs/config.ini', 'configs/wayfire.ini', 'configs/users.conf', 'configs/sway.cfg' ],
+	install_dir : join_paths( get_option( 'sysconfdir' ), 'qtgreet' )
 )
 
 summary = [

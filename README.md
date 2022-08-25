@@ -28,9 +28,19 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 ### Configure greetd to run QtGreet using wayfire
 
 If you wish to make use of greetd, then you will have to configure it to use QtGreet.
-To use wayfire, you'll have to set the command `greetd` should run as `wayfire --config /etc/qtgreet/wayfire.ini`
-* Open `/etc/greetd/config.toml` for editing with your favorite editor.
-* Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
+You can either use the *inbuilt* `greeetwl` compositor (a fork of `tinywl`), or use a full-fledged compositor like wayfire or sway.
+
+- To use `greetwl` compositor,
+  * Open `/etc/greetd/config.toml` for editing with your favorite editor.
+  * Under `[default_session]`, set `command = "greetwl"`
+
+- To use wayfire,
+  * Open `/etc/greetd/config.toml` for editing with your favorite editor.
+  * Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
+
+- Similarly for sway,
+  * Open `/etc/greetd/config.toml` for editing with your favorite editor.
+  * Under `[default_session]`, set `command = "sway --config /etc/qtgreet/sway.cfg"`
 
 ### Configuring the keyboard layout for wayfire
 Sometimes, it would be easier if the keyboard layout was not the default `us`. For wayfire, simply add the following line at the end of
