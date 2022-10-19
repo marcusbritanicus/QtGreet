@@ -73,10 +73,10 @@ QtGreet::UI::UI() {
 
     QAction *act = new QAction( "Quit" );
     act->setShortcut( QKeySequence( Qt::SHIFT | Qt::CTRL | Qt::Key_Q ) );
-    connect( act, &QAction::triggered, [=]() {
-        qInfo() << "Quitting";
-        qApp->quit();
-    } );
+    connect( act, &QAction::triggered, [ = ]() {
+                 qInfo() << "Quitting";
+                 qApp->quit();
+             } );
 
     addAction( act );
 }

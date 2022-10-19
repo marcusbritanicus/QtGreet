@@ -166,6 +166,7 @@ QWidget * QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjs
     lyt->setSpacing( getSpacing( props[ "Spacing" ], mScreenSize ) );
 
     double width = getWidth( props[ "Width" ], mScreenSize );
+
     lyt->addStrut( (int)width );
 
     for ( int idx = 0; idx < (int)col.size(); ++idx ) {

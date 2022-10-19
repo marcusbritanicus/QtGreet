@@ -31,6 +31,7 @@
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/util/log.h>
 #include <xkbcommon/xkbcommon.h>
+#include <linux/input-event-codes.h>
 #include <wlr/backend/session.h>
 
 static void focus_view( struct tinywl_view *view, struct wlr_surface *surface ) {
@@ -101,13 +102,13 @@ static bool checkKeyBinding( struct wlr_session *session, uint32_t key, uint32_t
         return false;
     }
 
-    if ( key == XKB_KEY_Q ) {
+    if ( key == KEY_Q ) {
         haltWlEventLoop();
         return true;
     }
 
-    else if ( (key >= XKB_KEY_F1) || (key <= XKB_KEY_F12) ) {
-        int target_vt = key - XKB_KEY_F1 + 1;
+    else if ( (key >= KEY_F1) || (key <= KEY_F12) ) {
+        int target_vt = key - KEY_F1 + 1;
         wlr_session_change_vt( session, target_vt );
 
         return true;
@@ -119,20 +120,18 @@ static bool checkKeyBinding( struct wlr_session *session, uint32_t key, uint32_t
 
 static void keyboard_handle_key( struct wl_listener *listener, void *data ) {
     /** This event is raised when a key is pressed or released. */
-    struct tinywl_keyboard *keyboard =
-        wl_container_of( listener, keyboard, key );
-    struct tinywl_server          *server = keyboard->server;
-    struct wlr_event_keyboard_key *event  = data;
-    struct wlr_seat               *seat   = server->seat;
+    struct tinywl_keyboard        *keyboard = wl_container_of( listener, keyboard, key );
+    struct tinywl_server          *server   = keyboard->server;
+    struct wlr_event_keyboard_key *event    = data;
+    struct wlr_seat               *seat     = server->seat;
 
-    /** Translate libinput keycode -> xkbcommon */
-    uint32_t keycode = event->keycode + 8;
+    uint32_t keycode = event->keycode;
 
     bool handled = false;
 
     /** If some key was pressed: check if we're trying to change the tty */
     if ( event->state == WL_KEYBOARD_KEY_STATE_PRESSED ) {
-        uint32_t    modifiers = wlr_keyboard_get_modifiers( keyboard->device->keyboard );
+        uint32_t           modifiers = wlr_keyboard_get_modifiers( keyboard->device->keyboard );
         struct wlr_session *session  = wlr_backend_get_session( server->backend );
 
         if ( session ) {
@@ -190,7 +189,7 @@ static void server_new_pointer( struct tinywl_server *server, struct wlr_input_d
 
 static void server_new_input( struct wl_listener *listener, void *data ) {
     /** This event is raised by the backend when a new input device becomes available. */
-    struct tinywl_server *server = wl_container_of( listener, server, new_input );
+    struct tinywl_server    *server = wl_container_of( listener, server, new_input );
     struct wlr_input_device *device = data;
 
     switch ( device->type ) {
@@ -419,7 +418,7 @@ static void server_cursor_motion( struct wl_listener *listener, void *data ) {
 }
 
 
-static void server_cursor_motion_absolute( struct wl_listener *listener, void *data )                                     {
+static void server_cursor_motion_absolute( struct wl_listener *listener, void *data ) {
     /** This event is forwarded by the cursor when a pointer emits an _absolute_
      * motion event, from 0..1 on each axis. This happens, for example, when
      * wlroots is running under a Wayland window rather than KMS+DRM, and you
@@ -712,7 +711,7 @@ int startCompositor() {
     wlr_log_init( WLR_ERROR, NULL );
 
     /** The Wayland display is managed by libwayland. It handles accepting
-    * clients from the Unix socket, managing Wayland globals, and so on. */
+     * clients from the Unix socket, managing Wayland globals, and so on. */
     server->wl_display = wl_display_create();
 
     /** The backend is a wlroots feature which abstracts the underlying input and
@@ -799,15 +798,15 @@ int startCompositor() {
      * And more comments are sprinkled throughout the notify functions above.
      */
     server->cursor_motion.notify = server_cursor_motion;
-    wl_signal_add( &server->cursor->events.motion, &server->cursor_motion );
+    wl_signal_add( &server->cursor->events.motion,          &server->cursor_motion );
     server->cursor_motion_absolute.notify = server_cursor_motion_absolute;
     wl_signal_add( &server->cursor->events.motion_absolute, &server->cursor_motion_absolute );
     server->cursor_button.notify = server_cursor_button;
-    wl_signal_add( &server->cursor->events.button, &server->cursor_button );
+    wl_signal_add( &server->cursor->events.button,          &server->cursor_button );
     server->cursor_axis.notify = server_cursor_axis;
-    wl_signal_add( &server->cursor->events.axis,   &server->cursor_axis );
+    wl_signal_add( &server->cursor->events.axis,            &server->cursor_axis );
     server->cursor_frame.notify = server_cursor_frame;
-    wl_signal_add( &server->cursor->events.frame,  &server->cursor_frame );
+    wl_signal_add( &server->cursor->events.frame,           &server->cursor_frame );
 
     /*
      * Configures a seat, which is a single "seat" at which a user sits and
@@ -817,10 +816,10 @@ int startCompositor() {
      */
     wl_list_init( &server->keyboards );
     server->new_input.notify = server_new_input;
-    wl_signal_add( &server->backend->events.new_input, &server->new_input );
+    wl_signal_add( &server->backend->events.new_input,          &server->new_input );
     server->seat = wlr_seat_create( server->wl_display, "seat0" );
     server->request_cursor.notify = seat_request_cursor;
-    wl_signal_add( &server->seat->events.request_set_cursor, &server->request_cursor );
+    wl_signal_add( &server->seat->events.request_set_cursor,    &server->request_cursor );
     server->request_set_selection.notify = seat_request_set_selection;
     wl_signal_add( &server->seat->events.request_set_selection, &server->request_set_selection );
 
@@ -848,6 +847,7 @@ int startCompositor() {
     return 1;
 }
 
+
 void runWlEventLoop() {
     /** Run the Wayland event loop. This does not return until you exit the
      * compositor. Starting the backend rigged up all of the necessary event
@@ -858,7 +858,7 @@ void runWlEventLoop() {
 
 
 void haltWlEventLoop() {
-    wl_display_terminate(server->wl_display);
+    wl_display_terminate( server->wl_display );
 }
 
 
@@ -870,8 +870,8 @@ void closeCompositor() {
 
 
 void setupEnv() {
-    setenv( "XCURSOR_THEME", "bloom", true );
-    setenv( "XCURSOR_SIZE", "24", true );
+    setenv( "XCURSOR_THEME",   "bloom",   true );
+    setenv( "XCURSOR_SIZE",    "24",      true );
     setenv( "QT_QPA_PLATFORM", "wayland", true );
-    setenv( "QT_SCALE_FACTOR", "1.0", true );
+    setenv( "QT_SCALE_FACTOR", "1.0",     true );
 }

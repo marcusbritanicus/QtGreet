@@ -26,7 +26,7 @@
 #include <QtCore>
 
 extern "C" {
-    #include "tinywl.h"
+#include "tinywl.h"
 }
 
 TinyWlServer *server = NULL;
@@ -39,7 +39,7 @@ static const char *COLOR_FATAL    = "\033[01;41m";
 static const char *COLOR_RESET    = "\033[00;00m";
 
 void handleSignals( int signum ) {
-    switch( signum ) {
+    switch ( signum ) {
         case SIGINT: {
             printf( "%sInterrupt signalled.%s\n", COLOR_WARN, COLOR_RESET );
             break;
@@ -55,8 +55,9 @@ void handleSignals( int signum ) {
             break;
         }
 
-        default:
+        default: {
             return;
+        }
     }
 
     printf( "%sClosing down the server.%s\n", COLOR_CRITICAL, COLOR_RESET );
@@ -69,6 +70,7 @@ static void startQtGreet( int argc, char *argv[] ) {
     QCoreApplication app( argc, argv );
 
     QProcess proc;
+
     proc.start( "qtgreet", {}, QProcess::ReadOnly );
     proc.waitForFinished( -1 );
 }
@@ -94,7 +96,7 @@ int main( int argc, char **argv ) {
         kill( getppid(), SIGTERM );
     }
 
-    signal( SIGINT, handleSignals );
+    signal( SIGINT,  handleSignals );
     signal( SIGTERM, handleSignals );
     signal( SIGQUIT, handleSignals );
 
