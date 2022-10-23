@@ -18,6 +18,7 @@
  * MA 02110-1301, USA.
  **/
 
+#include "Global.hpp"
 #include "GreetdManager.hpp"
 extern "C" {
 #include "proto.h"
@@ -70,7 +71,7 @@ bool GreetDLogin::startSession( QString baseCmd, QString type ) {
     };
 
     QString cmd;
-    QString logName = "/tmp/QtGreet-" + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" ) + ".log";
+    QString logName = tmpPath + "/QtGreet-" + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" ) + ".log";
 
     if ( type == "wayland" ) {
         cmd = baseCmd + " > " + logName + " 2>&1";
@@ -99,14 +100,14 @@ bool GreetDLogin::startSession( QString baseCmd, QString type ) {
 
 
 QString GreetDLogin::getX11Session( QString base ) {
-    QString xinit( "xinit %1 -- /etc/X11/xinit/xserverrc :%2 vt%3 -keeptty -noreset -novtswitch -auth /tmp/Xauth.%4" );
+    QString xinit( "xinit %1 -- %2 :%3 vt%4 -keeptty -noreset -novtswitch -auth %5/Xauth.%6" );
 
     /* Arg2: Get the display */
     int display;
 
     for ( display = 0; display < 64; display++ ) {
-        QString x1 = QString( "/tmp/.X%1-lock" ).arg( display );
-        QString x2 = QString( "/tmp/.X11-unix/X%1" ).arg( display );
+        QString x1 = QString( tmpPath + "/.X%1-lock" ).arg( display );
+        QString x2 = QString( tmpPath + "/.X11-unix/X%1" ).arg( display );
 
         if ( QFile::exists( x1 ) or QFile::exists( x2 ) ) {
             continue;
@@ -118,11 +119,11 @@ QString GreetDLogin::getX11Session( QString base ) {
     }
 
     /* Arg3: Get the vt from config.toml */
-    QSettings toml( "/etc/greetd/config.toml", QSettings::IniFormat );
+    QSettings toml( greetdPath, QSettings::IniFormat );
     int       vt = toml.value( "terminal/vt" ).toInt();
 
     /* Arg4: Random strings for server auth file */
     QString hash = QCryptographicHash::hash( QDateTime::currentDateTime().toString().toUtf8(), QCryptographicHash::Md5 ).toHex().left( 10 );
 
-    return xinit.arg( base ).arg( display ).arg( vt ).arg( hash );
+    return xinit.arg( base ).arg( xrcPath ).arg( display ).arg( vt ).arg( tmpPath ).arg( hash );
 }

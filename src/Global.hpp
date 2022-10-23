@@ -27,3 +27,19 @@
 /** Multiple classes require these */
 extern QSettings *sett;
 extern QSettings *users;
+
+extern QString configPath;
+extern QString usersPath;
+
+extern QString wlSessPath;
+extern QString xSessPath;
+
+extern QString passwdPath;
+extern QString loginPath;
+
+extern QString xrcPath;
+extern QString tmpPath;
+
+extern QString greetdPath;
+
+extern QMap<QString, QString> paths;

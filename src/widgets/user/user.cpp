@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  **/
 
-#include <QtWidgets>
+#include "Global.hpp"
 
 #include "user.hpp"
 
@@ -44,7 +44,7 @@ static inline Users getUsers() {
     Users mUserList;
 
     /* Read /etc/login.defs */
-    QFile loginDefs( "/etc/login.defs" );
+    QFile loginDefs( loginPath );
 
     loginDefs.open( QFile::ReadOnly );
     QString defs = QString::fromLocal8Bit( loginDefs.readAll() );
@@ -66,7 +66,7 @@ static inline Users getUsers() {
     }
 
     /* Read and parse /etc/passwd */
-    QFile passwd( "/etc/passwd" );
+    QFile passwd( passwdPath );
 
     passwd.open( QFile::ReadOnly );
     QString usrData = QString::fromLocal8Bit( passwd.readAll() );
@@ -75,7 +75,7 @@ static inline Users getUsers() {
 
     mUserList.clear();
 
-    // Read /etc/passwd and list the ones with UID > login.defs[UID_MIN]
+    /** Read /etc/passwd and list the ones with UID > login.defs[UID_MIN] */
     for ( QString user: usrData.split( "\n", Qt::SkipEmptyParts ) ) {
         QStringList uInfo = user.split( ":", Qt::KeepEmptyParts );
 

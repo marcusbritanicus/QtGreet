@@ -18,10 +18,13 @@ add_project_link_arguments( ['-rdynamic','-fPIC'], language:'cpp' )
 
 Qt5     = import( 'qt5' )
 Qt5Deps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Network', 'WaylandCompositor' ] )
-json    = dependency( 'json-c' )
-wlr     = dependency( 'wlroots' )
+json    = dependency( 'json-c' )			# Required for communication between qtgreet and greetd
 wlrqt   = dependency( 'wayqt' )
+DFApp   = dependency( 'df5application' )
+DFIpc   = dependency( 'df5ipc' )
 
+# Required for greetwl
+wlr            = dependency( 'wlroots' )
 wayland_server = dependency( 'wayland-server' )
 wayland_client = dependency( 'wayland-client' )
 xkbcommon      = dependency( 'xkbcommon' )
@@ -103,7 +106,7 @@ Resources = Qt5.compile_resources(
 
 qtgreet = executable(
     'qtgreet', [ Sources, Mocs, Resources ],
-    dependencies: [ Qt5Deps, json, wlr, wlrqt, wayland_server, wayland_client, xkbcommon, rt, protos ],
+    dependencies: [ Qt5Deps, json, wlrqt, DFApp, DFIpc ],
 	include_directories: [ Includes ],
     install: true
 )

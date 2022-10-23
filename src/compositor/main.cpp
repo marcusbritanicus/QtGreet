@@ -62,7 +62,6 @@ void handleSignals( int signum ) {
 
     printf( "%sClosing down the server.%s\n", COLOR_CRITICAL, COLOR_RESET );
     haltWlEventLoop();
-    // closeCompositor();
 }
 
 

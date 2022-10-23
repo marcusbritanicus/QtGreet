@@ -25,13 +25,25 @@
 
 #include <unistd.h>
 
+#include <DFL/DF5/Application.hpp>
+
 #include <wayqt/WayQtUtils.hpp>
-#include <wayqt/Application.hpp>
 #include <wayqt/Registry.hpp>
 #include <wayqt/WindowManager.hpp>
 
 QSettings *sett;
 QSettings *users;
+
+/** To store various paths */
+QString configPath = "/etc/qtgreet/config.ini";
+QString usersPath  = "/etc/qtgreetd/users.conf";
+QString wlSessPath = "default";
+QString xSessPath  = "default";
+QString passwdPath = "/etc/passwd";
+QString loginPath  = "/etc/login.defs";
+QString xrcPath    = "/etc/X11/xinit/xserverrc";
+QString tmpPath    = "/tmp/";
+QString greetdPath = "/etc/greetd/config.toml";
 
 static const char *COLOR_INFO     = "\033[01;32m";
 static const char *COLOR_DEBUG    = "\033[01;30m";
@@ -139,11 +151,65 @@ int main( int argc, char **argv ) {
     QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
     qInstallMessageHandler( Logger );
 
-    WQt::Application *app = new WQt::Application( "QtGreet", argc, argv );
+    DFL::Application *app = new DFL::Application( argc, argv );
+    app->setOrganizationName( "QtGreet" );
+    app->setApplicationName( "QtGreet" );
+    app->setDesktopFileName( "qtgreet.desktop" );
+    app->setApplicationVersion( PROJECT_VERSION );
+
+    QCommandLineParser parser;
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    /* Optional: Provide config path */
+    parser.addOption( { { "c", "config" }, "Configuration file", "cfgfile" } );
+
+    /* Optional: Provide users-data path */
+    parser.addOption( { { "d", "data" }, "File to store user data", "datafile" } );
+
+    /* Optional: Provide users-data path */
+    parser.addOption( { { "w", "wl-session-path" }, "Path containing wayland session desktops", "wlpath" } );
+
+    /* Optional: Provide users-data path */
+    parser.addOption( { { "x", "x-session-path" }, "Path containing x11 session desktops", "xpath" } );
+
+    /* Optional: Provide login.defs path */
+    parser.addOption( { { "p", "passwd-path" }, "Path to passwd", "passwd" } );
+
+    /* Optional: Provide login.defs path */
+    parser.addOption( { { "l", "login-defs-path" }, "Path to login.defs", "login" } );
+
+    /* Optional: Provide login.defs path */
+    parser.addOption( { { "r", "xserver-path" }, "Path to xserverrc", "xrc-path" } );
+
+    /* Optional: Provide login.defs path */
+    parser.addOption( { { "t", "tmp-path" }, "System temp folder", "tmp" } );
+
+    /* Optional: Provide login.defs path */
+    parser.addOption( { { "g", "greetd-path" }, "Greetd configuration file", "greetd-path" } );
+
+    /* Optional: Provide login.defs path */
+    QCommandLineOption test( "test", "Test QtGreet without using Wayland Protocols" );
+    test.setFlags( QCommandLineOption::HiddenFromHelp );
+    parser.addOption( test );
+
+    /* Process the CLI args */
+    parser.process( *app );
+
+    /** Set the paths */
+    configPath = (parser.isSet( "config" ) ? parser.value( "config" ) : configPath);
+    usersPath  = (parser.isSet( "data" ) ? parser.value( "data" ) : usersPath);
+    wlSessPath = (parser.isSet( "wl-session-path" ) ? parser.value( "wl-session-path" ) : wlSessPath);
+    xSessPath  = (parser.isSet( "x-session-path" ) ? parser.value( "x-session-path" ) : xSessPath);
+    passwdPath = (parser.isSet( "passwd-path" ) ? parser.value( "passwd-path" ) : passwdPath);
+    loginPath  = (parser.isSet( "login-defs-path" ) ? parser.value( "login-defs-path" ) : loginPath);
+    xrcPath    = (parser.isSet( "xserver-path" ) ? parser.value( "xserver-path" ) : xrcPath);
+    tmpPath    = (parser.isSet( "tmp-path" ) ? parser.value( "tmp-path" ) : tmpPath);
+    greetdPath = (parser.isSet( "greetd-path" ) ? parser.value( "greetd-path" ) : greetdPath);
 
     /** Settings Objects */
-    sett  = new QSettings( "/etc/qtgreet/config.ini", QSettings::IniFormat );
-    users = new QSettings( "/etc/qtgreet/users.conf", QSettings::IniFormat );
+    sett  = new QSettings( configPath, QSettings::IniFormat );
+    users = new QSettings( usersPath, QSettings::IniFormat );
 
     QIcon::setThemeName( sett->value( "IconTheme", "hicolor" ).toString() );
 
@@ -153,7 +219,10 @@ int main( int argc, char **argv ) {
         screens << scrn;
     }
 
-    WQt::WindowManager *wm = app->waylandRegistry()->windowManager();
+    WQt::Registry *wlRegistry = new WQt::Registry( WQt::Wayland::display() );
+    wlRegistry->setup();
+
+    WQt::WindowManager *wm = wlRegistry->windowManager();
     QObject::connect(
         wm, &WQt::WindowManager::newTopLevelHandle, [ = ] ( WQt::WindowHandle *hndl ) mutable {
             /** Wait for app ID to be set */

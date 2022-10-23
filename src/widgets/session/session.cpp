@@ -19,7 +19,7 @@
  **/
 
 #include <unistd.h>
-#include <QtWidgets>
+#include "Global.hpp"
 
 #include "session.hpp"
 
@@ -45,7 +45,16 @@ static bool IsExec( QString exec ) {
 Sessions getSessions( bool custom ) {
     Sessions mSessions;
 
-    for ( QString wlSessDir: QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "wayland-sessions", QStandardPaths::LocateDirectory ) ) {
+    QStringList wlSessPaths;
+    if ( wlSessPath == "default" ) {
+        wlSessPaths = QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "wayland-sessions", QStandardPaths::LocateDirectory );
+    }
+
+    else {
+        wlSessPaths = wlSessPath.split( ";", Qt::SkipEmptyParts );
+    }
+
+    for ( QString wlSessDir: wlSessPaths ) {
         for ( QFileInfo sess: QDir( wlSessDir ).entryInfoList( { "*.desktop" } ) ) {
             QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );
 
@@ -67,7 +76,16 @@ Sessions getSessions( bool custom ) {
         }
     }
 
-    for ( QString xSessDir: QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "xsessions", QStandardPaths::LocateDirectory ) ) {
+    QStringList xSessPaths;
+    if ( xSessPath == "default" ) {
+        xSessPaths = QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "xsessions", QStandardPaths::LocateDirectory );
+    }
+
+    else {
+        xSessPaths = xSessPath.split( ";", Qt::SkipEmptyParts );
+    }
+
+    for ( QString xSessDir: xSessPaths ) {
         for ( QFileInfo sess: QDir( xSessDir ).entryInfoList( { "*.desktop" } ) ) {
             QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );
 
