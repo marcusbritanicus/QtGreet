@@ -29,7 +29,7 @@ extern QSettings *sett;
 extern QSettings *users;
 
 extern QString configPath;
-extern QString usersPath;
+extern QString dynDataPath;
 
 extern QString wlSessPath;
 extern QString xSessPath;
@@ -40,6 +40,7 @@ extern QString loginPath;
 extern QString xrcPath;
 extern QString tmpPath;
 
-extern QString greetdPath;
+extern QString vtNum;
+extern QString logPath;
 
 extern QMap<QString, QString> paths;

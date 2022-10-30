@@ -34,7 +34,7 @@
 #include <QtDBus>
 
 QtGreet::UI::UI() {
-    login = new GreetDLogin();
+    login = new GreetdLogin();
 
     themeManager = new ThemeManager( sett->value( "Theme", "default" ).toString() );
 
@@ -73,10 +73,12 @@ QtGreet::UI::UI() {
 
     QAction *act = new QAction( "Quit" );
     act->setShortcut( QKeySequence( Qt::SHIFT | Qt::CTRL | Qt::Key_Q ) );
-    connect( act, &QAction::triggered, [ = ]() {
-                 qInfo() << "Quitting";
-                 qApp->quit();
-             } );
+    connect(
+        act, &QAction::triggered, [ = ]() {
+            qInfo() << "Quitting";
+            qApp->quit();
+        }
+    );
 
     addAction( act );
 }
@@ -98,6 +100,9 @@ void QtGreet::UI::createUI() {
     setWindowFlags( Qt::FramelessWindowHint );
 
     QMetaObject::connectSlotsByName( this );
+
+    validating = new QLabel();
+    validating->close();
 }
 
 
@@ -280,24 +285,88 @@ void QtGreet::UI::keyPressEvent( QKeyEvent *kEvent ) {
 }
 
 
-void QtGreet::UI::tryLogin() {
-    /** Save the user info */
-    users->setValue( QString( "LastUsed/%1" ).arg( mCurUser.uid ), mCurSession.file );
+void QtGreet::UI::showValidating() {
+    QWidget *base = new QWidget( this );
 
+    base->setObjectName( "OverLay" );
+    base->setFixedSize( size() );
+
+    QWidget *msg = new QWidget();
+
+    msg->setObjectName( "widget" );
+
+    validating->setText( "<b>Validating...</b>" );
+
+    QPushButton *btn = new QPushButton( QIcon( ":/icons/arrow-left.png" ), "&Back" );
+
+    btn->setFixedSize( 100, 36 );
+    connect( btn, &QPushButton::clicked, base, &QWidget::close );
+    connect(
+        btn, &QPushButton::clicked, [=] () {
+            base->close();
+            QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
+            if ( pwd ) {
+                pwd->selectAll();
+                pwd->setFocus();
+            }
+        }
+    );
+
+    QGridLayout *lyt = new QGridLayout();
+
+    lyt->setContentsMargins( QMargins( 100, 100, 100, 100 ) );
+    lyt->setSpacing( 50 );
+    lyt->addWidget( validating, 0, 0, Qt::AlignCenter );
+    lyt->addWidget( btn,        1, 0, Qt::AlignCenter );
+
+    msg->setLayout( lyt );
+
+    QGridLayout *blyt = new QGridLayout();
+
+    blyt->addWidget( msg, 0, 0, Qt::AlignCenter );
+
+    base->setLayout( blyt );
+    base->setStyleSheet(
+        "#widget {"
+        "    border: 2px solid gray;"
+        "    border-radius: 5px;"
+        "}"
+        "QPushButton {"
+        "    border: 2px solid gray;"
+        "    border-radius: 10px;"
+        "    background-color: rgba(255, 255, 255, 30);"
+        "}"
+    );
+
+    base->show();
+    btn->setFocus();
+}
+
+
+void QtGreet::UI::tryLogin() {
     QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
 
     if ( not pwd ) {
         return;
     }
 
+    showValidating();
+
     setDisabled( true );
-    bool auth = login->authenticate( mCurUser.username, pwd->text() );
-    bool sess = false;
+
+    bool    auth    = login->authenticate( mCurUser.username, pwd->text() );
+    QString authMsg = login->errorMessage();
+    bool    sess    = false;
+    QString sessMsg;
 
     if ( auth ) {
-        sess = login->startSession( mCurSession.exec, mCurSession.type );
+        sess    = login->startSession( mCurSession.exec, mCurSession.type );
+        sessMsg = login->errorMessage();
 
         if ( sess ) {
+            /** Save the user info */
+            users->setValue( QString( "LastUsed/%1" ).arg( mCurUser.uid ), mCurSession.file );
+
             qApp->quit();
         }
     }
@@ -308,34 +377,24 @@ void QtGreet::UI::tryLogin() {
     if ( not auth ) {
         errTitle = "Authentication failure";
         errMsg   = "We failed to authenticate you. Did you enter the correct password?";
+        errMsg  += "<p>Server says <br><center><tt>" + authMsg + "</tt></center></p>";
     }
 
     else {
         errTitle = "Failed to start Session";
         errMsg   = "We failed to start the selected session. Perhaps a wrong command?";
+        errMsg  += "<p>Server says <br><center><tt>" + sessMsg + "</tt></center></p>";
     }
 
-    QMessageBox::critical(
-        this,
-        "QtGreet | Failure",
-        QString( "<b>%1</b><p>%2</p>" ).arg( errTitle ).arg( errMsg ),
-        QMessageBox::Ok
-    );
+    validating->setText( QString( "<center><b>%1</b></center><p>%2</p>" ).arg( errTitle ).arg( errMsg ) );
 
     setEnabled( true );
-
-    if ( not auth ) {
-        pwd->selectAll();
-        pwd->setFocus();
-    }
 }
 
 
 /* Auto Slots */
 
 void QtGreet::UI::on_UserNavRight_clicked() {
-    qDebug() << "Loading next user";
-
     UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 
     if ( ulc ) {
@@ -363,8 +422,6 @@ void QtGreet::UI::on_UserNavRight_clicked() {
 
 
 void QtGreet::UI::on_UserNavLeft_clicked() {
-    qDebug() << "Loading prev user";
-
     UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 
     if ( ulc ) {

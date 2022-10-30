@@ -69,13 +69,13 @@ QBoxLayout * QtGreet::LayoutManager::generateLayout( QString lytFile ) {
         /** Vertical Layout: Each key will leat to new rows */
         if ( rows.match( key ).hasMatch() ) {
             Hjson::Value row = mLayout[ key.toUtf8().data() ];
-            topLyt->addWidget( addRow( row, key, mProperties[ key.toStdString() ], "" ) );
+            topLyt->addWidget( addRow( row, key, mProperties[ key.toStdString() ] ) );
         }
 
         /** Horizontal Layout: Each key will leat to new columns */
         else if ( cols.match( key ).hasMatch() ) {
             Hjson::Value col = mLayout[ key.toUtf8().data() ];
-            topLyt->addWidget( addColumn( col, key, mProperties[ key.toStdString() ], "" ) );
+            topLyt->addWidget( addColumn( col, key, mProperties[ key.toStdString() ] ) );
         }
 
         /** Should not have come here */
@@ -88,7 +88,7 @@ QBoxLayout * QtGreet::LayoutManager::generateLayout( QString lytFile ) {
 }
 
 
-QWidget * QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson::Value props, QString space ) {
+QWidget * QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson::Value props ) {
     /** Do we have a row? If yes, we will be expanding the size vertically */
     QRegularExpression rows = QRegularExpression( "^R[0-9]+$" );
     /** Do we have a column? If yes, we will be expanding the size horizontally */
@@ -118,19 +118,17 @@ QWidget * QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson:
         /** Vertical Layout: Each key will leat to new rows */
         if ( rows.match( key ).hasMatch() ) {
             Hjson::Value row = mLayout[ key.toUtf8().data() ];
-            lyt->addWidget( addRow( row, key, properties, space + "  " ) );
+            lyt->addWidget( addRow( row, key, properties ) );
         }
 
         /** Horizontal Layout: Each key will leat to new columns */
         else if ( cols.match( key ).hasMatch() ) {
             Hjson::Value col = mLayout[ key.toUtf8().data() ];
-            lyt->addWidget( addColumn( col, key, properties, space + "  " ) );
+            lyt->addWidget( addColumn( col, key, properties ) );
         }
 
         /** Initialize the widget */
         else {
-            // printf( "%s%s ", space.toUtf8().data(), key.toUtf8().data() );
-
             if ( key == "Stretch" ) {
                 lyt->addStretch();
                 continue;
@@ -144,8 +142,6 @@ QWidget * QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson:
         }
     }
 
-    // printf( "\n" );
-
     Container *cw = new Container( props[ "BGColor" ], name );
 
     cw->setLayout( lyt );
@@ -154,7 +150,7 @@ QWidget * QtGreet::LayoutManager::addRow( Hjson::Value row, QString name, Hjson:
 }
 
 
-QWidget * QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjson::Value props, QString space ) {
+QWidget * QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjson::Value props ) {
     /** Do we have a row? If yes, we will be expanding the size vertically */
     QRegularExpression rows = QRegularExpression( "^R[0-9]+$" );
     /** Do we have a column? If yes, we will be expanding the size horizontally */
@@ -176,13 +172,13 @@ QWidget * QtGreet::LayoutManager::addColumn( Hjson::Value col, QString name, Hjs
         /** Vertical Layout: Each key will leat to new rows */
         if ( rows.match( key ).hasMatch() ) {
             Hjson::Value row = mLayout[ key.toUtf8().data() ];
-            lyt->addWidget( addRow( row, key, properties, space + "  " ) );
+            lyt->addWidget( addRow( row, key, properties ) );
         }
 
         /** Horizontal Layout: Each key will leat to new columns */
         else if ( cols.match( key ).hasMatch() ) {
             Hjson::Value col = mLayout[ key.toUtf8().data() ];
-            lyt->addWidget( addColumn( col, key, properties, space + "  " ) );
+            lyt->addWidget( addColumn( col, key, properties ) );
         }
 
         /** Initialize the widget */

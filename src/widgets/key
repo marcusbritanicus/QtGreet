@@ -33,6 +33,10 @@
 |        6. Logout button                                      |  PowerButton          |  Logout                |
 +--------------------------------------------------------------+-----------------------+------------------------+
 |                                                              |                       |                        |
+|    password - Password entry                                 |                       |                        |
+|        1. Password edit                                      |  Password             |  LineEdit              |
++--------------------------------------------------------------+-----------------------+------------------------+
+|                                                              |                       |                        |
 |    session - Session name                                    |                       |                        |
 |        1. Session combo                                      |  SessionName          |  Combo                 |
 |        2. Session list                                       |  SessionName          |  List                  |

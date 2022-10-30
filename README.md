@@ -9,7 +9,10 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 
 ### Dependencies:
 - Qt5 (duh...)
-- WayQt (https://gitlab.com/desqktop-frameworks/wayqt/)
+- WayQt (https://gitlab.com/desqktop-frameworks/wayqt.git)
+- DFL::Applications (https://gitlab.com/desqktop-frameworks/applications.git)
+- DFL::IPC (https://gitlab.com/desqktop-frameworks/ipc.git)
+- DFL::Utils (https://gitlab.com/desqktop-frameworks/utils.git)
 - A wayland based compositor (wayfire, sway, cage etc..)
 - Meson (to build this project)
 - Ninja (to compile this project)
@@ -25,7 +28,7 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 - Compile and install - we use ninja
   * `ninja -C .build -k 0 -j $(nproc) && sudo ninja -C .build install`
 
-### Configure greetd to run QtGreet using wayfire
+### Configure greetd to run QtGreet
 
 If you wish to make use of greetd, then you will have to configure it to use QtGreet.
 You can either use the *inbuilt* `greeetwl` compositor (a fork of `tinywl`), or use a full-fledged compositor like wayfire or sway.

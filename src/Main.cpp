@@ -24,8 +24,10 @@
 #include "LayoutManager.hpp"
 
 #include <unistd.h>
+#include <signal.h>
 
 #include <DFL/DF5/Application.hpp>
+#include <DFL/DF5/Utils.hpp>
 
 #include <wayqt/WayQtUtils.hpp>
 #include <wayqt/Registry.hpp>
@@ -35,127 +37,46 @@ QSettings *sett;
 QSettings *users;
 
 /** To store various paths */
-QString configPath = "/etc/qtgreet/config.ini";
-QString usersPath  = "/etc/qtgreetd/users.conf";
-QString wlSessPath = "default";
-QString xSessPath  = "default";
-QString passwdPath = "/etc/passwd";
-QString loginPath  = "/etc/login.defs";
-QString xrcPath    = "/etc/X11/xinit/xserverrc";
-QString tmpPath    = "/tmp/";
-QString greetdPath = "/etc/greetd/config.toml";
-
-static const char *COLOR_INFO     = "\033[01;32m";
-static const char *COLOR_DEBUG    = "\033[01;30m";
-static const char *COLOR_WARN     = "\033[01;33m";
-static const char *COLOR_CRITICAL = "\033[01;31m";
-static const char *COLOR_FATAL    = "\033[01;41m";
-static const char *COLOR_RESET    = "\033[00;00m";
-
-void Logger( QtMsgType type, const QMessageLogContext& context, const QString& msg ) {
-    if ( msg.startsWith( "Using QCharRef with an index pointing" ) ) {
-        return;
-    }
-
-    QByteArray localMsg  = msg.toLocal8Bit();
-    const char *file     = context.file ? context.file : "";
-    const char *function = context.function ? context.function : "";
-
-    switch ( type ) {
-        case QtInfoMsg: {
-            fprintf( stderr, "%s[I]: (%s:%u, %s) %s%s\n",
-                     COLOR_INFO,
-                     file,
-                     context.line,
-                     function,
-                     localMsg.constData(),
-                     COLOR_RESET
-            );
-            fflush( stderr );
-
-            break;
-        }
-
-        case QtDebugMsg: {
-            fprintf( stderr, "%s[D]: (%s:%u, %s) %s%s\n",
-                     COLOR_DEBUG,
-                     file,
-                     context.line,
-                     function,
-                     localMsg.constData(),
-                     COLOR_RESET
-            );
-            fflush( stderr );
-
-            break;
-        }
-
-        case QtWarningMsg: {
-            fprintf( stderr, "%s[W]: (%s:%u, %s) %s%s\n",
-                     COLOR_WARN,
-                     file,
-                     context.line,
-                     function,
-                     localMsg.constData(),
-                     COLOR_RESET
-            );
-            fflush( stderr );
-
-            break;
-        }
-
-        case QtCriticalMsg: {
-            fprintf( stderr, "%s[E]: (%s:%u, %s) %s%s\n",
-                     COLOR_CRITICAL,
-                     file,
-                     context.line,
-                     function,
-                     localMsg.constData(),
-                     COLOR_RESET
-            );
-            fflush( stderr );
-
-            break;
-        }
-
-        case QtFatalMsg: {
-            fprintf( stderr, "%s[#]: (%s:%u, %s) %s%s\n",
-                     COLOR_FATAL,
-                     file,
-                     context.line,
-                     function,
-                     localMsg.constData(),
-                     COLOR_RESET
-            );
-            fflush( stderr );
-
-            break;
-        }
-    }
-}
-
+QString configPath  = "/etc/qtgreet/config.ini";
+QString dynDataPath = DYNPATH;
+QString wlSessPath  = "default";
+QString xSessPath   = "default";
+QString passwdPath  = "/etc/passwd";
+QString loginPath   = "/etc/login.defs";
+QString xrcPath     = "/etc/X11/xinit/xserverrc";
+QString tmpPath     = "/tmp/";
+QString vtNum       = "1";
+QString logPath     = LOGPATH;
 
 void setupWindow( QScreen *screen, WQt::WindowHandle *hndl ) {
     wl_output *output = WQt::Utils::wlOutputFromQScreen( screen );
 
     hndl->setFullScreen( output );
-
-    while ( hndl->appId().isEmpty() ) {
-        qApp->processEvents();
-        usleep( 10 * 1000 );
-    }
 }
 
 
 int main( int argc, char **argv ) {
     QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
-    qInstallMessageHandler( Logger );
+
+    QString dt( QDateTime::currentDateTime().toString( "yyyyMMddThhmmss" ) );
+    QString logFile = QString( "%1/%2.log" ).arg( LOGPATH ).arg( dt );
+
+    DFL::log = fopen( logFile.toLocal8Bit().data(), "w" );
+    qInstallMessageHandler( DFL::Logger );
+
+    qInfo() << "QtGreet Started";
 
     DFL::Application *app = new DFL::Application( argc, argv );
     app->setOrganizationName( "QtGreet" );
     app->setApplicationName( "QtGreet" );
     app->setDesktopFileName( "qtgreet.desktop" );
     app->setApplicationVersion( PROJECT_VERSION );
+
+    app->interceptSignal( SIGSEGV, true );
+    app->interceptSignal( SIGINT, true );
+    app->interceptSignal( SIGQUIT, true );
+    app->interceptSignal( SIGTERM, true );
+    app->interceptSignal( SIGABRT, true );
 
     QCommandLineParser parser;
     parser.addHelpOption();
@@ -164,14 +85,14 @@ int main( int argc, char **argv ) {
     /* Optional: Provide config path */
     parser.addOption( { { "c", "config" }, "Configuration file", "cfgfile" } );
 
-    /* Optional: Provide users-data path */
-    parser.addOption( { { "d", "data" }, "File to store user data", "datafile" } );
+    /* Optional: Provide dynamic data storage path */
+    parser.addOption( { { "d", "data-path" }, "Path to store dynamic data", "datafile" } );
 
     /* Optional: Provide users-data path */
-    parser.addOption( { { "w", "wl-session-path" }, "Path containing wayland session desktops", "wlpath" } );
+    parser.addOption( { { "w", "wl-session-path" }, "Path(s) containing wayland session desktops", "path1;path2;..." } );
 
     /* Optional: Provide users-data path */
-    parser.addOption( { { "x", "x-session-path" }, "Path containing x11 session desktops", "xpath" } );
+    parser.addOption( { { "x", "x-session-path" }, "Path(s) containing x11 session desktops", "path1;path2;..." } );
 
     /* Optional: Provide login.defs path */
     parser.addOption( { { "p", "passwd-path" }, "Path to passwd", "passwd" } );
@@ -186,7 +107,10 @@ int main( int argc, char **argv ) {
     parser.addOption( { { "t", "tmp-path" }, "System temp folder", "tmp" } );
 
     /* Optional: Provide login.defs path */
-    parser.addOption( { { "g", "greetd-path" }, "Greetd configuration file", "greetd-path" } );
+    parser.addOption( { { "n", "vt-number" }, "VT number where the session is started", "vtnr" } );
+
+    /* Optional: Provide login.defs path */
+    parser.addOption( { { "o", "log-path" }, "Path to store log files", "log-path" } );
 
     /* Optional: Provide login.defs path */
     QCommandLineOption test( "test", "Test QtGreet without using Wayland Protocols" );
@@ -196,21 +120,33 @@ int main( int argc, char **argv ) {
     /* Process the CLI args */
     parser.process( *app );
 
-    /** Set the paths */
-    configPath = (parser.isSet( "config" ) ? parser.value( "config" ) : configPath);
-    usersPath  = (parser.isSet( "data" ) ? parser.value( "data" ) : usersPath);
-    wlSessPath = (parser.isSet( "wl-session-path" ) ? parser.value( "wl-session-path" ) : wlSessPath);
-    xSessPath  = (parser.isSet( "x-session-path" ) ? parser.value( "x-session-path" ) : xSessPath);
-    passwdPath = (parser.isSet( "passwd-path" ) ? parser.value( "passwd-path" ) : passwdPath);
-    loginPath  = (parser.isSet( "login-defs-path" ) ? parser.value( "login-defs-path" ) : loginPath);
-    xrcPath    = (parser.isSet( "xserver-path" ) ? parser.value( "xserver-path" ) : xrcPath);
-    tmpPath    = (parser.isSet( "tmp-path" ) ? parser.value( "tmp-path" ) : tmpPath);
-    greetdPath = (parser.isSet( "greetd-path" ) ? parser.value( "greetd-path" ) : greetdPath);
+    /** Set the various paths */
+    configPath  = (parser.isSet( "config" ) ? parser.value( "config" ) : configPath);
+    dynDataPath = (parser.isSet( "data-path" ) ? parser.value( "data-path" ) : dynDataPath);
+    wlSessPath  = (parser.isSet( "wl-session-path" ) ? parser.value( "wl-session-path" ) : wlSessPath);
+    xSessPath   = (parser.isSet( "x-session-path" ) ? parser.value( "x-session-path" ) : xSessPath);
+    passwdPath  = (parser.isSet( "passwd-path" ) ? parser.value( "passwd-path" ) : passwdPath);
+    loginPath   = (parser.isSet( "login-defs-path" ) ? parser.value( "login-defs-path" ) : loginPath);
+    xrcPath     = (parser.isSet( "xserver-path" ) ? parser.value( "xserver-path" ) : xrcPath);
+    tmpPath     = (parser.isSet( "tmp-path" ) ? parser.value( "tmp-path" ) : tmpPath);
+    vtNum       = (parser.isSet( "vt-number" ) ? parser.value( "vt-number" ) : vtNum);
+    logPath     = (parser.isSet( "log-path" ) ? parser.value( "log-path" ) : logPath);
+
+    if ( DFL::log == NULL ) {
+        QString altLogFile = QString( "%1/%2.log" ).arg( logPath != LOGPATH ? logPath : tmpPath ).arg( dt );
+        DFL::log = fopen( altLogFile.toLocal8Bit().data(), "w" );
+    }
+
+    if ( dynDataPath.isEmpty() and not parser.isSet( "data-path" ) ) {
+        qCritical() << "Please use --data-path option to specify where QtGreet can store its dynamic data.";
+        parser.showHelp( EXIT_FAILURE );       // Exit with an error
+    }
 
     /** Settings Objects */
     sett  = new QSettings( configPath, QSettings::IniFormat );
-    users = new QSettings( usersPath, QSettings::IniFormat );
+    users = new QSettings( dynDataPath + "/users.conf", QSettings::IniFormat );
 
+    /** Set the icon theme name */
     QIcon::setThemeName( sett->value( "IconTheme", "hicolor" ).toString() );
 
     QList<QScreen *> screens;
@@ -223,28 +159,31 @@ int main( int argc, char **argv ) {
     wlRegistry->setup();
 
     WQt::WindowManager *wm = wlRegistry->windowManager();
-    QObject::connect(
-        wm, &WQt::WindowManager::newTopLevelHandle, [ = ] ( WQt::WindowHandle *hndl ) mutable {
-            /** Wait for app ID to be set */
-            while ( hndl->appId().isEmpty() ) {
-                qApp->processEvents();
-                usleep( 10 * 1000 );
-            }
 
-            /** If we have used up all the screens, then this is probably a dialog */
-            if ( not screens.count() ) {
-                return;
-            }
+    if ( wm ) {
+        QObject::connect(
+            wm, &WQt::WindowManager::newTopLevelHandle, [ = ] ( WQt::WindowHandle *hndl ) mutable {
+                /** Wait for app ID to be set */
+                while ( hndl->appId().isEmpty() ) {
+                    qApp->processEvents();
+                    usleep( 10 * 1000 );
+                }
 
-            /** Ensure that this handle is indeed qtrgeet */
-            if ( not hndl->appId().contains( "qtgreet" ) ) {
-                return;
-            }
+                /** If we have used up all the screens, then this is probably a dialog */
+                if ( not screens.count() ) {
+                    return;
+                }
 
-            QScreen *scrn = screens.takeAt( 0 );
-            setupWindow( scrn, hndl );
-        }
-    );
+                /** Ensure that this handle is indeed qtrgeet */
+                if ( not hndl->appId().contains( "qtgreet" ) ) {
+                    return;
+                }
+
+                QScreen *scrn = screens.takeAt( 0 );
+                setupWindow( scrn, hndl );
+            }
+        );
+    }
 
     /** Open a window for every existing screen */
     for ( int i = 0; i < screens.count(); i++ ) {

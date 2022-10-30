@@ -20,58 +20,246 @@
 
 #include "Global.hpp"
 #include "GreetdManager.hpp"
-extern "C" {
-#include "proto.h"
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <unistd.h>
+
+/**
+ * class Response
+ * Converts the response recieved in the form of JSON into usable form
+ */
+
+Response::Response( QByteArray jsonResp ) {
+    QJsonObject json = QJsonDocument::fromJson( jsonResp ).object();
+
+    if ( not json.contains( "type" ) ) {
+        return;
+    }
+
+    QString type = json[ "type" ].toString();
+
+    if ( type == "success" ) {
+        mType = Success;
+    }
+
+    else if ( type == "error" ) {
+        mType = Error;
+    }
+
+    else if ( type == "auth_message" ) {
+        mType = AuthMessage;
+    }
+
+    else {
+        mType = Invalid;
+    }
+
+    if ( mType == Error ) {
+        if ( json[ "error_type" ].toString() == "auth_error" ) {
+            mErrorType = ErrorTypeAuthError;
+        }
+
+        else {
+            mErrorType = ErrorTypeGeneric;
+        }
+
+        mErrorMsg = json[ "description" ].toString();
+    }
+
+    if ( mType == AuthMessage ) {
+        if ( json[ "auth_message_type" ].toString() == "visible" ) {
+            mAuthType = AuthTypeVisible;
+        }
+
+        else if ( json[ "auth_message_type" ].toString() == "secret" ) {
+            mAuthType = AuthTypeSecret;
+        }
+
+        else if ( json[ "auth_message_type" ].toString() == "info" ) {
+            mAuthType = AuthTypeInfo;
+        }
+
+        else {
+            mAuthType = AuthTypeError;
+        }
+
+        mAuthMsg = json[ "auth_message" ].toString();
+    }
 }
 
-GreetDLogin::GreetDLogin() : LoginManager() {
+
+Response::Type Response::responseType() {
+    return mType;
+}
+
+
+Response::AuthType Response::authType() {
+    return mAuthType;
+}
+
+
+QString Response::authMessage() {
+    return mAuthMsg;
+}
+
+
+Response::ErrorType Response::errorType() {
+    return mErrorType;
+}
+
+
+QString Response::errorMessage() {
+    return mErrorMsg;
+}
+
+
+/**
+ * class GreetdLogin
+ * This class perform the actual user authentication,
+ * and then starts the session.
+ */
+
+GreetdLogin::GreetdLogin() : LoginManager() {
     /** Nothing much */
 }
 
 
-bool GreetDLogin::authenticate( QString username, QString password ) {
-    /** Let's ask greetd to create a session */
-    request req_create_sess = {
-        .request_type = request_type_create_session,
-    };
+bool GreetdLogin::authenticate( QString username, QString password ) {
+    mErrorMsg.clear();
 
-    /** Add the username  */
-    strncpy( req_create_sess.body.request_create_session.username, username.toUtf8().constData(), 127 );
+    Response resp = createSession( username );
 
-    /** Send this request */
-    response resp = roundtrip( req_create_sess );
+    /**
+     * Request failed: We probably failed to conenct to greetd.
+     */
+    if ( resp.responseType() == Response::Invalid ) {
+        mErrorMsg = "Unable to communicate with greetd.";
+        qDebug() << mErrorMsg;
+        return false;
+    }
 
-    /** Request was successful. GreetD wants to authenticate */
-    if ( resp.response_type == response_type_auth_message ) {
-        /** We're now posting a auth message with password */
-        request req = {
-            .request_type = request_type_post_auth_message_response,
-        };
+    /**
+     * Request successful: We can now start the session.
+     * This may happen for password-less login.
+     */
+    if ( resp.responseType() == Response::Success ) {
+        return true;
+    }
 
-        /** Add the password */
-        strncpy( req.body.request_post_auth_message_response.response, password.toUtf8().constData(), 127 );
-
-        /** Send the request */
-        resp = roundtrip( req );
-
-        /* Authentication should be successful; anything else will be considered a failure */
-        if ( resp.response_type == response_type_success ) {
-            return true;
+    /**
+     * Request failed: We can now start the session.
+     * Something failed, we will cancel the session.
+     */
+    if ( resp.responseType() == Response::Error ) {
+        if ( resp.errorType() == Response::ErrorTypeGeneric ) {
+            qDebug() << "Generic error";
         }
+
+        else {
+            qDebug() << "Authentication error";
+        }
+
+        mErrorMsg = resp.errorMessage();
+        resp      = cancelSession();
+
+        if ( resp.responseType() != Response::Success ) {
+            mErrorMsg += "\nError while handling the previous error. Abort.";
+        }
+
+        qDebug() << mErrorMsg;
+
+        return false;
+    }
+
+    /**
+     * Request failed: We can now start the session.
+     * Something failed, we will cancel the session.
+     */
+    if ( resp.responseType() == Response::AuthMessage ) {
+        switch ( resp.authType() ) {
+            /* We should never reach here. If we do, then abort. */
+            case Response::AuthTypeInvalid: {
+                qDebug() << "Not an auth_message response. Abort.";
+                return false;
+            }
+
+            /**
+             * User reply should be visible.
+             * But this does not apply to us.
+             * We already have a password which will be used.
+             */
+            case Response::AuthTypeVisible: {
+                [[fallthrough]];
+            }
+
+            /**
+             * User reply should be secret.
+             * But this does not apply to us.
+             * We already have a password which will be used.
+             */
+            case Response::AuthTypeSecret: {
+                resp = postResponse( password );
+
+                /** Authenticated! We can now start the session */
+                if ( resp.responseType() == Response::Success ) {
+                    return true;
+                }
+
+                mErrorMsg = "Authentication failed.";
+                resp      = cancelSession();
+
+                if ( resp.responseType() == Response::Success ) {
+                    mErrorMsg += "\nError while handling the previous error. Abort.";
+                }
+
+                qDebug() << mErrorMsg;
+
+                return false;
+            }
+
+            /**
+             * Providing info to the user.
+             * Not applicable to us. Treat it as failure.
+             * Cancel session and return false.
+             */
+            case Response::AuthTypeInfo: {
+                [[fallthrough]];
+            }
+
+            /**
+             * Providing info to the user.
+             * Not applicable to us. Treat it as failure.
+             * Cancel session and return false.
+             */
+            case Response::AuthTypeError: {
+                mErrorMsg = resp.authMessage();
+                resp      = cancelSession();
+
+                if ( resp.responseType() != Response::Success ) {
+                    mErrorMsg += "\nError while handling the previous error. Abort.";
+                }
+
+                qDebug() << mErrorMsg;
+
+                return false;
+            }
+        }
+
+        /** We should have never reached this point. */
+        mErrorMsg = "Unknown error. Abort.";
+        qDebug() << mErrorMsg;
+        return false;
     }
 
     return false;
 }
 
 
-bool GreetDLogin::startSession( QString baseCmd, QString type ) {
-    /** We now request greetd to start the selected session */
-    request req = {
-        .request_type = request_type_start_session,
-    };
+bool GreetdLogin::startSession( QString baseCmd, QString type ) {
+    /** Get the log name */
+    QString logName = tmpPath + "/QtGreet-" + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" ) + ".log";
 
     QString cmd;
-    QString logName = tmpPath + "/QtGreet-" + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" ) + ".log";
 
     if ( type == "wayland" ) {
         cmd = baseCmd + " > " + logName + " 2>&1";
@@ -85,21 +273,33 @@ bool GreetDLogin::startSession( QString baseCmd, QString type ) {
         cmd = baseCmd;
     }
 
-    /** Add the command to the request */
-    strncpy( req.body.request_start_session.cmd, cmd.toUtf8().constData(), 256 );
+    /** Send the start_session request */
+    Response resp = startSession( cmd, prepareEnv() );
 
-    /** Send the request */
-    response resp = roundtrip( req );
-
-    if ( resp.response_type == response_type_success ) {
+    if ( resp.responseType() == Response::Success ) {
         return true;
     }
+
+    qDebug() << "Failed to launch the session:" << baseCmd;
+    mErrorMsg = resp.errorMessage();
+    resp      = cancelSession();
+
+    if ( resp.responseType() != Response::Success ) {
+        mErrorMsg += "\nError while handling the previous error. Abort.";
+    }
+
+    qDebug() << mErrorMsg;
 
     return false;
 }
 
 
-QString GreetDLogin::getX11Session( QString base ) {
+QString GreetdLogin::errorMessage() {
+    return mErrorMsg;
+}
+
+
+QString GreetdLogin::getX11Session( QString base ) {
     QString xinit( "xinit %1 -- %2 :%3 vt%4 -keeptty -noreset -novtswitch -auth %5/Xauth.%6" );
 
     /* Arg2: Get the display */
@@ -118,12 +318,186 @@ QString GreetDLogin::getX11Session( QString base ) {
         }
     }
 
-    /* Arg3: Get the vt from config.toml */
-    QSettings toml( greetdPath, QSettings::IniFormat );
-    int       vt = toml.value( "terminal/vt" ).toInt();
-
     /* Arg4: Random strings for server auth file */
     QString hash = QCryptographicHash::hash( QDateTime::currentDateTime().toString().toUtf8(), QCryptographicHash::Md5 ).toHex().left( 10 );
 
-    return xinit.arg( base ).arg( xrcPath ).arg( display ).arg( vt ).arg( tmpPath ).arg( hash );
+    return xinit.arg( base ).arg( xrcPath ).arg( display ).arg( vtNum ).arg( tmpPath ).arg( hash );
+}
+
+
+QStringList GreetdLogin::prepareEnv() {
+    QStringList env;
+
+    sett->beginGroup( "Environment" );
+    for ( QString key: sett->allKeys() ) {
+        env << QString( "%1=%2" ).arg( key ).arg( sett->value( key ).toString() );
+    }
+    sett->endGroup();
+
+    QSettings envSett( "/etc/environment", QSettings::IniFormat );
+    for ( QString key: envSett.allKeys() ) {
+        env << QString( "%1=%2" ).arg( key ).arg( envSett.value( key ).toString() );
+    }
+
+    QDir envDir( "/etc/environment.d" );
+    for( QFileInfo info: envDir.entryInfoList( QDir::Files | QDir::Readable, QDir::Name ) ) {
+        QSettings s( info.filePath(), QSettings::IniFormat );
+        for ( QString key: s.allKeys() ) {
+            env << QString( "%1=%2" ).arg( key ).arg( s.value( key ).toString() );
+        }
+    }
+
+    return env;
+}
+
+
+Response GreetdLogin::createSession( QString username ) {
+    QVariantMap request;
+
+    request[ "type" ]     = "create_session";
+    request[ "username" ] = username;
+
+    QJsonDocument json;
+
+    json.setObject( QJsonObject::fromVariantMap( request ) );
+
+    QByteArray response = roundtrip( json.toJson().simplified() );
+
+    return Response( response );
+}
+
+
+Response GreetdLogin::postResponse( QString response ) {
+    QVariantMap request;
+
+    request[ "type" ] = "post_auth_message_response";
+
+    if ( not response.isEmpty() ) {
+        request[ "response" ] = response;
+    }
+
+    QJsonDocument json;
+
+    json.setObject( QJsonObject::fromVariantMap( request ) );
+
+    QByteArray respJson = roundtrip( json.toJson().simplified() );
+
+    return Response( respJson );
+}
+
+
+Response GreetdLogin::startSession( QString cmd, QStringList env ) {
+    QVariantMap request;
+
+    request[ "type" ] = "start_session";
+    request[ "cmd" ]  = QStringList() << cmd;
+
+    if ( env.count() ) {
+        request[ "env" ] = env;
+    }
+
+    QJsonDocument json;
+
+    json.setObject( QJsonObject::fromVariantMap( request ) );
+
+    QByteArray response = roundtrip( json.toJson().simplified() );
+
+    return Response( response );
+}
+
+
+Response GreetdLogin::cancelSession() {
+    QVariantMap request;
+
+    request[ "type" ] = "cancel_session";
+
+    QJsonDocument json;
+
+    json.setObject( QJsonObject::fromVariantMap( request ) );
+
+    QByteArray response = roundtrip( json.toJson().simplified() );
+
+    return Response( response );
+}
+
+
+bool GreetdLogin::connectToServer() {
+    if ( mFD > 0 ) {
+        close( mFD );
+    }
+
+    mFD = socket( AF_UNIX, SOCK_STREAM, 0 );
+
+    if ( mFD < 0 ) {
+        qDebug() << "Unable to open the socket";
+        return false;
+    }
+
+    struct sockaddr_un addr;
+
+    QString path = qgetenv( "GREETD_SOCK" );
+
+    if ( path.isEmpty() ) {
+        qDebug() << "Unable to retrieve GREETD_SOCK";
+        close( mFD );
+
+        return false;
+    }
+
+    memset( &addr, 0, sizeof(addr) );
+    addr.sun_family = AF_UNIX;
+    strcpy( addr.sun_path, path.toLocal8Bit().constData() );
+
+    if ( ::connect( mFD, ( struct sockaddr * )&addr, sizeof(addr) ) == -1 ) {
+        qDebug() << "Connection error:" << strerror( errno );
+        close( mFD );
+        return false;
+    }
+
+    return true;
+}
+
+
+QByteArray GreetdLogin::roundtrip( QByteArray payload ) {
+    if ( not connectToServer() ) {
+        return QByteArray();
+    }
+
+    /** 32-bit representation of the payload length */
+    uint32_t length  = payload.size();
+    char     *chrlen = ( char * )&length;
+
+    /** chrlen will be 4 bytes long */
+    if ( write( mFD, chrlen, 4 ) != 4 ) {
+        qDebug() << "Error sending message";
+        return QByteArray();
+    }
+
+    if ( write( mFD, payload.constData(), length ) != payload.size() ) {
+        qDebug() << "Error sending message";
+        return QByteArray();
+    }
+
+    uint32_t retLen;
+    char     *chrRetLen = ( char * )&retLen;
+
+    if ( read( mFD, chrRetLen, 4 ) != 4 ) {
+        qDebug() << "Error reading response from the server";
+        return QByteArray();
+    }
+
+    char message[ retLen + 1 ] = { '\0' };
+
+    memset( message, '\0', retLen + 1 );
+
+    if ( read( mFD, message, retLen ) != retLen ) {
+        qDebug() << "Error reading response from the server";
+        return QByteArray();
+    }
+
+    QByteArray respJson = message;
+
+    close( mFD );
+
+    return respJson;
 }

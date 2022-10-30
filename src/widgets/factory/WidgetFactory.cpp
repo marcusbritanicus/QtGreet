@@ -90,7 +90,6 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "UserIcon";
 
         w = new UserIcon();
-        w->setObjectName( type );
     }
 
     else if ( name == "UserName" ) {
@@ -103,17 +102,14 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
         else if ( type == "Label" ) {
             w = new UserLabel();
-            w->setObjectName( "UserName" );
         }
 
         else if ( type == "List" ) {
             w = new UserList();
-            w->setObjectName( "UserList" );
         }
 
         else if ( type == "Combo" ) {
             w = new UserCombo();
-            w->setObjectName( "UserList" );
         }
     }
 
@@ -134,17 +130,14 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
         if ( type == "List" ) {
             w = new SessionList( custom );
-            w->setObjectName( "SessionList" );
         }
 
         else if ( type == "Combo" ) {
             w = new SessionCombo( custom );
-            w->setObjectName( "SessionList" );
         }
 
         else if ( type == "Label" ) {
             w = new SessionLabel( custom );
-            w->setObjectName( "SessionName" );
         }
 
         else if ( type == "ToolButton" ) {
@@ -165,33 +158,28 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "SessionEdit Button";
 
         w = new SessionEditButton();
-        w->setObjectName( "SessionEditBtn" );
     }
 
     else if ( name == "PowerButton" ) {
         // qWarning() << "PowerButton";
 
         w = new PowerButton( type );
-        w->setObjectName( "PowerButton" );
     }
 
     else if ( (name == "CapsLock") or (name == "NumLock") ) {
         // qWarning() << "CapsLock";
 
         w = new LockState( name );
-        w->setObjectName( "LockState" );
     }
 
     else if ( (name == "UserNav") or (name == "SessionNav") ) {
         w = new NavButton( name, type );
-        w->setObjectName( "NavBtn" );
     }
 
     else if ( name == "Logo" ) {
         // qWarning() << "Logo";
 
         w = new Logo();
-        w->setObjectName( "Logo" );
     }
 
     else if ( name == "LoginButton" ) {

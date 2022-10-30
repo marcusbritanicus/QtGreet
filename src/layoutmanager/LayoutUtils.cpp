@@ -104,7 +104,7 @@ QMargins getMargins( Hjson::Value margins, QSize screenSize ) {
 }
 
 
-int getSpacing( Hjson::Value value, QSize screenSize ) {
+int getSpacing( Hjson::Value value, QSize ) {
     if ( value.empty() or not value.defined() ) {
         return 0;
     }
@@ -121,28 +121,39 @@ Qt::Alignment getAlignment( Hjson::Value value ) {
     QString       align( value.to_string().c_str() );
     Qt::Alignment XX;
 
-    if ( align[ 0 ] == "T" ) {
+    /** We'll manage the alignment externally */
+    if ( align.isEmpty() ) {
+        return XX;
+    }
+
+    if ( align.at( 0 ) == QChar( 'T' ) ) {
         XX = Qt::AlignTop;
     }
 
-    else if ( align[ 0 ] == "M" ) {
+    else if ( align.at( 0 ) == QChar( 'M' ) ) {
         XX = Qt::AlignVCenter;
     }
 
-    else if ( align[ 0 ] == "B" ) {
+    else if ( align.at( 0 ) == QChar( 'B' ) ) {
         XX = Qt::AlignBottom;
     }
 
-    if ( align[ 1 ] == "L" ) {
+    if ( align.size() == 2 ) {
+        if ( align.at( 1 ) == QChar( 'L' ) ) {
+            XX |= Qt::AlignLeft;
+        }
+
+        else if ( align.at( 1 ) == QChar( 'M' ) ) {
+            XX |= Qt::AlignHCenter;
+        }
+
+        else if ( align.at( 1 ) == QChar( 'R' ) ) {
+            XX |= Qt::AlignRight;
+        }
+    }
+
+    else {
         XX |= Qt::AlignLeft;
-    }
-
-    else if ( align[ 1 ] == "M" ) {
-        XX |= Qt::AlignHCenter;
-    }
-
-    else if ( align[ 1 ] == "R" ) {
-        XX |= Qt::AlignRight;
     }
 
     return XX;

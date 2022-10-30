@@ -28,6 +28,15 @@ class LoginManager : public QObject {
     public:
         LoginManager();
 
-        virtual bool authenticate( QString user, QString passwd )  = 0;
+        /** Make an attempt to authenticate the user @user using the password @passwd */
+        virtual bool authenticate( QString user, QString passwd ) = 0;
+
+        /** User authentication was successful. Try to start the session */
         virtual bool startSession( QString command, QString type ) = 0;
+
+        /**
+         * If authenticate/startSession failed, retrieve the error message.
+         * The error message will be reset if another command is issued.
+         */
+        virtual QString errorMessage() = 0;
 };

@@ -46,6 +46,7 @@ Sessions getSessions( bool custom ) {
     Sessions mSessions;
 
     QStringList wlSessPaths;
+
     if ( wlSessPath == "default" ) {
         wlSessPaths = QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "wayland-sessions", QStandardPaths::LocateDirectory );
     }
@@ -77,6 +78,7 @@ Sessions getSessions( bool custom ) {
     }
 
     QStringList xSessPaths;
+
     if ( xSessPath == "default" ) {
         xSessPaths = QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "xsessions", QStandardPaths::LocateDirectory );
     }

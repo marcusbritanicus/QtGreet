@@ -19,9 +19,6 @@
  **/
 
 #include "LoginManager.hpp"
-extern "C" {
-#include "proto.h"
-}
 
 LoginManager::LoginManager() {
     /** Nothing much */

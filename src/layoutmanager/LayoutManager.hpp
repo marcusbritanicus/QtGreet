@@ -50,8 +50,8 @@ class QtGreet::LayoutManager {
         void readLayout( Hjson::Value layout );
 
         /** Initialize a row and it's widgets */
-        QWidget * addRow( Hjson::Value row, QString name, Hjson::Value props, QString space );
+        QWidget * addRow( Hjson::Value row, QString name, Hjson::Value props );
 
         /** Initialize a column and it's widgets */
-        QWidget * addColumn( Hjson::Value row, QString name, Hjson::Value props, QString space );
+        QWidget * addColumn( Hjson::Value row, QString name, Hjson::Value props );
 };

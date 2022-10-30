@@ -425,6 +425,7 @@ namespace Hjson {
                         break;
                     }
                 }
+                [[fallthrough]];
             }
 
             default: {
@@ -461,6 +462,7 @@ namespace Hjson {
                         break;
                     }
                 }
+                [[fallthrough]];
             }
 
             default: {

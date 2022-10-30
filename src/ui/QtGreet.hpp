@@ -50,23 +50,33 @@ class QtGreet::UI : public QMainWindow {
         /* Update the session on the screen */
         void updateSession( uint );
 
+        /* Show the validating message */
+        void showValidating();
+
         User mCurUser;
         Session mCurSession;
 
+        /* Background image */
         QImage background;
 
+        /* QtGreet theme manager */
         ThemeManager *themeManager;
 
+        /* Base to show multiple widgets */
         QStackedWidget *base;
 
+        /* Login manager backend */
         LoginManager *login;
+
+        /* Validation message */
+        QLabel *validating;
 
     protected:
         void paintEvent( QPaintEvent *pEvent );
         void keyPressEvent( QKeyEvent *kEvent );
 
     private Q_SLOTS:
-        //
+        // Try to login: If successful, store the username/userid and the session path.
         void tryLogin();
 
         // ComboBox
