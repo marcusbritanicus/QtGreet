@@ -140,16 +140,33 @@ User UserName::currentUser() {
 }
 
 
-void UserName::setCurrentUser( User usr ) {
+bool UserName::setCurrentUser( User usr ) {
     /** Check name and uid. */
     for ( int i = 0; i < mUserList.count(); i++ ) {
         User xusr = mUserList.at( i );
 
         if ( (xusr.username == usr.username) and (xusr.uid == usr.uid) ) {
             curUser = i;
-            break;
+            return true;
         }
     }
+
+    return false;
+}
+
+
+bool UserName::setCurrentUser( uint uid ) {
+    /** Check uid. */
+    for ( int i = 0; i < mUserList.count(); i++ ) {
+        User xusr = mUserList.at( i );
+
+        if ( xusr.uid == uid ) {
+            curUser = i;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 

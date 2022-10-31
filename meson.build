@@ -196,11 +196,6 @@ if get_option( 'nodynpath' ) == false
 	)
 endif
 
-install_emptydir(
-	get_option( 'logpath' ),
-	install_mode: [ 'rwxr-xr-x', get_option( 'username' ), get_option( 'username' ) ],
-)
-
 summary = [
 	'',
 	'--------------',

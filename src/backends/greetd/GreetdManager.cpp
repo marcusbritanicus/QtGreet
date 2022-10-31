@@ -257,7 +257,7 @@ bool GreetdLogin::authenticate( QString username, QString password ) {
 
 bool GreetdLogin::startSession( QString baseCmd, QString type ) {
     /** Get the log name */
-    QString logName = tmpPath + "/QtGreet-" + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" ) + ".log";
+    QString logName = logPath + "/session/QtGreet-" + QDateTime::currentDateTime().toString( "ddMMyyyy-hhmmss" ) + ".log";
 
     QString cmd;
 

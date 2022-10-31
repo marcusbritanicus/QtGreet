@@ -107,9 +107,17 @@ void QtGreet::UI::createUI() {
 
 
 void QtGreet::UI::prepareUIforUse() {
+    int lastUsedId = users->value( "LastUsedId", -1 ).toInt();
+
     UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 
     if ( ulc ) {
+        /** Update the widget with the last used user id */
+        if ( lastUsedId != -1 ) {
+            ulc->setCurrentUser( (uint)lastUsedId );
+        }
+
+        /** Get the updated User */
         User usr( ulc->currentUser() );
         updateUser( usr );
         updateSession( usr.uid );
@@ -118,6 +126,12 @@ void QtGreet::UI::prepareUIforUse() {
     UserList *ul = findChild<UserList *>( "UserList" );
 
     if ( ul ) {
+        /** Update the widget with the last used user id */
+        if ( lastUsedId != -1 ) {
+            ul->setCurrentUser( (uint)lastUsedId );
+        }
+
+        /** Get the updated User */
         User usr( ul->currentUser() );
         updateUser( usr );
         updateSession( usr.uid );
@@ -126,6 +140,12 @@ void QtGreet::UI::prepareUIforUse() {
     UserLabel *unl = findChild<UserLabel *>( "UserLabel" );
 
     if ( unl ) {
+        /** Update the widget with the last used user id */
+        if ( lastUsedId != -1 ) {
+            unl->setCurrentUser( (uint)lastUsedId );
+        }
+
+        /** Get the updated User */
         User usr( unl->currentUser() );
         updateUser( usr );
         updateSession( usr.uid );
@@ -365,6 +385,7 @@ void QtGreet::UI::tryLogin() {
 
         if ( sess ) {
             /** Save the user info */
+            users->setValue( "LastUsedId", mCurUser.uid );
             users->setValue( QString( "LastUsed/%1" ).arg( mCurUser.uid ), mCurSession.file );
 
             qApp->quit();

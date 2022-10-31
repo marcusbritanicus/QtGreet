@@ -30,6 +30,6 @@ option(
 option(
     'logpath',
     type: 'string',
-    value: '/var/log/qtgreet',
-    description: 'Location where QtGreet logs can be stored',
+    value: '/var/tmp/qtgreet',
+    description: 'Location where user session logs can be stored',
 )

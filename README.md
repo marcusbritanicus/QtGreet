@@ -13,7 +13,7 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 - DFL::Applications (https://gitlab.com/desktop-frameworks/applications.git)
 - DFL::IPC (https://gitlab.com/desktop-frameworks/ipc.git)
 - DFL::Utils (https://gitlab.com/desktop-frameworks/utils.git)
-- A wayland based compositor (wayfire, sway, cage etc..)
+- A wayland based compositor (wayfire, sway, cage etc..) - Optional
 - Meson (to build this project)
 - Ninja (to compile this project)
 
@@ -44,6 +44,25 @@ You can either use the *inbuilt* `greeetwl` compositor (a fork of `tinywl`), or 
 - Similarly for sway,
   * Open `/etc/greetd/config.toml` for editing with your favorite editor.
   * Under `[default_session]`, set `command = "sway --config /etc/qtgreet/sway.cfg"`
+
+### CLI Options
+Following command-line options are available:
+```
+  -h, --help                               Displays help on commandline options.
+  -v, --version                            Displays version information.
+  -c, --config <cfgfile>                   Configuration file (Default: /etc/qtgreet/config.ini)
+  -d, --data-path <datafile>               Path to store dynamic data (Default: /var/lib/qtgreet/)
+  -w, --wl-session-path <path1;path2;...>  Path(s) containing wayland session desktops  (Default: /usr/share/wayland-sessions)
+  -x, --x-session-path <path1;path2;...>   Path(s) containing x11 session desktops  (Default: /usr/share/xsessions)
+  -p, --passwd-path <passwd>               Path to passwd  (Default: /etc/passwd)
+  -l, --login-defs-path <login>            Path to login.defs  (Default: /etc/login.defs)
+  -r, --xserver-path <xrc-path>            Path to xserverrc  (Default: /etc/X11/xinit/xserverrc)
+  -t, --tmp-path <tmp>                     System temp folder (Default: /tmp)
+  -n, --vt-number <vtnr>                   VT number where the session is started (Default: 1; applicable for X11 only)
+  -o, --log-path <log-path>                Path to store log files (Default: /var/tmp/qtgreet)
+```
+
+If you're using `greetwl` as the compositor, you can pass these options to `greetwl` which will forward them to `qtgreet`.
 
 ### Configuring the keyboard layout for wayfire
 Sometimes, it would be easier if the keyboard layout was not the default `us`. For wayfire, simply add the following line at the end of

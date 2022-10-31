@@ -56,16 +56,6 @@ void setupWindow( QScreen *screen, WQt::WindowHandle *hndl ) {
 
 
 int main( int argc, char **argv ) {
-    QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
-
-    QString dt( QDateTime::currentDateTime().toString( "yyyyMMddThhmmss" ) );
-    QString logFile = QString( "%1/%2.log" ).arg( LOGPATH ).arg( dt );
-
-    DFL::log = fopen( logFile.toLocal8Bit().data(), "w" );
-    qInstallMessageHandler( DFL::Logger );
-
-    qInfo() << "QtGreet Started";
-
     DFL::Application *app = new DFL::Application( argc, argv );
     app->setOrganizationName( "QtGreet" );
     app->setApplicationName( "QtGreet" );
@@ -132,9 +122,59 @@ int main( int argc, char **argv ) {
     vtNum       = (parser.isSet( "vt-number" ) ? parser.value( "vt-number" ) : vtNum);
     logPath     = (parser.isSet( "log-path" ) ? parser.value( "log-path" ) : logPath);
 
+    /**
+     * Notes: Log path
+     * 1. logPath / greeter (mode 0700) will contain log files produced by qtgreet's debug output
+     * 2. logPath / session (mode 01777) will contain log files produced by the session.
+     *    This is redirected from the stdout/stderr in GreetdLogin when starting a named session.
+     */
+
+    /** Create @logPath first. */
+    if ( not QFile::exists( logPath ) ) {
+        mkdir( logPath.toLocal8Bit().constData(), 01700 );
+    }
+
+    /** Prepare our paths */
+    if ( QFile::exists( logPath ) ) {
+        /** Create the 'logPath / greeter' folder */
+        QString greeter = QDir( logPath ).filePath( "greeter" );
+        QString session = QDir( logPath ).filePath( "session" );
+
+        /** Only qtgreet can write into this folder */
+        if ( mkdir( greeter.toLocal8Bit().constData(), 01700 ) ) {
+            qDebug() << strerror( errno );
+        }
+
+        /** Any user can write into this folder */
+        if ( mkdir( session.toLocal8Bit().constData(), 01777 ) ) {
+            qDebug() << strerror( errno );
+        }
+    }
+
+    QString dt( QDateTime::currentDateTime().toString( "yyyyMMddThhmmss" ) );
+    QString logFile = QString( "%1/greeter/%2.log" ).arg( logPath ).arg( dt );
     if ( DFL::log == NULL ) {
-        QString altLogFile = QString( "%1/%2.log" ).arg( logPath != LOGPATH ? logPath : tmpPath ).arg( dt );
+        /** Unable to open the logPath, we'll try system tmpPath */
+        QString altLogFile = QString( "%1/%2.log" ).arg( tmpPath ).arg( dt );
         DFL::log = fopen( altLogFile.toLocal8Bit().data(), "w" );
+    }
+
+    DFL::log = fopen( logFile.toLocal8Bit().data(), "w" );
+    qInstallMessageHandler( DFL::Logger );
+
+    qInfo() << "Starting QtGreet";
+
+    if ( parser.isSet( "test" ) ) {
+        qInfo() << "Config file:           " << configPath;
+        qInfo() << "Dynamic data path:     " << dynDataPath;
+        qInfo() << "Wayland sessions path: " << wlSessPath;
+        qInfo() << "X11 sessions path:     " << xSessPath;
+        qInfo() << "passwd file:           " << passwdPath;
+        qInfo() << "login.defs file:       " << loginPath;
+        qInfo() << "Xserverrc file:        " << xrcPath;
+        qInfo() << "System temp path:      " << tmpPath;
+        qInfo() << "VT Number:             " << vtNum;
+        qInfo() << "Session log path:      " << logPath;
     }
 
     if ( dynDataPath.isEmpty() and not parser.isSet( "data-path" ) ) {

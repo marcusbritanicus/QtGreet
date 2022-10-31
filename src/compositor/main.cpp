@@ -31,8 +31,6 @@ extern "C" {
 
 TinyWlServer *server = NULL;
 
-static const char *COLOR_INFO     = "\033[01;32m";
-static const char *COLOR_DEBUG    = "\033[01;30m";
 static const char *COLOR_WARN     = "\033[01;33m";
 static const char *COLOR_CRITICAL = "\033[01;31m";
 static const char *COLOR_FATAL    = "\033[01;41m";
@@ -68,10 +66,28 @@ void handleSignals( int signum ) {
 static void startQtGreet( int argc, char *argv[] ) {
     QCoreApplication app( argc, argv );
 
-    QProcess proc;
+    QProcess *proc = new QProcess();
 
-    proc.start( "qtgreet", {}, QProcess::ReadOnly );
-    proc.waitForFinished( -1 );
+    QObject::connect(
+        proc, &QProcess::readyReadStandardError, [=] () {
+            /** Redirect the stderr of qtgreet to our stderr */
+            qDebug() << proc->readAllStandardError().trimmed().data();
+        }
+    );
+
+    QObject::connect(
+        proc, &QProcess::readyReadStandardOutput, [=] () {
+            /** Redirect the stdout of qtgreet to our stderr */
+            qDebug() << proc->readAllStandardOutput().trimmed().data();
+        }
+    );
+
+    /**
+     * Pass the arguments sent to greetwl to qtgreet.
+     * This way we can quite easily use the cli args of qtgreet while using greetwl
+     */
+    proc->start( "qtgreet", app.arguments().mid( 1 ) );
+    proc->waitForFinished( -1 );
 }
 
 

@@ -46,7 +46,17 @@ class UserName {
         Users users();
         User currentUser();
 
-        void setCurrentUser( User usr );
+        /**
+         * Set the current user based on the struct user_t.
+         * Here we compare the username and user id.
+         */
+        bool setCurrentUser( User usr );
+
+        /**
+         * Set the current user based on the user id.
+         * Here we compare only the user id.
+         */
+        bool setCurrentUser( uint uid );
 
     protected:
         Users mUserList;
