@@ -9,10 +9,10 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 
 ### Dependencies:
 - Qt5 (duh...)
-- WayQt (https://gitlab.com/desqktop-frameworks/wayqt.git)
-- DFL::Applications (https://gitlab.com/desqktop-frameworks/applications.git)
-- DFL::IPC (https://gitlab.com/desqktop-frameworks/ipc.git)
-- DFL::Utils (https://gitlab.com/desqktop-frameworks/utils.git)
+- WayQt (https://gitlab.com/desktop-frameworks/wayqt.git)
+- DFL::Applications (https://gitlab.com/desktop-frameworks/applications.git)
+- DFL::IPC (https://gitlab.com/desktop-frameworks/ipc.git)
+- DFL::Utils (https://gitlab.com/desktop-frameworks/utils.git)
 - A wayland based compositor (wayfire, sway, cage etc..)
 - Meson (to build this project)
 - Ninja (to compile this project)
