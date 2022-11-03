@@ -131,7 +131,7 @@ int main( int argc, char **argv ) {
 
     /** Create @logPath first. */
     if ( not QFile::exists( logPath ) ) {
-        mkdir( logPath.toLocal8Bit().constData(), 01700 );
+        mkdir( logPath.toLocal8Bit().constData(), 01777 );
     }
 
     /** Prepare our paths */
