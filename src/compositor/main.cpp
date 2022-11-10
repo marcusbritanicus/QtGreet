@@ -69,14 +69,14 @@ static void startQtGreet( int argc, char *argv[] ) {
     QProcess *proc = new QProcess();
 
     QObject::connect(
-        proc, &QProcess::readyReadStandardError, [=] () {
+        proc, &QProcess::readyReadStandardError, [ = ] () {
             /** Redirect the stderr of qtgreet to our stderr */
             qDebug() << proc->readAllStandardError().trimmed().data();
         }
     );
 
     QObject::connect(
-        proc, &QProcess::readyReadStandardOutput, [=] () {
+        proc, &QProcess::readyReadStandardOutput, [ = ] () {
             /** Redirect the stdout of qtgreet to our stderr */
             qDebug() << proc->readAllStandardOutput().trimmed().data();
         }

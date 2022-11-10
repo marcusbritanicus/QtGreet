@@ -72,6 +72,7 @@ QtGreet::UI::UI() {
     prepareUIforUse();
 
     QAction *act = new QAction( "Quit" );
+
     act->setShortcut( QKeySequence( Qt::SHIFT | Qt::CTRL | Qt::Key_Q ) );
     connect(
         act, &QAction::triggered, [ = ]() {
@@ -322,9 +323,10 @@ void QtGreet::UI::showValidating() {
     btn->setFixedSize( 100, 36 );
     connect( btn, &QPushButton::clicked, base, &QWidget::close );
     connect(
-        btn, &QPushButton::clicked, [=] () {
+        btn, &QPushButton::clicked, [ = ] () {
             base->close();
             QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
+
             if ( pwd ) {
                 pwd->selectAll();
                 pwd->setFocus();
@@ -385,7 +387,7 @@ void QtGreet::UI::tryLogin() {
 
         if ( sess ) {
             /** Save the user info */
-            users->setValue( "LastUsedId", mCurUser.uid );
+            users->setValue( "LastUsedId",                                 mCurUser.uid );
             users->setValue( QString( "LastUsed/%1" ).arg( mCurUser.uid ), mCurSession.file );
 
             qApp->quit();

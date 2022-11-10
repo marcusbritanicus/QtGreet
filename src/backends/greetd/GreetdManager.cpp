@@ -335,12 +335,14 @@ QStringList GreetdLogin::prepareEnv() {
     sett->endGroup();
 
     QSettings envSett( "/etc/environment", QSettings::IniFormat );
+
     for ( QString key: envSett.allKeys() ) {
         env << QString( "%1=%2" ).arg( key ).arg( envSett.value( key ).toString() );
     }
 
     QDir envDir( "/etc/environment.d" );
-    for( QFileInfo info: envDir.entryInfoList( QDir::Files | QDir::Readable, QDir::Name ) ) {
+
+    for ( QFileInfo info: envDir.entryInfoList( QDir::Files | QDir::Readable, QDir::Name ) ) {
         QSettings s( info.filePath(), QSettings::IniFormat );
         for ( QString key: s.allKeys() ) {
             env << QString( "%1=%2" ).arg( key ).arg( s.value( key ).toString() );
