@@ -57,18 +57,20 @@ void setupWindow( QScreen *screen, WQt::WindowHandle *hndl ) {
 
 int main( int argc, char **argv ) {
     DFL::Application *app = new DFL::Application( argc, argv );
+
     app->setOrganizationName( "QtGreet" );
     app->setApplicationName( "QtGreet" );
     app->setDesktopFileName( "qtgreet.desktop" );
     app->setApplicationVersion( PROJECT_VERSION );
 
     app->interceptSignal( SIGSEGV, true );
-    app->interceptSignal( SIGINT, true );
+    app->interceptSignal( SIGINT,  true );
     app->interceptSignal( SIGQUIT, true );
     app->interceptSignal( SIGTERM, true );
     app->interceptSignal( SIGABRT, true );
 
     QCommandLineParser parser;
+
     parser.addHelpOption();
     parser.addVersionOption();
 
@@ -104,6 +106,7 @@ int main( int argc, char **argv ) {
 
     /* Optional: Provide login.defs path */
     QCommandLineOption test( "test", "Test QtGreet without using Wayland Protocols" );
+
     test.setFlags( QCommandLineOption::HiddenFromHelp );
     parser.addOption( test );
 
@@ -131,7 +134,8 @@ int main( int argc, char **argv ) {
 
     /** Create @logPath first. */
     if ( not QFile::exists( logPath ) ) {
-        mkdir( logPath.toLocal8Bit().constData(), 01777 );
+        mkdir( logPath.toLocal8Bit().constData(), 0700 );
+        chmod( logPath.toLocal8Bit().constData(), (mode_t)01777 );
     }
 
     /** Prepare our paths */
@@ -146,13 +150,20 @@ int main( int argc, char **argv ) {
         }
 
         /** Any user can write into this folder */
-        if ( mkdir( session.toLocal8Bit().constData(), 01777 ) ) {
+        if ( mkdir( session.toLocal8Bit().constData(), 0700 ) ) {
             qDebug() << strerror( errno );
+        }
+
+        else {
+            if ( chmod( session.toLocal8Bit().constData(), (mode_t)01777 ) ) {
+                qDebug() << strerror( errno );
+            }
         }
     }
 
     QString dt( QDateTime::currentDateTime().toString( "yyyyMMddThhmmss" ) );
     QString logFile = QString( "%1/greeter/%2.log" ).arg( logPath ).arg( dt );
+
     if ( DFL::log == NULL ) {
         /** Unable to open the logPath, we'll try system tmpPath */
         QString altLogFile = QString( "%1/%2.log" ).arg( tmpPath ).arg( dt );
@@ -196,6 +207,7 @@ int main( int argc, char **argv ) {
     }
 
     WQt::Registry *wlRegistry = new WQt::Registry( WQt::Wayland::display() );
+
     wlRegistry->setup();
 
     WQt::WindowManager *wm = wlRegistry->windowManager();
