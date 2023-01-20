@@ -1,6 +1,6 @@
 # QtGreet
 
-### Note: Github is a read-only mirror. You can open PRs and issues at [GitLab](https://gitlab.com/marcusbritanicus/QGGreet)
+#### Note: Github is a read-only mirror. You can open PRs and issues at [GitLab](https://gitlab.com/marcusbritanicus/QtGreet.git).
 
 Qt based greeter for [greetd](https://git.sr.ht/~kennylevinsen/greetd), to be run under wayfire or similar wlr-based compositors.
 
