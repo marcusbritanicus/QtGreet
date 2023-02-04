@@ -21,10 +21,29 @@
 #pragma once
 
 #include <QtWidgets>
+#include <QtDBus>
 
 class PowerButton : public QToolButton {
     Q_OBJECT;
 
     public:
         PowerButton( QString type );
+
+        /** Perform a suspend */
+        Q_SIGNAL void suspend();
+
+        /** Perform a hibernate */
+        Q_SIGNAL void hibernate();
+
+        /**
+         * Perform a shutdown or inform the user of a shutdown.
+         * @done - The action has been done, just inform the user.
+         */
+        Q_SIGNAL void shutdown( bool done );
+
+        /**
+         * Perform a reboot or inform the user of a reboot.
+         * @done - The action has been done, just inform the user.
+         */
+        Q_SIGNAL void reboot( bool done );
 };

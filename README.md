@@ -16,6 +16,7 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 - DFL::Applications (https://gitlab.com/desktop-frameworks/applications.git)
 - DFL::IPC (https://gitlab.com/desktop-frameworks/ipc.git)
 - DFL::Utils (https://gitlab.com/desktop-frameworks/utils.git)
+- DFL::Login1 (https://gitlab.com/desktop-frameworks/login1.git)
 - A wayland based compositor (wayfire, sway, cage etc..) - Optional
 - Meson (to build this project)
 - Ninja (to compile this project)

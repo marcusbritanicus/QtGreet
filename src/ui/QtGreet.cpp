@@ -36,6 +36,8 @@
 QtGreet::UI::UI() {
     login = new GreetdLogin();
 
+    login1 = new DFL::Login1( this );
+
     themeManager = new ThemeManager( sett->value( "Theme", "default" ).toString() );
 
     setFixedSize( qApp->primaryScreen()->size() );
@@ -82,6 +84,12 @@ QtGreet::UI::UI() {
     );
 
     addAction( act );
+
+    QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
+
+    if ( pwd ) {
+        pwd->setFocus();
+    }
 }
 
 
@@ -365,6 +373,117 @@ void QtGreet::UI::showValidating() {
 }
 
 
+void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
+    QWidget *base = new QWidget( this );
+
+    base->setObjectName( "OverLay" );
+    base->setFixedSize( size() );
+
+    QWidget *msg = new QWidget();
+    QLabel *powerMsg = new QLabel();
+
+    msg->setObjectName( "widget" );
+
+    QString message1(
+        "<b>%1</b><br>"
+        "<p>"
+        "Your system will be %2 shortly. Please standby."
+        "</p>"
+    );
+
+    QString message2(
+        "<b>%1</b><br>"
+        "<p>"
+        "Your system will be %2 in %3s. Click <tt>[Cancel]</tt> to cancel."
+        "</p>"
+    );
+
+    if ( done ) {
+        powerMsg->setText( message1.arg( reboot ? "Rebooting..." : "Shutting Down..." ).arg( reboot ? "reboot" : "shutdown" ) );
+    }
+
+    else {
+        powerMsg->setText( message2.arg( reboot ? "Rebooting..." : "Shutting Down..." ).arg( reboot ? "reboot" : "shutdown" ).arg( 10 ) );
+    }
+
+    QTimer *timer = new QTimer();
+    timer->setInterval( 1000 );
+    timer->setTimerType( Qt::CoarseTimer );
+
+    QPushButton *btn = new QPushButton( QIcon::fromTheme( "dialog-close" ), "&Cancel" );
+    btn->setToolTip( QString( "Cancel the %1" ).arg( reboot ? "reboot" : "shutdown" ) );
+    btn->setFixedSize( 100, 36 );
+
+    connect(
+        btn, &QPushButton::clicked, [=] () {
+            timer->stop();
+            login1->scheduleShutdown( "cancel", 0 );
+            base->close();
+        }
+    );
+
+    QGridLayout *lyt = new QGridLayout();
+
+    lyt->setContentsMargins( QMargins( 100, 100, 100, 100 ) );
+    lyt->setSpacing( 50 );
+    lyt->addWidget( powerMsg, 0, 0, Qt::AlignCenter );
+    if ( !done ) {
+        lyt->addWidget( btn, 1, 0, Qt::AlignCenter );
+    }
+
+    msg->setLayout( lyt );
+
+    QGridLayout *blyt = new QGridLayout();
+
+    blyt->addWidget( msg, 0, 0, Qt::AlignCenter );
+
+    base->setLayout( blyt );
+    base->setStyleSheet(
+        "#widget {"
+        "    border: 2px solid gray;"
+        "    border-radius: 5px;"
+        "}"
+        "QPushButton {"
+        "    border: 2px solid gray;"
+        "    border-radius: 10px;"
+        "    background-color: rgba(255, 255, 255, 30);"
+        "}"
+    );
+
+    base->show();
+    btn->setFocus();
+
+    int remaining = 10;
+    connect(
+        timer, &QTimer::timeout, [ = ] () mutable {
+            remaining--;
+
+            /**
+             * 10s are up. Close the GUI.
+             * Shutdown will be in progress.
+             */
+            if ( remaining <= 0 ) {
+                timer->stop();
+                qApp->quit();
+            }
+
+            else {
+                if ( done ) {
+                    powerMsg->setText( message1.arg( reboot ? "Rebooting..." : "Shutting Down..." ).arg( reboot ? "reboot" : "shutdown" ) );
+                }
+                else {
+                    powerMsg->setText( message2.arg( reboot ? "Rebooting..." : "Shutting Down..." ).arg( reboot ? "reboot" : "shutdown" ).arg( remaining ) );
+                }
+            }
+        }
+    );
+
+    login1->scheduleShutdown( ( reboot ? "reboot" : "poweroff" ), 10 * 1000 * 1000 );
+
+    timer->start();
+}
+
+
 void QtGreet::UI::tryLogin() {
     QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
 
@@ -400,16 +519,16 @@ void QtGreet::UI::tryLogin() {
     QString errTitle;
     QString errMsg;
 
-    if ( not auth ) {
-        errTitle = "Authentication failure";
-        errMsg   = "We failed to authenticate you. Did you enter the correct password?";
-        errMsg  += "<p>Server says <br><center><tt>" + authMsg + "</tt></center></p>";
-    }
-
-    else {
+    if ( auth ) {
         errTitle = "Failed to start Session";
         errMsg   = "We failed to start the selected session. Perhaps a wrong command?";
         errMsg  += "<p>Server says <br><center><tt>" + sessMsg + "</tt></center></p>";
+    }
+
+    else {
+        errTitle = "Authentication failure";
+        errMsg   = "We failed to authenticate you. Did you enter the correct password?";
+        errMsg  += "<p>Server says <br><center><tt>" + authMsg + "</tt></center></p>";
     }
 
     validating->setText( QString( "<center><b>%1</b></center><p>%2</p>" ).arg( errTitle ).arg( errMsg ) );
@@ -576,13 +695,11 @@ void QtGreet::UI::on_UserCombo_currentIndexChanged( int idx ) {
     // Reset the password and change the login session
     UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 
-    if ( not ulc ) {
-        return;
+    if ( ulc ) {
+        User usr( ulc->users().at( idx ) );
+
+        updateUser( usr );
     }
-
-    User usr( ulc->users().at( idx ) );
-
-    updateUser( usr );
 }
 
 
@@ -609,4 +726,44 @@ void QtGreet::UI::on_UserList_currentItemChanged( QListWidgetItem *cur, QListWid
     if ( pwd ) {
         pwd->clear();
     }
+}
+
+
+void QtGreet::UI::on_PowerButton_suspend() {
+    login1->request( "Suspend" );
+}
+
+
+void QtGreet::UI::on_PowerButton_hibernate() {
+    login1->request( "Hibernate" );
+}
+
+
+void QtGreet::UI::on_PowerButton_shutdown( bool done ) {
+    showPowerMessage( false, done );
+}
+
+
+void QtGreet::UI::on_PowerButton_reboot( bool done ) {
+    showPowerMessage( true, done );
+}
+
+
+void QtGreet::UI::on_Suspend_suspend() {
+    login1->request( "Suspend" );
+}
+
+
+void QtGreet::UI::on_Hibernate_hibernate() {
+    login1->request( "Hibernate" );
+}
+
+
+void QtGreet::UI::on_Halt_shutdown( bool done ) {
+    showPowerMessage( false, done );
+}
+
+
+void QtGreet::UI::on_Reboot_reboot( bool done ) {
+    showPowerMessage( true, done );
 }

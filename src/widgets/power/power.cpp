@@ -24,25 +24,7 @@
 #include "power.hpp"
 
 QString getCommand( QString what ) {
-    QString cmd = sett->value( what ).toString();
-
-    /** Figure out if we should use systemctl or loginctl */
-    if ( cmd == "default" ) {
-        for ( QString path: qEnvironmentVariable( "PATH" ).split( ":" ) ) {
-            if ( QFile::exists( path + "/systemctl" ) ) {
-                return "systemctl";
-            }
-
-            if ( QFile::exists( path + "/loginctl" ) ) {
-                return "loginctl";
-            }
-        }
-
-        qCritical() << "Unable to figure out command for" << what;
-        return QString();
-    }
-
-    return cmd;
+    return sett->value( "PowerCommands/" + what ).toString();
 }
 
 
@@ -53,28 +35,62 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
 
     if ( type == "Menu" ) {
         setIcon( QIcon( ":/icons/shutdown.png" ) );
+        setObjectName( "PowerButton" );
 
         setToolTip( "Logout Menu" );
 
         QMenu *menu = new QMenu();
         menu->addAction(
             QIcon( ":/icons/suspend.png" ), "Suspend to RAM", [ = ] () {
-                QProcess::startDetached( getCommand( "suspend" ), { "suspend", "-i" } );
+                QStringList args = getCommand( "Suspend" ).split( " " );
+                if ( args.at( 0 ) == "dbus" ) {
+                    emit suspend();
+                }
+
+                else {
+                    QProcess::startDetached( args.takeAt( 0 ), args );
+                }
             }
         );
+
         menu->addAction(
             QIcon( ":/icons/hibernate.png" ), "Suspend to Disk", [ = ] () {
-                QProcess::startDetached( getCommand( "hibernate" ), { "hibernate", "-i" } );
+                QStringList args = getCommand( "Hibernate" ).split( " " );
+                if ( args.at( 0 ) == "dbus" ) {
+                    emit hibernate();
+                }
+
+                else {
+                    QProcess::startDetached( args.takeAt( 0 ), args );
+                }
             }
         );
+
         menu->addAction(
             QIcon( ":/icons/shutdown.png" ), "Halt System", [ = ] () {
-                QProcess::startDetached( getCommand( "shutdown" ), { "shutdown", "-i" } );
+                QStringList args = getCommand( "Shutdown" ).split( " " );
+                if ( args.at( 0 ) == "dbus" ) {
+                    emit shutdown( false );
+                }
+
+                else {
+                    QProcess::startDetached( args.takeAt( 0 ), args );
+                    emit shutdown( true );
+                }
             }
         );
+
         menu->addAction(
             QIcon( ":/icons/reboot.png" ), "Reboot System", [ = ] () {
-                QProcess::startDetached( getCommand( "reboot" ), { "reboot", "-i" } );
+                QStringList args = getCommand( "Reboot" ).split( " " );
+                if ( args.at( 0 ) == "dbus" ) {
+                    emit reboot( false );
+                }
+
+                else {
+                    QProcess::startDetached( args.takeAt( 0 ), args );
+                    emit reboot( true );
+                }
             }
         );
 
@@ -88,7 +104,14 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         setIcon( QIcon( ":/icons/suspend.png" ) );
         connect(
             this, &QToolButton::clicked, [ = ] () {
-                QProcess::startDetached( getCommand( "suspend" ), { "suspend", "-i" } );
+                QStringList args = getCommand( "Suspend" ).split( " " );
+                if ( args.at( 0 ) == "dbus" ) {
+                    emit suspend();
+                }
+
+                else {
+                    QProcess::startDetached( args.takeAt( 0 ), args );
+                }
             }
         );
     }
@@ -99,7 +122,14 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         setIcon( QIcon( ":/icons/hibernate.png" ) );
         connect(
             this, &QToolButton::clicked, [ = ] () {
-                QProcess::startDetached( getCommand( "hibernate" ), { "hibernate", "-i" } );
+                QStringList args = getCommand( "Hibernate" ).split( " " );
+                if ( args.at( 0 ) == "dbus" ) {
+                    emit hibernate();
+                }
+
+                else {
+                    QProcess::startDetached( args.takeAt( 0 ), args );
+                }
             }
         );
     }
@@ -110,7 +140,15 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         setIcon( QIcon( ":/icons/shutdown.png" ) );
         connect(
             this, &QToolButton::clicked, [ = ] () {
-                QProcess::startDetached( getCommand( "shutdown" ), { "shutdown", "-i" } );
+                QStringList args = getCommand( "Shutdown" ).split( " " );
+                if ( args.at( 0 ) == "dbus" ) {
+                    emit shutdown( false );
+                }
+
+                else {
+                    QProcess::startDetached( args.takeAt( 0 ), args );
+                    emit shutdown( true );
+                }
             }
         );
     }
@@ -121,7 +159,15 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         setIcon( QIcon( ":/icons/reboot.png" ) );
         connect(
             this, &QToolButton::clicked, [ = ] () {
-                QProcess::startDetached( getCommand( "reboot" ), { "reboot", "-i" } );
+                QStringList args = getCommand( "Reboot" ).split( " " );
+                if ( args.at( 0 ) == "dbus" ) {
+                    emit reboot( false );
+                }
+
+                else {
+                    QProcess::startDetached( args.takeAt( 0 ), args );
+                    emit reboot( true );
+                }
             }
         );
     }

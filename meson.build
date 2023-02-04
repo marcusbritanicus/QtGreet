@@ -34,8 +34,9 @@ if get_option('use_qt_version') == 'auto'
 	DFApp  = dependency( 'df6application', required: false )
 	DFIpc  = dependency( 'df6ipc',         required: false )
 	DFUtl  = dependency( 'df6utils',       required: false )
+	DFLgn  = dependency( 'df6login1',      required: false )
 
-	Qt6_is_Found = QtDeps.found() and wayqt.found() and DFApp.found() and DFIpc.found() and DFUtl.found()
+	Qt6_is_Found = QtDeps.found() and wayqt.found() and DFApp.found() and DFIpc.found() and DFUtl.found() and DFLgn.found()
 
 	if Qt6_is_Found
 		Qt = import( 'qt6' )
@@ -48,6 +49,7 @@ if get_option('use_qt_version') == 'auto'
 		DFApp  = dependency( 'df5application', required: true )
 		DFIpc  = dependency( 'df5ipc',         required: true )
 		DFUtl  = dependency( 'df5utils',       required: true )
+		DFLgn  = dependency( 'df5login1',      required: true )
 	endif
 
 # User specifically wants to user Qt5
@@ -59,16 +61,18 @@ elif get_option('use_qt_version') == 'qt5'
 	DFApp  = dependency( 'df5application', required: true )
 	DFIpc  = dependency( 'df5ipc',         required: true )
 	DFUtl  = dependency( 'df5utils',       required: true )
+	DFLgn  = dependency( 'df5login1',      required: true )
 
 # User specifically wants to user Qt6
 elif get_option('use_qt_version') == 'qt6'
 	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ], required: false )
 	Qt     = import( 'qt6' )
 
-	wayqt  = dependency( 'wayqt-qt6',      required: false )
-	DFApp  = dependency( 'df6application', required: false )
-	DFIpc  = dependency( 'df6ipc',         required: false )
-	DFUtl  = dependency( 'df6utils',       required: false )
+	wayqt  = dependency( 'wayqt-qt6',      required: true )
+	DFApp  = dependency( 'df6application', required: true )
+	DFIpc  = dependency( 'df6ipc',         required: true )
+	DFUtl  = dependency( 'df6utils',       required: true )
+	DFLgn  = dependency( 'df6login1',      required: true )
 endif
 
 # Required for greetwl
@@ -152,7 +156,7 @@ Resources = Qt.compile_resources(
 
 qtgreet = executable(
     'qtgreet', [ Sources, Mocs, Resources ],
-    dependencies: [ QtDeps, wayqt, DFApp, DFIpc, DFUtl ],
+    dependencies: [ QtDeps, wayqt, DFApp, DFIpc, DFUtl, DFLgn ],
 	include_directories: [ Includes ],
     install: true
 )

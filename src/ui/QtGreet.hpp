@@ -25,6 +25,12 @@
 #include "session.hpp"
 #include "ThemeManager.hpp"
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    #include <DFL/DF5/Login1.hpp>
+#else
+    #include <DFL/DF6/Login1.hpp>
+#endif
+
 class LoginManager;
 
 namespace QtGreet {
@@ -53,6 +59,9 @@ class QtGreet::UI : public QMainWindow {
         /* Show the validating message */
         void showValidating();
 
+        /* Show the power message */
+        void showPowerMessage( bool reboot, bool done );
+
         User mCurUser;
         Session mCurSession;
 
@@ -67,6 +76,9 @@ class QtGreet::UI : public QMainWindow {
 
         /* Login manager backend */
         LoginManager *login;
+
+        /* Login1 backend */
+        DFL::Login1 *login1;
 
         /* Validation message */
         QLabel *validating;
@@ -114,4 +126,14 @@ class QtGreet::UI : public QMainWindow {
 
         // ListWidget
         void on_SessionList_currentItemChanged( QListWidgetItem *, QListWidgetItem * );
+
+        // PowerButton/Reboot/Halt/Suspend/Hibernate
+        void on_PowerButton_suspend();
+        void on_PowerButton_hibernate();
+        void on_PowerButton_shutdown( bool );
+        void on_PowerButton_reboot( bool );
+        void on_Suspend_suspend();
+        void on_Hibernate_hibernate();
+        void on_Halt_shutdown( bool );
+        void on_Reboot_reboot( bool );
 };
