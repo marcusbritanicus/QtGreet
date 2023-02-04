@@ -61,6 +61,7 @@ static void focus_view( struct tinywl_view *view, struct wlr_surface *surface ) 
     }
 
     struct wlr_keyboard *keyboard = wlr_seat_get_keyboard( seat );
+
     /** Move the view to the front */
     wlr_scene_node_raise_to_top( view->scene_node );
     wl_list_remove( &view->link );

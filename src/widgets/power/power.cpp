@@ -22,6 +22,29 @@
 
 #include "power.hpp"
 
+QString getCommand( QString what ) {
+    QString cmd = sett->value( what );
+
+    /** Figure out if we should use systemctl or loginctl */
+    if ( cmd == "default" ) {
+        for ( QString path: qEnvironmentVariable( "PATH" ).split( ":" ) ) {
+            if ( QFile::exists( path + "/systemctl" ) ) {
+                return "systemctl";
+            }
+
+            if ( QFile::exists( path + "/loginctl" ) ) {
+                return "loginctl";
+            }
+        }
+
+        qCritical() << "Unable to figure out command for" << what;
+        return QString();
+    }
+
+    return cmd;
+}
+
+
 PowerButton::PowerButton( QString type ) : QToolButton() {
     setAutoRaise( true );
     setFixedSize( QSize( 40, 40 ) );
@@ -33,42 +56,72 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         setToolTip( "Logout Menu" );
 
         QMenu *menu = new QMenu();
-        menu->addAction( QIcon( ":/icons/suspend.png" ),   "Suspend to RAM" );
-        menu->addAction( QIcon( ":/icons/hibernate.png" ), "Suspend to Disk" );
-        menu->addAction( QIcon( ":/icons/shutdown.png" ),  "Halt System" );
-        menu->addAction( QIcon( ":/icons/reboot.png" ),    "Reboot System" );
+        menu->addAction(
+            QIcon( ":/icons/suspend.png" ), "Suspend to RAM", [ = ] () {
+                QProcess::startDetached( getCommand( "suspend" ), { "suspend", "-i" } );
+            }
+        );
+        menu->addAction(
+            QIcon( ":/icons/hibernate.png" ), "Suspend to Disk", [ = ] () {
+                QProcess::startDetached( getCommand( "hibernate" ), { "hibernate", "-i" } );
+            }
+        );
+        menu->addAction(
+            QIcon( ":/icons/shutdown.png" ), "Halt System", [ = ] () {
+                QProcess::startDetached( getCommand( "shutdown" ), { "shutdown", "-i" } );
+            }
+        );
+        menu->addAction(
+            QIcon( ":/icons/reboot.png" ), "Reboot System", [ = ] () {
+                QProcess::startDetached( getCommand( "reboot" ), { "reboot", "-i" } );
+            }
+        );
 
         setMenu( menu );
         setPopupMode( QToolButton::InstantPopup );
-    }
-
-    else if ( type == "Halt" ) {
-        setObjectName( "Halt" );
-        setToolTip( "Shutdown the system" );
-        setIcon( QIcon( ":/icons/shutdown.png" ) );
-    }
-
-    else if ( type == "Reboot" ) {
-        setObjectName( "Reboot" );
-        setToolTip( "Reboot the system" );
-        setIcon( QIcon( ":/icons/reboot.png" ) );
     }
 
     else if ( type == "Suspend" ) {
         setObjectName( "Suspend" );
         setToolTip( "Suspend to RAM" );
         setIcon( QIcon( ":/icons/suspend.png" ) );
+        connect(
+            this, &QToolButton::clicked, [ = ] () {
+                QProcess::startDetached( getCommand( "suspend" ), { "suspend", "-i" } );
+            }
+        );
     }
 
     else if ( type == "Hibernate" ) {
         setObjectName( "Hibernate" );
         setToolTip( "Suspend to Disk" );
         setIcon( QIcon( ":/icons/hibernate.png" ) );
+        connect(
+            this, &QToolButton::clicked, [ = ] () {
+                QProcess::startDetached( getCommand( "hibernate" ), { "hibernate", "-i" } );
+            }
+        );
     }
 
-    else if ( type == "Logout" ) {
-        setObjectName( "Logout" );
-        setToolTip( "Logout from the current session" );
-        setIcon( QIcon( ":/icons/logout.png" ) );
+    else if ( type == "Halt" ) {
+        setObjectName( "Halt" );
+        setToolTip( "Shutdown the system" );
+        setIcon( QIcon( ":/icons/shutdown.png" ) );
+        connect(
+            this, &QToolButton::clicked, [ = ] () {
+                QProcess::startDetached( getCommand( "shutdown" ), { "shutdown", "-i" } );
+            }
+        );
+    }
+
+    else if ( type == "Reboot" ) {
+        setObjectName( "Reboot" );
+        setToolTip( "Reboot the system" );
+        setIcon( QIcon( ":/icons/reboot.png" ) );
+        connect(
+            this, &QToolButton::clicked, [ = ] () {
+                QProcess::startDetached( getCommand( "reboot" ), { "reboot", "-i" } );
+            }
+        );
     }
 }
