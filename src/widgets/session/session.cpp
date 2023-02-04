@@ -29,10 +29,11 @@ static bool IsExec( QString exec ) {
         return true;
     }
 
-    QStringList parts = exec.split();
-    QString cmd;
+    QStringList parts = exec.split( QRegularExpression( "\\s+" ) );
+    QString     cmd;
+
     /** Pick the first part which is not a env variable as cmd */
-    for( QString part: parts ) {
+    for ( QString part: parts ) {
         if ( part.contains( "=" ) ) {
             continue;
         }
@@ -74,7 +75,7 @@ Sessions getSessions( bool custom ) {
             QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );
 
             bool isAvailable = IsExec( session.value( "Desktop Entry/TryExec" ).toString() );
-            isAvailable |= IsExec( session.value( "Desktop Entry/Exec" ).toString() )
+            isAvailable |= IsExec( session.value( "Desktop Entry/Exec" ).toString() );
 
             if ( isAvailable ) {
                 Session s = Session{
@@ -109,7 +110,7 @@ Sessions getSessions( bool custom ) {
             QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );
 
             bool isAvailable = IsExec( session.value( "Desktop Entry/TryExec" ).toString() );
-            isAvailable |= IsExec( session.value( "Desktop Entry/Exec" ).toString() )
+            isAvailable |= IsExec( session.value( "Desktop Entry/Exec" ).toString() );
 
             if ( isAvailable ) {
                 Session s = Session{
