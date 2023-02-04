@@ -29,11 +29,25 @@ static bool IsExec( QString exec ) {
         return true;
     }
 
+    QStringList parts = exec.split();
+    QString cmd;
+    /** Pick the first part which is not a env variable as cmd */
+    for( QString part: parts ) {
+        if ( part.contains( "=" ) ) {
+            continue;
+        }
+
+        cmd = part;
+        break;
+    }
+
     /* Otherwise (ex: plasmashell) */
     for ( QString path : qgetenv( "PATH" ).split( ':' ) ) {
-        int ret = access( QString( path + "/" + exec ).toUtf8().constData(), R_OK | X_OK );
+        if ( QFileInfo( path + "/" + exec ).isExecutable() ) {
+            return true;
+        }
 
-        if ( ret == 0 ) {
+        if ( QFileInfo( path + "/" + cmd ).isExecutable() ) {
             return true;
         }
     }
@@ -59,7 +73,10 @@ Sessions getSessions( bool custom ) {
         for ( QFileInfo sess: QDir( wlSessDir ).entryInfoList( { "*.desktop" } ) ) {
             QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );
 
-            if ( IsExec( session.value( "Desktop Entry/TryExec" ).toString() ) ) {
+            bool isAvailable = IsExec( session.value( "Desktop Entry/TryExec" ).toString() );
+            isAvailable |= IsExec( session.value( "Desktop Entry/Exec" ).toString() )
+
+            if ( isAvailable ) {
                 Session s = Session{
                     session.value( "Desktop Entry/Name" ).toString(),
                     session.value( "Desktop Entry/Icon", ":/icons/session.png" ).toString(),
@@ -91,7 +108,10 @@ Sessions getSessions( bool custom ) {
         for ( QFileInfo sess: QDir( xSessDir ).entryInfoList( { "*.desktop" } ) ) {
             QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );
 
-            if ( IsExec( session.value( "Desktop Entry/TryExec" ).toString() ) ) {
+            bool isAvailable = IsExec( session.value( "Desktop Entry/TryExec" ).toString() );
+            isAvailable |= IsExec( session.value( "Desktop Entry/Exec" ).toString() )
+
+            if ( isAvailable ) {
                 Session s = Session{
                     session.value( "Desktop Entry/Name" ).toString() + " (X11)",
                     session.value( "Desktop Entry/Icon", ":/icons/session.png" ).toString(),

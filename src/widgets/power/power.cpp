@@ -20,10 +20,11 @@
 
 #include <QtWidgets>
 
+#include "Global.hpp"
 #include "power.hpp"
 
 QString getCommand( QString what ) {
-    QString cmd = sett->value( what );
+    QString cmd = sett->value( what ).toString();
 
     /** Figure out if we should use systemctl or loginctl */
     if ( cmd == "default" ) {
