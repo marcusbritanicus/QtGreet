@@ -19,7 +19,7 @@ add_project_link_arguments( ['-rdynamic','-fPIC'], language:'cpp' )
 if get_option( 'nodynpath' ) == false
 	add_global_arguments( '-DDYNPATH="@0@"'.format( get_option( 'dynpath' ) ), language : 'cpp' )
 else
-	add_global_arguments( '-DDYNPATH=""'.format( get_option( 'dynpath' ) ), language : 'cpp' )
+	add_global_arguments( '-DDYNPATH=""', language : 'cpp' )
 endif
 
 add_global_arguments( '-DLOGPATH="@0@"'.format( get_option( 'logpath' ) ), language : 'cpp' )

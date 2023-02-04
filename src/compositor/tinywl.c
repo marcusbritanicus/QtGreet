@@ -35,7 +35,7 @@
 #include <wlr/backend/session.h>
 
 static void focus_view( struct tinywl_view *view, struct wlr_surface *surface ) {
-    /** Note: this function only deals with keyboard focus. */
+    /* Note: this function only deals with keyboard focus. */
     if ( view == NULL ) {
         return;
     }
@@ -45,7 +45,7 @@ static void focus_view( struct tinywl_view *view, struct wlr_surface *surface ) 
     struct wlr_surface   *prev_surface = seat->keyboard_state.focused_surface;
 
     if ( prev_surface == surface ) {
-        /** Don't re-focus an already focused surface. */
+        /* Don't re-focus an already focused surface. */
         return;
     }
 
@@ -57,25 +57,28 @@ static void focus_view( struct tinywl_view *view, struct wlr_surface *surface ) 
          */
         struct wlr_xdg_surface *previous = wlr_xdg_surface_from_wlr_surface(
             seat->keyboard_state.focused_surface );
-        wlr_xdg_toplevel_set_activated( previous, false );
+        assert( previous->role == WLR_XDG_SURFACE_ROLE_TOPLEVEL );
+        wlr_xdg_toplevel_set_activated( previous->toplevel, false );
     }
 
     struct wlr_keyboard *keyboard = wlr_seat_get_keyboard( seat );
 
-    /** Move the view to the front */
-    wlr_scene_node_raise_to_top( view->scene_node );
+    /* Move the view to the front */
+    wlr_scene_node_raise_to_top( &view->scene_tree->node );
     wl_list_remove( &view->link );
     wl_list_insert( &server->views, &view->link );
-    /** Activate the new surface */
-    wlr_xdg_toplevel_set_activated( view->xdg_surface, true );
+    /* Activate the new surface */
+    wlr_xdg_toplevel_set_activated( view->xdg_toplevel, true );
 
     /*
      * Tell the seat to have the keyboard enter this surface. wlroots will keep
      * track of this and automatically send key events to the appropriate
      * clients without additional work on your part.
      */
-    wlr_seat_keyboard_notify_enter( seat, view->xdg_surface->surface,
-                                    keyboard->keycodes, keyboard->num_keycodes, &keyboard->modifiers );
+    if ( keyboard != NULL ) {
+        wlr_seat_keyboard_notify_enter( seat, view->xdg_toplevel->base->surface,
+                                        keyboard->keycodes, keyboard->num_keycodes, &keyboard->modifiers );
+    }
 }
 
 
@@ -91,10 +94,9 @@ static void keyboard_handle_modifiers( struct wl_listener *listener, void * ) {
      * same seat. You can swap out the underlying wlr_keyboard like this and
      * wlr_seat handles this transparently.
      */
-    wlr_seat_set_keyboard( keyboard->server->seat, keyboard->device );
+    wlr_seat_set_keyboard( keyboard->server->seat, keyboard->wlr_keyboard );
     /** Send modifiers to the client. */
-    wlr_seat_keyboard_notify_modifiers( keyboard->server->seat,
-                                        &keyboard->device->keyboard->modifiers );
+    wlr_seat_keyboard_notify_modifiers( keyboard->server->seat, &keyboard->wlr_keyboard->modifiers );
 }
 
 
@@ -123,7 +125,7 @@ static void keyboard_handle_key( struct wl_listener *listener, void *data ) {
     /** This event is raised when a key is pressed or released. */
     struct tinywl_keyboard        *keyboard = wl_container_of( listener, keyboard, key );
     struct tinywl_server          *server   = keyboard->server;
-    struct wlr_event_keyboard_key *event    = data;
+    struct wlr_keyboard_key_event *event    = data;
     struct wlr_seat               *seat     = server->seat;
 
     uint32_t keycode = event->keycode;
@@ -132,7 +134,7 @@ static void keyboard_handle_key( struct wl_listener *listener, void *data ) {
 
     /** If some key was pressed: check if we're trying to change the tty */
     if ( event->state == WL_KEYBOARD_KEY_STATE_PRESSED ) {
-        uint32_t           modifiers = wlr_keyboard_get_modifiers( keyboard->device->keyboard );
+        uint32_t           modifiers = wlr_keyboard_get_modifiers( keyboard->wlr_keyboard );
         struct wlr_session *session  = wlr_backend_get_session( server->backend );
 
         if ( session ) {
@@ -143,36 +145,53 @@ static void keyboard_handle_key( struct wl_listener *listener, void *data ) {
     /** We're not changing the tty */
     if ( !handled ) {
         /** Otherwise, we pass it along to the client. */
-        wlr_seat_set_keyboard( seat, keyboard->device );
+        wlr_seat_set_keyboard( seat, keyboard->wlr_keyboard );
         wlr_seat_keyboard_notify_key( seat, event->time_msec, event->keycode, event->state );
     }
 }
 
 
-static void server_new_keyboard( struct tinywl_server *server, struct wlr_input_device *device ) {
-    struct tinywl_keyboard *keyboard = calloc( 1, sizeof(struct tinywl_keyboard) );
+static void keyboard_handle_destroy( struct wl_listener *listener, void * ) {
+    /* This event is raised by the keyboard base wlr_input_device to signal
+     * the destruction of the wlr_keyboard. It will no longer receive events
+     * and should be destroyed.
+     */
+    struct tinywl_keyboard *keyboard = wl_container_of( listener, keyboard, destroy );
 
-    keyboard->server = server;
-    keyboard->device = device;
+    wl_list_remove( &keyboard->modifiers.link );
+    wl_list_remove( &keyboard->key.link );
+    wl_list_remove( &keyboard->destroy.link );
+    wl_list_remove( &keyboard->link );
+    free( keyboard );
+}
+
+
+static void server_new_keyboard( struct tinywl_server *server, struct wlr_input_device *device ) {
+    struct wlr_keyboard    *wlr_keyboard = wlr_keyboard_from_input_device( device );
+    struct tinywl_keyboard *keyboard     = calloc( 1, sizeof(struct tinywl_keyboard) );
+
+    keyboard->server       = server;
+    keyboard->wlr_keyboard = wlr_keyboard;
 
     /** We need to prepare an XKB keymap and assign it to the keyboard. This
      * assumes the defaults (e.g. layout = "us"). */
     struct xkb_context *context = xkb_context_new( XKB_CONTEXT_NO_FLAGS );
-    struct xkb_keymap  *keymap  = xkb_keymap_new_from_names( context, NULL,
-                                                             XKB_KEYMAP_COMPILE_NO_FLAGS );
+    struct xkb_keymap  *keymap  = xkb_keymap_new_from_names( context, NULL, XKB_KEYMAP_COMPILE_NO_FLAGS );
 
-    wlr_keyboard_set_keymap( device->keyboard, keymap );
+    wlr_keyboard_set_keymap( wlr_keyboard, keymap );
     xkb_keymap_unref( keymap );
     xkb_context_unref( context );
-    wlr_keyboard_set_repeat_info( device->keyboard, 25, 600 );
+    wlr_keyboard_set_repeat_info( wlr_keyboard, 25, 600 );
 
     /** Here we set up listeners for keyboard events. */
     keyboard->modifiers.notify = keyboard_handle_modifiers;
-    wl_signal_add( &device->keyboard->events.modifiers, &keyboard->modifiers );
+    wl_signal_add( &wlr_keyboard->events.modifiers, &keyboard->modifiers );
     keyboard->key.notify = keyboard_handle_key;
-    wl_signal_add( &device->keyboard->events.key,       &keyboard->key );
+    wl_signal_add( &wlr_keyboard->events.key,       &keyboard->key );
+    keyboard->destroy.notify = keyboard_handle_destroy;
+    wl_signal_add( &device->events.destroy,         &keyboard->destroy );
 
-    wlr_seat_set_keyboard( server->seat, device );
+    wlr_seat_set_keyboard( server->seat, keyboard->wlr_keyboard );
 
     /** And add the keyboard to our list of keyboards */
     wl_list_insert( &server->keyboards, &keyboard->link );
@@ -262,20 +281,36 @@ static struct tinywl_view *desktop_view_at( struct tinywl_server *server, double
      * we only care about surface nodes as we are specifically looking for a
      * surface in the surface tree of a tinywl_view. */
     struct wlr_scene_node *node = wlr_scene_node_at(
-        &server->scene->node, lx, ly, sx, sy );
+        &server->scene->tree.node, lx, ly, sx, sy );
 
-    if ( (node == NULL) || (node->type != WLR_SCENE_NODE_SURFACE) ) {
+    if ( (node == NULL) || (node->type != WLR_SCENE_NODE_BUFFER) ) {
         return NULL;
     }
 
-    *surface = wlr_scene_surface_from_node( node )->surface;
+    struct wlr_scene_buffer  *scene_buffer  = wlr_scene_buffer_from_node( node );
+    struct wlr_scene_surface *scene_surface = wlr_scene_surface_from_buffer( scene_buffer );
 
-    /** Find the node corresponding to the tinywl_view at the root of this
-    * surface tree, it is the only one for which we set the data field. */
-    while ( node != NULL && node->data == NULL ) {
-        node = node->parent;
+    if ( !scene_surface ) {
+        return NULL;
     }
-    return node->data;
+
+    *surface = scene_surface->surface;
+
+    /* Find the node corresponding to the tinywl_view at the root of this
+     * surface tree, it is the only one for which we set the data field. */
+    struct wlr_scene_tree *tree = node->parent;
+
+    while ( tree != NULL && tree->node.data == NULL ) {
+        tree = tree->node.parent;
+    }
+    return tree->node.data;
+}
+
+
+static void reset_cursor_mode( struct tinywl_server *server ) {
+    /* Reset the cursor mode to passthrough. */
+    server->cursor_mode  = TINYWL_CURSOR_PASSTHROUGH;
+    server->grabbed_view = NULL;
 }
 
 
@@ -285,7 +320,7 @@ static void process_cursor_move( struct tinywl_server *server, uint32_t ) {
 
     view->x = server->cursor->x - server->grab_x;
     view->y = server->cursor->y - server->grab_y;
-    wlr_scene_node_set_position( view->scene_node, view->x, view->y );
+    wlr_scene_node_set_position( &view->scene_tree->node, view->x, view->y );
 }
 
 
@@ -340,15 +375,15 @@ static void process_cursor_resize( struct tinywl_server *server, uint32_t ) {
 
     struct wlr_box geo_box;
 
-    wlr_xdg_surface_get_geometry( view->xdg_surface, &geo_box );
+    wlr_xdg_surface_get_geometry( view->xdg_toplevel->base, &geo_box );
     view->x = new_left - geo_box.x;
     view->y = new_top - geo_box.y;
-    wlr_scene_node_set_position( view->scene_node, view->x, view->y );
+    wlr_scene_node_set_position( &view->scene_tree->node, view->x, view->y );
 
     int new_width  = new_right - new_left;
     int new_height = new_bottom - new_top;
 
-    wlr_xdg_toplevel_set_size( view->xdg_surface, new_width, new_height );
+    wlr_xdg_toplevel_set_size( view->xdg_toplevel, new_width, new_height );
 }
 
 
@@ -404,17 +439,15 @@ static void process_cursor_motion( struct tinywl_server *server, uint32_t time )
 static void server_cursor_motion( struct wl_listener *listener, void *data ) {
     /** This event is forwarded by the cursor when a pointer emits a _relative_
      * pointer motion event (i.e. a delta) */
-    struct tinywl_server *server =
-        wl_container_of( listener, server, cursor_motion );
-    struct wlr_event_pointer_motion *event = data;
+    struct tinywl_server            *server = wl_container_of( listener, server, cursor_motion );
+    struct wlr_pointer_motion_event *event  = data;
 
     /** The cursor doesn't move unless we tell it to. The cursor automatically
      * handles constraining the motion to the output layout, as well as any
      * special configuration applied for the specific input device which
      * generated the event. You can pass NULL for the device if you want to move
      * the cursor around without any input. */
-    wlr_cursor_move( server->cursor, event->device,
-                     event->delta_x, event->delta_y );
+    wlr_cursor_move( server->cursor, &event->pointer->base, event->delta_x, event->delta_y );
     process_cursor_motion( server, event->time_msec );
 }
 
@@ -426,11 +459,10 @@ static void server_cursor_motion_absolute( struct wl_listener *listener, void *d
      * move the mouse over the window. You could enter the window from any edge,
      * so we have to warp the mouse there. There is also some hardware which
      * emits these events. */
-    struct tinywl_server *server =
-        wl_container_of( listener, server, cursor_motion_absolute );
-    struct wlr_event_pointer_motion_absolute *event = data;
+    struct tinywl_server *server = wl_container_of( listener, server, cursor_motion_absolute );
+    struct wlr_pointer_motion_absolute_event *event = data;
 
-    wlr_cursor_warp_absolute( server->cursor, event->device, event->x, event->y );
+    wlr_cursor_warp_absolute( server->cursor, &event->pointer->base, event->x, event->y );
     process_cursor_motion( server, event->time_msec );
 }
 
@@ -438,24 +470,22 @@ static void server_cursor_motion_absolute( struct wl_listener *listener, void *d
 static void server_cursor_button( struct wl_listener *listener, void *data ) {
     /** This event is forwarded by the cursor when a pointer emits a button
      * event. */
-    struct tinywl_server *server =
-        wl_container_of( listener, server, cursor_button );
-    struct wlr_event_pointer_button *event = data;
+    struct tinywl_server            *server = wl_container_of( listener, server, cursor_button );
+    struct wlr_pointer_button_event *event  = data;
 
     /** Notify the client with pointer focus that a button press has occurred */
-    wlr_seat_pointer_notify_button( server->seat,
-                                    event->time_msec, event->button, event->state );
+    wlr_seat_pointer_notify_button( server->seat, event->time_msec, event->button, event->state );
     double             sx, sy;
     struct wlr_surface *surface = NULL;
-    struct tinywl_view *view    = desktop_view_at( server,
-                                                   server->cursor->x, server->cursor->y, &surface, &sx, &sy );
+    struct tinywl_view *view    = desktop_view_at( server, server->cursor->x, server->cursor->y, &surface, &sx, &sy );
 
     if ( event->state == WLR_BUTTON_RELEASED ) {
-        /** If you released any buttons, we exit interactive move/resize mode. */
-        server->cursor_mode = TINYWL_CURSOR_PASSTHROUGH;
+        /* If you released any buttons, we exit interactive move/resize mode. */
+        reset_cursor_mode( server );
     }
+
     else {
-        /** Focus that client if the button was _pressed_ */
+        /* Focus that client if the button was _pressed_ */
         focus_view( view, surface );
     }
 }
@@ -464,9 +494,8 @@ static void server_cursor_button( struct wl_listener *listener, void *data ) {
 static void server_cursor_axis( struct wl_listener *listener, void *data ) {
     /** This event is forwarded by the cursor when a pointer emits an axis event,
      * for example when you move the scroll wheel. */
-    struct tinywl_server *server =
-        wl_container_of( listener, server, cursor_axis );
-    struct wlr_event_pointer_axis *event = data;
+    struct tinywl_server          *server = wl_container_of( listener, server, cursor_axis );
+    struct wlr_pointer_axis_event *event  = data;
 
     /** Notify the client with pointer focus of the axis event. */
     wlr_seat_pointer_notify_axis( server->seat,
@@ -507,6 +536,16 @@ static void output_frame( struct wl_listener *listener, void * ) {
 }
 
 
+static void output_destroy( struct wl_listener *listener, void * ) {
+    struct tinywl_output *output = wl_container_of( listener, output, destroy );
+
+    wl_list_remove( &output->frame.link );
+    wl_list_remove( &output->destroy.link );
+    wl_list_remove( &output->link );
+    free( output );
+}
+
+
 static void server_new_output( struct wl_listener *listener, void *data ) {
     /** This event is raised by the backend when a new output (aka a display or
      * monitor) becomes available. */
@@ -542,6 +581,11 @@ static void server_new_output( struct wl_listener *listener, void *data ) {
     /** Sets up a listener for the frame notify event. */
     output->frame.notify = output_frame;
     wl_signal_add( &wlr_output->events.frame, &output->frame );
+
+    /* Sets up a listener for the destroy notify event. */
+    output->destroy.notify = output_destroy;
+    wl_signal_add( &wlr_output->events.destroy, &output->destroy );
+
     wl_list_insert( &server->outputs, &output->link );
 
     /** Adds this to the output layout. The add_auto function arranges outputs
@@ -563,7 +607,7 @@ static void xdg_toplevel_map( struct wl_listener *listener, void * ) {
 
     wl_list_insert( &view->server->views, &view->link );
 
-    focus_view( view, view->xdg_surface->surface );
+    focus_view( view, view->xdg_toplevel->base->surface );
 }
 
 
@@ -584,6 +628,8 @@ static void xdg_toplevel_destroy( struct wl_listener *listener, void * ) {
     wl_list_remove( &view->destroy.link );
     wl_list_remove( &view->request_move.link );
     wl_list_remove( &view->request_resize.link );
+    wl_list_remove( &view->request_maximize.link );
+    wl_list_remove( &view->request_fullscreen.link );
 
     free( view );
 }
@@ -598,8 +644,7 @@ static void begin_interactive( struct tinywl_view *view,
     struct wlr_surface   *focused_surface =
         server->seat->pointer_state.focused_surface;
 
-    if ( view->xdg_surface->surface !=
-         wlr_surface_get_root_surface( focused_surface ) ) {
+    if ( view->xdg_toplevel->base->surface != wlr_surface_get_root_surface( focused_surface ) ) {
         /** Deny move/resize requests from unfocused clients. */
         return;
     }
@@ -613,7 +658,7 @@ static void begin_interactive( struct tinywl_view *view,
     }
     else {
         struct wlr_box geo_box;
-        wlr_xdg_surface_get_geometry( view->xdg_surface, &geo_box );
+        wlr_xdg_surface_get_geometry( view->xdg_toplevel->base, &geo_box );
 
         double border_x = (view->x + geo_box.x) +
                           ( (edges & WLR_EDGE_RIGHT) ? geo_box.width : 0);
@@ -669,11 +714,9 @@ static void server_new_xdg_surface( struct wl_listener *listener, void *data ) {
      * we always set the user data field of xdg_surfaces to the corresponding
      * scene node. */
     if ( xdg_surface->role == WLR_XDG_SURFACE_ROLE_POPUP ) {
-        struct wlr_xdg_surface *parent = wlr_xdg_surface_from_wlr_surface(
-            xdg_surface->popup->parent );
-        struct wlr_scene_node *parent_node = parent->data;
-        xdg_surface->data = wlr_scene_xdg_surface_create(
-            parent_node, xdg_surface );
+        struct wlr_xdg_surface *parent      = wlr_xdg_surface_from_wlr_surface( xdg_surface->popup->parent );
+        struct wlr_scene_node  *parent_node = parent->data;
+        xdg_surface->data = wlr_scene_xdg_surface_create( parent_node, xdg_surface );
         return;
     }
 
@@ -683,12 +726,11 @@ static void server_new_xdg_surface( struct wl_listener *listener, void *data ) {
     struct tinywl_view *view =
         calloc( 1, sizeof(struct tinywl_view) );
 
-    view->server      = server;
-    view->xdg_surface = xdg_surface;
-    view->scene_node  = wlr_scene_xdg_surface_create(
-        &view->server->scene->node, view->xdg_surface );
-    view->scene_node->data = view;
-    xdg_surface->data      = view->scene_node;
+    view->server                = server;
+    view->xdg_toplevel          = xdg_surface->toplevel;
+    view->scene_tree            = wlr_scene_xdg_surface_create( &view->server->scene->tree, view->xdg_toplevel->base );
+    view->scene_tree->node.data = view;
+    xdg_surface->data           = view->scene_tree;
 
     /** Listen to the various events it can emit */
     view->map.notify = xdg_toplevel_map;
@@ -768,7 +810,7 @@ int startCompositor() {
      * https://drewdevault.com/2018/07/29/Wayland-shells.html
      */
     wl_list_init( &server->views );
-    server->xdg_shell = wlr_xdg_shell_create( server->wl_display );
+    server->xdg_shell = wlr_xdg_shell_create( server->wl_display, 3 );
     server->new_xdg_surface.notify = server_new_xdg_surface;
     wl_signal_add( &server->xdg_shell->events.new_surface, &server->new_xdg_surface );
 

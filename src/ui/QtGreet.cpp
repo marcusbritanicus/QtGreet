@@ -386,9 +386,12 @@ void QtGreet::UI::tryLogin() {
         sessMsg = login->errorMessage();
 
         if ( sess ) {
+            qDebug() << "Login successful";
+            qDebug() << "Saving dsession details.";
             /** Save the user info */
             users->setValue( "LastUsedId",                                 mCurUser.uid );
             users->setValue( QString( "LastUsed/%1" ).arg( mCurUser.uid ), mCurSession.file );
+            users->sync();
 
             qApp->quit();
         }
