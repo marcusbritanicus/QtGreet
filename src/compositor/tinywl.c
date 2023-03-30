@@ -715,8 +715,8 @@ static void server_new_xdg_surface( struct wl_listener *listener, void *data ) {
      * scene node. */
     if ( xdg_surface->role == WLR_XDG_SURFACE_ROLE_POPUP ) {
         struct wlr_xdg_surface *parent      = wlr_xdg_surface_from_wlr_surface( xdg_surface->popup->parent );
-        struct wlr_scene_node  *parent_node = parent->data;
-        xdg_surface->data = wlr_scene_xdg_surface_create( parent_node, xdg_surface );
+        struct wlr_scene_tree  *parent_tree = parent->data;
+        xdg_surface->data = wlr_scene_xdg_surface_create( parent_tree, xdg_surface );
         return;
     }
 
