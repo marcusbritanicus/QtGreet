@@ -338,8 +338,14 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
 
         /** Font */
         else if ( key == "Font" ) {
-            QStringList fontBits = QString( properties[ stdKey ].to_string().c_str() ).split( ", ", Qt::SkipEmptyParts );
-            QFont       font(
+            QString     fontFamily = sett->value( "Overrides/FontFamily" ).toString();
+            QStringList fontBits   = QString( properties[ stdKey ].to_string().c_str() ).split( ", ", Qt::SkipEmptyParts );
+
+            if ( fontFamily != "Theme" ) {
+                fontBits[ 0 ] = fontFamily;
+            }
+
+            QFont font(
                 fontBits[ 0 ],
                 fontBits[ 1 ].toInt(),
                 (fontBits[ 2 ] == "Bold" ? QFont::Bold : QFont::Normal),

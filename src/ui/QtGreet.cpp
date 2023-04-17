@@ -379,8 +379,8 @@ void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
     base->setObjectName( "OverLay" );
     base->setFixedSize( size() );
 
-    QWidget *msg = new QWidget();
-    QLabel *powerMsg = new QLabel();
+    QWidget *msg      = new QWidget();
+    QLabel  *powerMsg = new QLabel();
 
     msg->setObjectName( "widget" );
 
@@ -407,15 +407,17 @@ void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
     }
 
     QTimer *timer = new QTimer();
+
     timer->setInterval( 1000 );
     timer->setTimerType( Qt::CoarseTimer );
 
     QPushButton *btn = new QPushButton( QIcon::fromTheme( "dialog-close" ), "&Cancel" );
+
     btn->setToolTip( QString( "Cancel the %1" ).arg( reboot ? "reboot" : "shutdown" ) );
     btn->setFixedSize( 100, 36 );
 
     connect(
-        btn, &QPushButton::clicked, [=] () {
+        btn, &QPushButton::clicked, [ = ] () {
             timer->stop();
             login1->scheduleShutdown( "cancel", 0 );
             base->close();
@@ -427,6 +429,7 @@ void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
     lyt->setContentsMargins( QMargins( 100, 100, 100, 100 ) );
     lyt->setSpacing( 50 );
     lyt->addWidget( powerMsg, 0, 0, Qt::AlignCenter );
+
     if ( !done ) {
         lyt->addWidget( btn, 1, 0, Qt::AlignCenter );
     }
@@ -454,6 +457,7 @@ void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
     btn->setFocus();
 
     int remaining = 10;
+
     connect(
         timer, &QTimer::timeout, [ = ] () mutable {
             remaining--;
@@ -478,7 +482,7 @@ void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
         }
     );
 
-    login1->scheduleShutdown( ( reboot ? "reboot" : "poweroff" ), 10 * 1000 * 1000 );
+    login1->scheduleShutdown( (reboot ? "reboot" : "poweroff"), 10 * 1000 * 1000 );
 
     timer->start();
 }

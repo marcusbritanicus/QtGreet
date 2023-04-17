@@ -482,42 +482,42 @@ namespace Hjson {
     }
 
 
-    #define RET_VAL( _T, _O )                       \
-        Value operator _O( _T a, const Value& b ) { \
-            return Value( a ) _O b;                 \
-        }                                           \
-        Value operator _O( const Value& a, _T b ) { \
-            return a _O Value( b );                 \
-        }
+#define RET_VAL( _T, _O )                       \
+    Value operator _O( _T a, const Value& b ) { \
+        return Value( a ) _O b;                 \
+    }                                           \
+    Value operator _O( const Value& a, _T b ) { \
+        return a _O Value( b );                 \
+    }
 
 
-    #define RET_BOOL( _T, _O )                     \
-        bool operator _O( _T a, const Value& b ) { \
-            return Value( a ) _O b;                \
-        }                                          \
-        bool operator _O( const Value& a, _T b ) { \
-            return a _O Value( b );                \
-        }
+#define RET_BOOL( _T, _O )                     \
+    bool operator _O( _T a, const Value& b ) { \
+        return Value( a ) _O b;                \
+    }                                          \
+    bool operator _O( const Value& a, _T b ) { \
+        return a _O Value( b );                \
+    }
 
 
-    #define HJSON_OP_IMPL_A( _T ) \
-        RET_BOOL( _T, < )         \
-        RET_BOOL( _T, > )         \
-        RET_BOOL( _T, <= )        \
-        RET_BOOL( _T, >= )        \
-        RET_BOOL( _T, == )        \
-        RET_BOOL( _T, != )
+#define HJSON_OP_IMPL_A( _T ) \
+    RET_BOOL( _T, < )         \
+    RET_BOOL( _T, > )         \
+    RET_BOOL( _T, <= )        \
+    RET_BOOL( _T, >= )        \
+    RET_BOOL( _T, == )        \
+    RET_BOOL( _T, != )
 
-    #define HJSON_OP_IMPL_B( _T ) \
-        HJSON_OP_IMPL_A( _T )     \
-        RET_VAL( _T, + )          \
-        RET_VAL( _T, - )          \
-        RET_VAL( _T, * )          \
-        RET_VAL( _T, / )
+#define HJSON_OP_IMPL_B( _T ) \
+    HJSON_OP_IMPL_A( _T )     \
+    RET_VAL( _T, + )          \
+    RET_VAL( _T, - )          \
+    RET_VAL( _T, * )          \
+    RET_VAL( _T, / )
 
-    #define HJSON_OP_IMPL_C( _T ) \
-        HJSON_OP_IMPL_B( _T )     \
-        RET_VAL( _T, % )
+#define HJSON_OP_IMPL_C( _T ) \
+    HJSON_OP_IMPL_B( _T )     \
+    RET_VAL( _T, % )
 
     HJSON_OP_IMPL_A( const char * )
     HJSON_OP_IMPL_A( const std::string& )
@@ -879,21 +879,21 @@ namespace Hjson {
     }
 
 
-    #define OP_ASS( _O, _T )                  \
-        Value& Value::operator _O( _T b ) {   \
-            return operator _O( Value( b ) ); \
-        }
+#define OP_ASS( _O, _T )                  \
+    Value& Value::operator _O( _T b ) {   \
+        return operator _O( Value( b ) ); \
+    }
 
 
-    #define HJSON_ASS_IMPL_A( _T ) \
-        OP_ASS( +=, _T )           \
-        OP_ASS( -=, _T )           \
-        OP_ASS( *=, _T )           \
-        OP_ASS( /=, _T )
+#define HJSON_ASS_IMPL_A( _T ) \
+    OP_ASS( +=, _T )           \
+    OP_ASS( -=, _T )           \
+    OP_ASS( *=, _T )           \
+    OP_ASS( /=, _T )
 
-    #define HJSON_ASS_IMPL_B( _T ) \
-        HJSON_ASS_IMPL_A( _T )     \
-        OP_ASS( %=, _T )
+#define HJSON_ASS_IMPL_B( _T ) \
+    HJSON_ASS_IMPL_A( _T )     \
+    OP_ASS( %=, _T )
 
     HJSON_ASS_IMPL_A( float )
     HJSON_ASS_IMPL_A( double )
@@ -1241,10 +1241,10 @@ namespace Hjson {
     }
 
 
-    #define HJSON_CONV_INT_IMPL( _T )                      \
-        Value::operator _T() const {                       \
-            return static_cast<_T>(operator long long() ); \
-        }
+#define HJSON_CONV_INT_IMPL( _T )                      \
+    Value::operator _T() const {                       \
+        return static_cast<_T>(operator long long() ); \
+    }
 
 
     HJSON_CONV_INT_IMPL( char )
@@ -1659,34 +1659,34 @@ namespace Hjson {
                 double ret;
 
 #if HJSON_USE_CHARCONV
-                    const char *pCh  = prv->s->c_str();
-                    const char *pEnd = pCh + prv->s->size();
+                const char *pCh  = prv->s->c_str();
+                const char *pEnd = pCh + prv->s->size();
 
-                    auto res = std::from_chars( pCh, pEnd, ret );
+                auto res = std::from_chars( pCh, pEnd, ret );
 
-                    if ( (res.ptr != pEnd) || (res.ec == std::errc::result_out_of_range) ) {
+                if ( (res.ptr != pEnd) || (res.ec == std::errc::result_out_of_range) ) {
 #elif HJSON_USE_STRTOD
-                    const char *pCh = prv->s->c_str();
-                    char *endptr;
-                    errno = 0;
+                const char *pCh = prv->s->c_str();
+                char *endptr;
+                errno = 0;
 
-                    ret = std::strtod( pCh, &endptr );
+                ret = std::strtod( pCh, &endptr );
 
-                    if ( errno || (endptr - pCh != prv->s->size() ) ) {
+                if ( errno || (endptr - pCh != prv->s->size() ) ) {
 #else
-                    std::stringstream ss( *prv->s );
+                std::stringstream ss( *prv->s );
 
-                    // Make sure we expect dot (not comma) as decimal point.
-                    ss.imbue( std::locale::classic() );
+                // Make sure we expect dot (not comma) as decimal point.
+                ss.imbue( std::locale::classic() );
 
-                    ss >> ret;
+                ss >> ret;
 
-                    if ( !ss.eof() || ss.fail() ) {
+                if ( !ss.eof() || ss.fail() ) {
 #endif
-                        return 0.0;
-                    }
+                    return 0.0;
+                }
 
-                    return ret;
+                return ret;
             }
 
             default: {
@@ -1721,35 +1721,35 @@ namespace Hjson {
                 std::int64_t ret;
 
 #if HJSON_USE_CHARCONV
-                    const char *pCh  = prv->s->c_str();
-                    const char *pEnd = pCh + prv->s->size();
+                const char *pCh  = prv->s->c_str();
+                const char *pEnd = pCh + prv->s->size();
 
-                    auto res = std::from_chars( pCh, pEnd, ret );
+                auto res = std::from_chars( pCh, pEnd, ret );
 
-                    if ( (res.ptr != pEnd) || (res.ec == std::errc::result_out_of_range) ) {
+                if ( (res.ptr != pEnd) || (res.ec == std::errc::result_out_of_range) ) {
 #elif HJSON_USE_STRTOD
-                    const char *pCh = prv->s->c_str();
-                    char *endptr;
-                    errno = 0;
+                const char *pCh = prv->s->c_str();
+                char *endptr;
+                errno = 0;
 
-                    ret = std::strtoll( pCh, &endptr, 0 );
+                ret = std::strtoll( pCh, &endptr, 0 );
 
-                    if ( errno || (endptr - pCh != prv->s->size() ) ) {
+                if ( errno || (endptr - pCh != prv->s->size() ) ) {
 #else
-                    std::stringstream ss( *prv->s );
+                std::stringstream ss( *prv->s );
 
-                    // Avoid localization surprises.
-                    ss.imbue( std::locale::classic() );
+                // Avoid localization surprises.
+                ss.imbue( std::locale::classic() );
 
-                    ss >> ret;
+                ss >> ret;
 
-                    if ( !ss.eof() || ss.fail() ) {
+                if ( !ss.eof() || ss.fail() ) {
 #endif
-                        // Perhaps the string contains a decimal point or exponential part.
-                        return static_cast<std::int64_t>(to_double() );
-                    }
+                    // Perhaps the string contains a decimal point or exponential part.
+                    return static_cast<std::int64_t>(to_double() );
+                }
 
-                    return ret;
+                return ret;
             }
 
             default: {
@@ -1777,94 +1777,94 @@ namespace Hjson {
 
             case Type::Double: {
 #if HJSON_USE_CHARCONV
-                    std::array<char, 32> buf;
+                std::array<char, 32> buf;
 
-                    auto res = std::to_chars( buf.data(), buf.data() + buf.size(), prv->d );
+                auto res = std::to_chars( buf.data(), buf.data() + buf.size(), prv->d );
 
-                    if ( (res.ptr - buf.data() >= buf.size() ) || (res.ec != std::errc() ) ) {
+                if ( (res.ptr - buf.data() >= buf.size() ) || (res.ec != std::errc() ) ) {
+                    return "";
+                }
+
+                // to_chars() does not set a zero termination, which is needed by strchr().
+                *res.ptr = '\0';
+
+                // Always output a decimal point.
+                if ( strchr( buf.data(), '.' ) == nullptr ) {
+                    if ( res.ptr - buf.data() >= buf.size() - 1 ) {
                         return "";
                     }
 
-                    // to_chars() does not set a zero termination, which is needed by strchr().
-                    *res.ptr = '\0';
+                    *(res.ptr++) = '.';
+                    *(res.ptr++) = '0';
+                }
 
-                    // Always output a decimal point.
-                    if ( strchr( buf.data(), '.' ) == nullptr ) {
-                        if ( res.ptr - buf.data() >= buf.size() - 1 ) {
-                            return "";
-                        }
-
-                        *(res.ptr++) = '.';
-                        *(res.ptr++) = '0';
-                    }
-
-                    return std::string( buf.data(), res.ptr );
+                return std::string( buf.data(), res.ptr );
 
 #elif HJSON_USE_STRTOD
-                    char buf[ 32 ];
-                    int  nChars = snprintf( buf, sizeof(buf), "%.15g", prv->d );
+                char buf[ 32 ];
+                int  nChars = snprintf( buf, sizeof(buf), "%.15g", prv->d );
 
-                    if ( (nChars < 0) || (nChars >= static_cast<int>(sizeof(buf) ) ) ) {
+                if ( (nChars < 0) || (nChars >= static_cast<int>(sizeof(buf) ) ) ) {
+                    return "";
+                }
+
+                // Always output a decimal point.
+                if ( strchr( buf, '.' ) == nullptr ) {
+                    if ( nChars >= static_cast<int>(sizeof(buf) ) - 1 ) {
                         return "";
                     }
 
-                    // Always output a decimal point.
-                    if ( strchr( buf, '.' ) == nullptr ) {
-                        if ( nChars >= static_cast<int>(sizeof(buf) ) - 1 ) {
-                            return "";
-                        }
+                    buf[ nChars++ ] = '.';
+                    buf[ nChars++ ] = '0';
+                }
 
-                        buf[ nChars++ ] = '.';
-                        buf[ nChars++ ] = '0';
-                    }
-
-                    return std::string( buf, nChars );
+                return std::string( buf, nChars );
 
 #else
-                    std::ostringstream oss;
+                std::ostringstream oss;
 
-                    // Make sure we use dot (not comma) as decimal point.
-                    oss.imbue( std::locale::classic() );
-                    oss.precision( 15 );
+                // Make sure we use dot (not comma) as decimal point.
+                oss.imbue( std::locale::classic() );
+                oss.precision( 15 );
 
-                    oss << prv->d;
+                oss << prv->d;
 
-                    // Always output a decimal point. Done like this to avoid printing more
-                    // decimals than needed, which would be the result of using
-                    // std::ios::showpoint.
-                    if ( oss.str().find_first_of( '.', 0 ) == std::string::npos ) {
-                        oss << ".0";
-                    }
+                // Always output a decimal point. Done like this to avoid printing more
+                // decimals than needed, which would be the result of using
+                // std::ios::showpoint.
+                if ( oss.str().find_first_of( '.', 0 ) == std::string::npos ) {
+                    oss << ".0";
+                }
 
-                    return oss.str();
+                return oss.str();
 
 #endif
             }
 
             case Type::Int64: {
 #if HJSON_USE_CHARCONV
-                    std::array<char, 32> buf;
+                std::array<char, 32> buf;
 
-                    auto res = std::to_chars( buf.data(), buf.data() + buf.size(), prv->i );
+                auto res = std::to_chars( buf.data(), buf.data() + buf.size(), prv->i );
 
-                    if ( res.ec != std::errc() ) {
-                        return "";
-                    }
+                if ( res.ec != std::errc() ) {
+                    return "";
+                }
 
-                    return std::string( buf.data(), res.ptr );
+                return std::string( buf.data(), res.ptr );
 
 #elif HJSON_USE_STRTOD
-                    return std::to_string( prv->i );
+                return std::to_string( prv->i );
 
 #else
-                    std::ostringstream oss;
+                std::ostringstream oss;
 
-                    // Avoid localization surprises.
-                    oss.imbue( std::locale::classic() );
+                // Avoid localization surprises.
+                oss.imbue( std::locale::classic() );
 
-                    oss << prv->i;
+                oss << prv->i;
 
-                    return oss.str();
+                return oss.str();
 
 #endif
             }

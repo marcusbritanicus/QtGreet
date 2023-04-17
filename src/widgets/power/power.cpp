@@ -43,6 +43,7 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         menu->addAction(
             QIcon( ":/icons/suspend.png" ), "Suspend to RAM", [ = ] () {
                 QStringList args = getCommand( "Suspend" ).split( " " );
+
                 if ( args.at( 0 ) == "dbus" ) {
                     emit suspend();
                 }
@@ -56,6 +57,7 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         menu->addAction(
             QIcon( ":/icons/hibernate.png" ), "Suspend to Disk", [ = ] () {
                 QStringList args = getCommand( "Hibernate" ).split( " " );
+
                 if ( args.at( 0 ) == "dbus" ) {
                     emit hibernate();
                 }
@@ -69,6 +71,7 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         menu->addAction(
             QIcon( ":/icons/shutdown.png" ), "Halt System", [ = ] () {
                 QStringList args = getCommand( "Shutdown" ).split( " " );
+
                 if ( args.at( 0 ) == "dbus" ) {
                     emit shutdown( false );
                 }
@@ -83,6 +86,7 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         menu->addAction(
             QIcon( ":/icons/reboot.png" ), "Reboot System", [ = ] () {
                 QStringList args = getCommand( "Reboot" ).split( " " );
+
                 if ( args.at( 0 ) == "dbus" ) {
                     emit reboot( false );
                 }
@@ -105,6 +109,7 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         connect(
             this, &QToolButton::clicked, [ = ] () {
                 QStringList args = getCommand( "Suspend" ).split( " " );
+
                 if ( args.at( 0 ) == "dbus" ) {
                     emit suspend();
                 }
@@ -123,6 +128,7 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         connect(
             this, &QToolButton::clicked, [ = ] () {
                 QStringList args = getCommand( "Hibernate" ).split( " " );
+
                 if ( args.at( 0 ) == "dbus" ) {
                     emit hibernate();
                 }
@@ -141,6 +147,7 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         connect(
             this, &QToolButton::clicked, [ = ] () {
                 QStringList args = getCommand( "Shutdown" ).split( " " );
+
                 if ( args.at( 0 ) == "dbus" ) {
                     emit shutdown( false );
                 }
@@ -160,6 +167,7 @@ PowerButton::PowerButton( QString type ) : QToolButton() {
         connect(
             this, &QToolButton::clicked, [ = ] () {
                 QStringList args = getCommand( "Reboot" ).split( " " );
+
                 if ( args.at( 0 ) == "dbus" ) {
                     emit reboot( false );
                 }
