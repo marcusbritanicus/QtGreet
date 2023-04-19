@@ -6,13 +6,14 @@ Layout = layout.hjson
 StyleSheet = style.qss
 
 [Theme]
-Background = mpvpaper
+Background = videobg
 BaseColor = ffffffff
 TextColor = ffffff
 Type = Video
 
-[mpvpaper]
+[videobg]
+File =
 Playlist = 4k.m3u, all_sd.m3u, day.m3u, night.m3u
 
 [cache]
-Location = $HOME/.cache/qtgreet/aerial
+Location = /var/tmp/qtgreet/aerial

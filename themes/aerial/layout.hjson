@@ -27,7 +27,8 @@
 		SessionName: {
 			Height: 24
 			Type: Combo
-			MaximumWidth: 150
+			MaximumWidth: 270
+			Font: Dejavu Sans, 12, Normal, Normal
 		}
 		QLabel-1: {
 			Text: en_us

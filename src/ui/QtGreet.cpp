@@ -45,7 +45,7 @@ QtGreet::UI::UI() {
 
     setStyleSheet( themeManager->getStyleSheet() );
 
-    if ( sett->contains( "VideoBG" ) ) {
+    if ( themeManager->isVideoBG() ) {
         QStringList vbg = sett->value( "VideoBG" ).toString().split( "\\s+" );
         QProcess::startDetached( vbg.takeFirst(), vbg );
     }
@@ -102,7 +102,20 @@ void QtGreet::UI::createUI() {
     QWidget    *w   = new QWidget( base );
     QBoxLayout *lyt = lytMgr.generateLayout( themeManager->getLayout() );
 
-    w->setLayout( lyt );
+    if ( themeManager->isVideoBG() ) {
+        // MpvWidget *video = new MpvWidget( this );
+        QLabel *video = new QLabel();
+        video->setPixmap( QPixmap( "/usr/share/backgrounds/rhythm.jpg" ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation ) );
+        QGridLayout *baseLyt = new QGridLayout();
+        baseLyt->setContentsMargins( QMargins() );
+        baseLyt->addWidget( video, 0, 0 );
+        baseLyt->addLayout( lyt, 0, 0 );
+        w->setLayout( baseLyt );
+    }
+
+    else {
+        w->setLayout( lyt );
+    }
 
     base->addWidget( w );
 
@@ -257,7 +270,6 @@ void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
     QPainter painter( this );
 
     /* Base color */
-
     painter.save();
     painter.drawImage( QPointF( 0, 0 ), background );
     painter.setOpacity( 1.0 );

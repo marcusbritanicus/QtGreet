@@ -6,7 +6,7 @@ Layout = layout.hjson
 StyleSheet = style.qss
 
 [Theme]
-Background = ../../backgrounds/Christmas.svg
+Background = ../../backgrounds/BlurryBlob.png
 BaseColor = ffffffff
 TextColor = ffffff
 Type = Image
