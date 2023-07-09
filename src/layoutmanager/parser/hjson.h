@@ -5,6 +5,7 @@
 #include <memory>
 #include <map>
 #include <stdexcept>
+#include <cstdint>
 
 #define HJSON_OP_DECL_VAL( _T, _O )               \
     friend Value operator _O( _T, const Value& ); \
