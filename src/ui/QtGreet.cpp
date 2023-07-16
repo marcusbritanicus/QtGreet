@@ -431,7 +431,7 @@ void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
     connect(
         btn, &QPushButton::clicked, [ = ] () {
             timer->stop();
-            login1->scheduleShutdown( "cancel", 0 );
+            login1->schedulePowerEvent( "cancel", 0 );
             base->close();
         }
     );
@@ -494,7 +494,7 @@ void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
         }
     );
 
-    login1->scheduleShutdown( (reboot ? "reboot" : "poweroff"), 10 * 1000 * 1000 );
+    login1->schedulePowerEventIn( (reboot ? "reboot" : "poweroff"), 10 * 1000 * 1000 );
 
     timer->start();
 }

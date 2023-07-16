@@ -2,24 +2,23 @@ QWidget {
     color: #ffffff;
 }
 
-#LoginButton {
-    border: 1px solid gray;
-    border-radius: 18px;
-}
-
-#UserLabel, #SessionLabel {
-    border: 1px solid gray;
-    border-radius: 18px;
-}
-
 QPushButton:hover {
     background-color: rgba(255, 255, 255, 30);
+    border: 1px solid cornflowerblue;
 }
 
 QPushButton:pressed {
     background-color: rgba(255, 255, 255, 10);
     padding-top: 1px;
     padding-left: 1px;
+}
+
+QPushButton:focus {
+    border: 2px solid cornflowerblue;
+}
+
+QToolButton:focus {
+    border: 2px solid cornflowerblue;
 }
 
 QToolButton:hover {
@@ -30,6 +29,21 @@ QToolButton:pressed {
     background-color: rgba(255, 255, 255, 10);
     padding-top: 2px;
     padding-left: 2px;
+}
+
+#LoginButton {
+    border: 1px solid gray;
+    border-radius: 18px;
+}
+
+#LoginButton:focus {
+    border: 1px solid cornflowerblue;
+    border-radius: 18px;
+}
+
+#UserLabel, #SessionLabel {
+    border: 1px solid gray;
+    border-radius: 18px;
 }
 
 #UserNavRight, #UserNavLeft {
@@ -44,6 +58,14 @@ QToolButton:pressed {
     border-radius: 18px;
     padding-top: 1px;
     padding-left: 1px;
+}
+
+#UserNavRight:focus, #UserNavLeft:focus {
+    border: 1px solid cornflowerblue;
+}
+
+#SessionNavRight:focus, #SessionNavLeft:focus {
+    border: 1px solid cornflowerblue;
 }
 
 QToolButton#Halt {
@@ -70,6 +92,14 @@ QLineEdit {
     border-radius: 18px;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+QLineEdit:focus {
+    border: 2px solid cornflowerblue;
+}
+
+QLineEdit:edit-focus {
+    border: 2px solid cornflowerblue;
 }
 
 QListWidget {

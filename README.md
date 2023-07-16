@@ -49,6 +49,9 @@ You can either use the *inbuilt* `greeetwl` compositor (a fork of `tinywl`), or 
   * Open `/etc/greetd/config.toml` for editing with your favorite editor.
   * Under `[default_session]`, set `command = "sway --config /etc/qtgreet/sway.cfg"`
 
+Most compositors print debug messages to the terminal. You can hide them by redirecting the debug output. Add ` > /dev/null 2>&1` at the end of
+each command (ex. `command = "greetwl > /dev/null 2>&1"`).
+
 ### CLI Options
 Following command-line options are available:
 ```
@@ -76,3 +79,4 @@ Sometimes, it would be easier if the keyboard layout was not the default `us`. F
 [input]
 xkb_layout = us
 ```
+``
