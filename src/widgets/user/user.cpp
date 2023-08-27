@@ -18,8 +18,10 @@
  * MA 02110-1301, USA.
  **/
 
-#include "Global.hpp"
+#include <sys/types.h>
+#include <pwd.h>
 
+#include "Global.hpp"
 #include "user.hpp"
 
 static inline QString getIcon( QString name ) {
@@ -65,34 +67,32 @@ static inline Users getUsers() {
         }
     }
 
-    /* Read and parse /etc/passwd */
-    QFile passwd( passwdPath );
-
-    passwd.open( QFile::ReadOnly );
-    QString usrData = QString::fromLocal8Bit( passwd.readAll() );
-
-    passwd.close();
-
     mUserList.clear();
 
-    /** Read /etc/passwd and list the ones with UID > login.defs[UID_MIN] */
-    for ( QString user: usrData.split( "\n", Qt::SkipEmptyParts ) ) {
-        QStringList uInfo = user.split( ":", Qt::KeepEmptyParts );
-
-        if ( (uInfo.value( 2 ).toInt() >= uid_min) and (uInfo.value( 3 ).toInt() <= uid_max) ) {
-            User usr = User{
-                uInfo.value( 0 ),
-                uInfo.value( 2 ).toUInt(),
-                uInfo.value( 3 ).toUInt(),
-                uInfo.value( 4 ).replace( ",", "" ),
-                uInfo.value( 5 ),
-                uInfo.value( 6 ),
-                getIcon( uInfo.value( 0 ) )
-            };
-
-            mUserList << usr;
+    while ( true ) {
+        struct passwd *pwd = getpwent();
+        if ( !pwd ) {
+            break;
         }
+
+        /** We want values within our UID limits */
+        if ( ( pwd->pw_uid < uid_min ) or ( pwd->pw_uid > uid_max ) ) {
+            continue;
+        }
+
+        User usr = User{
+            pwd->pw_name,
+            pwd->pw_uid,
+            pwd->pw_gid,
+            QString( pwd->pw_gecos ).replace( ",", "" ),
+            pwd->pw_dir,
+            pwd->pw_shell,
+            getIcon( pwd->pw_name )
+        };
+
+		mUserList << usr;
     }
+    endpwent();
 
     std::sort(
         mUserList.begin(), mUserList.end(), [ = ]( const User& u1, const User& u2 ) {
