@@ -54,8 +54,8 @@ static inline Users getUsers() {
     loginDefs.close();
 
     /* Default values */
-    int uid_min = 1000;
-    int uid_max = 60000;
+    uid_t uid_min = 1000;
+    uid_t uid_max = 60000;
 
     for ( QString def: defs.split( "\n", Qt::SkipEmptyParts ) ) {
         if ( def.startsWith( "UID_MIN" ) ) {
@@ -71,12 +71,13 @@ static inline Users getUsers() {
 
     while ( true ) {
         struct passwd *pwd = getpwent();
+
         if ( !pwd ) {
             break;
         }
 
         /** We want values within our UID limits */
-        if ( ( pwd->pw_uid < uid_min ) or ( pwd->pw_uid > uid_max ) ) {
+        if ( (pwd->pw_uid < uid_min) or (pwd->pw_uid > uid_max) ) {
             continue;
         }
 
@@ -90,7 +91,7 @@ static inline Users getUsers() {
             getIcon( pwd->pw_name )
         };
 
-		mUserList << usr;
+        mUserList << usr;
     }
     endpwent();
 

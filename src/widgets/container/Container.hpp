@@ -34,6 +34,7 @@ class Container : public QWidget {
 
     private:
         QColor bgColor;
+        QColor border;
 
     protected:
         void paintEvent( QPaintEvent * );

@@ -24,6 +24,13 @@
 static QStringList themePaths = QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "qtgreet/themes", QStandardPaths::LocateDirectory );
 
 ThemeManager::ThemeManager( QString themeName ) {
+    /** Read the env variable: QTGREET_THEME_DIRS */
+    for ( QString themeDir: qEnvironmentVariable( "QTGREET_THEME_DIRS" ).split( ":" ) ) {
+        if ( not themePaths.contains( QDir( themeDir ).path() ) ) {
+            themePaths << themeDir;
+        }
+    }
+
     /** If this theme does not exist, use the 'default' theme */
     if ( not availableThemes().contains( themeName ) ) {
         themeName = "default";

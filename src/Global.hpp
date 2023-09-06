@@ -43,4 +43,6 @@ extern QString tmpPath;
 extern QString vtNum;
 extern QString logPath;
 
+extern QString themeName;
+
 extern QMap<QString, QString> paths;

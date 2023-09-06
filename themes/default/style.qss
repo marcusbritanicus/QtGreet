@@ -53,6 +53,13 @@ QToolButton:pressed {
     padding-left: 1px;
 }
 
+#BackButton {
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
 #SessionNavRight, #SessionNavLeft {
     border: 1px solid gray;
     border-radius: 18px;

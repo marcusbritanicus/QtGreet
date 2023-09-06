@@ -27,14 +27,26 @@
 #include "LayoutUtils.hpp"
 
 QtGreet::LayoutManager::LayoutManager() {
+    /** TODO: Fix this bug before release!! */
     mScreenSize = qApp->primaryScreen()->size();
 }
 
 
 QBoxLayout * QtGreet::LayoutManager::generateLayout( QString lytFile ) {
-    mLytFile = lytFile;
+    Hjson::Value layout;
 
-    Hjson::Value layout = Hjson::UnmarshalFromFile( lytFile.toStdString() );
+    /** Simple hack to load customlogin.hjson */
+    if ( lytFile.startsWith( ":/" ) ) {
+        QFile hjson( lytFile );
+        hjson.open( QFile::ReadOnly );
+        layout = Hjson::Unmarshal( QString::fromUtf8( hjson.readAll() ).toStdString() );
+        hjson.close();
+    }
+
+    /** Other files */
+    else {
+        layout = Hjson::UnmarshalFromFile( lytFile.toStdString() );
+    }
 
     mLayout     = layout[ "Layout" ];
     mProperties = layout[ "Properties" ];
@@ -66,13 +78,13 @@ QBoxLayout * QtGreet::LayoutManager::generateLayout( QString lytFile ) {
     for ( int idx = 0; idx < (int)layoutItems.size(); ++idx ) {
         QString key( layoutItems[ idx ].to_string().c_str() );
 
-        /** Vertical Layout: Each key will leat to new rows */
+        /** Vertical Layout: Each key will lead to new rows */
         if ( rows.match( key ).hasMatch() ) {
             Hjson::Value row = mLayout[ key.toUtf8().data() ];
             topLyt->addWidget( addRow( row, key, mProperties[ key.toStdString() ] ) );
         }
 
-        /** Horizontal Layout: Each key will leat to new columns */
+        /** Horizontal Layout: Each key will lead to new columns */
         else if ( cols.match( key ).hasMatch() ) {
             Hjson::Value col = mLayout[ key.toUtf8().data() ];
             topLyt->addWidget( addColumn( col, key, mProperties[ key.toStdString() ] ) );

@@ -42,14 +42,16 @@ Container::Container( Hjson::Value bgClr, QString name ) : QWidget() {
 
 
 void Container::paintEvent( QPaintEvent *pEvent ) {
-    QPainter painter( this );
+    if ( bgColor != QColor( Qt::transparent ) ) {
+        QPainter painter( this );
 
-    painter.setBrush( bgColor );
-    painter.setPen( Qt::NoPen );
+        painter.setBrush( bgColor );
+        painter.setPen( Qt::NoPen );
 
-    painter.drawRect( rect() );
+        painter.drawRoundedRect( rect(), 5, 5 );
 
-    painter.end();
+        painter.end();
+    }
 
     QWidget::paintEvent( pEvent );
 }

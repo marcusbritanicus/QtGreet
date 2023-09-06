@@ -2,6 +2,10 @@ QWidget {
     color: white;
 }
 
+QWidget#OverLay {
+    background-color: rgba(0, 0, 0, 230);
+}
+
 QToolButton {
     border: none;
     border-radius: 3px;

@@ -33,12 +33,19 @@
 #include <unistd.h>
 #include <QtDBus>
 
+#include <QMediaPlayer>
+#include <QVideoWidget>
+
 QtGreet::UI::UI() {
     login = new GreetdLogin();
 
     login1 = new DFL::Login1( this );
 
-    themeManager = new ThemeManager( sett->value( "Theme", "default" ).toString() );
+    /**
+     * The option passed as cli will take precedence.
+     * Assume that the user knows the theme names.
+     */
+    themeManager = new ThemeManager( themeName.length() ? themeName : sett->value( "Theme", "default" ).toString() );
 
     setFixedSize( qApp->primaryScreen()->size() );
     createUI();
@@ -103,6 +110,11 @@ void QtGreet::UI::createUI() {
     QBoxLayout *lyt = lytMgr.generateLayout( themeManager->getLayout() );
 
     if ( themeManager->isVideoBG() ) {
+        // QVideoWidget
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+        // s
+#else
+#endif
         // MpvWidget *video = new MpvWidget( this );
         QLabel *video = new QLabel();
         video->setPixmap( QPixmap( "/usr/share/backgrounds/rhythm.jpg" ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation ) );
@@ -125,6 +137,31 @@ void QtGreet::UI::createUI() {
 
     validating = new QLabel();
     validating->close();
+
+    /** Create custom login widget */
+    cLogin = new QWidget( this );
+    cLogin->setObjectName( "OverLay" );
+    cLogin->setLayout( lytMgr.generateLayout( ":/customlogin.hjson" ) );
+
+    /* Set the Custom login stylesheet */
+    QFile qss( ":/customlogin.qss" );
+    qss.open( QFile::ReadOnly );
+    cLogin->setStyleSheet( QString::fromLocal8Bit( qss.readAll() ) );
+    qss.close();
+
+    /** Hide it for now */
+    cLogin->hide();
+
+    QAction *cstmLgnAct = new QAction( "Show custom login" );
+    cstmLgnAct->setShortcut( QKeySequence( Qt::CTRL | Qt::SHIFT | Qt::Key_X ) );
+
+    connect(
+        cstmLgnAct, &QAction::triggered, [ = ] () {
+            showCustomLogin();
+        }
+    );
+
+    addAction( cstmLgnAct );
 }
 
 
@@ -385,6 +422,35 @@ void QtGreet::UI::showValidating() {
 }
 
 
+void QtGreet::UI::showCustomLogin() {
+    /** Connect the back button to close the window */
+    QToolButton *backBtn = cLogin->findChild<QToolButton *>( "BackButton" );
+
+    connect(
+        backBtn, &QToolButton::clicked, [ = ] () {
+            cLogin->close();
+            backBtn->disconnect();
+        }
+    );
+
+    /** Login Button */
+    QPushButton *loginBtn = cLogin->findChild<QPushButton *>( "CustomLogin" );
+
+    connect(
+        loginBtn, &QToolButton::clicked, [ = ] () {
+            tryCustomLogin();
+        }
+    );
+
+    QLineEdit *le = cLogin->findChild<QLineEdit *>( "UserEdit" );
+
+    le->setFocus();
+
+    cLogin->resize( size() );
+    cLogin->show();
+}
+
+
 void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
     QWidget *base = new QWidget( this );
 
@@ -522,10 +588,65 @@ void QtGreet::UI::tryLogin() {
 
         if ( sess ) {
             qDebug() << "Login successful";
-            qDebug() << "Saving dsession details.";
+            qDebug() << "Saving the session details.";
             /** Save the user info */
             users->setValue( "LastUsedId",                                 mCurUser.uid );
             users->setValue( QString( "LastUsed/%1" ).arg( mCurUser.uid ), mCurSession.file );
+            users->sync();
+
+            qApp->quit();
+        }
+    }
+
+    QString errTitle;
+    QString errMsg;
+
+    if ( auth ) {
+        errTitle = "Failed to start Session";
+        errMsg   = "We failed to start the selected session. Perhaps a wrong command?";
+        errMsg  += "<p>Server says <br><center><tt>" + sessMsg + "</tt></center></p>";
+    }
+
+    else {
+        errTitle = "Authentication failure";
+        errMsg   = "We failed to authenticate you. Did you enter the correct password?";
+        errMsg  += "<p>Server says <br><center><tt>" + authMsg + "</tt></center></p>";
+    }
+
+    validating->setText( QString( "<center><b>%1</b></center><p>%2</p>" ).arg( errTitle ).arg( errMsg ) );
+
+    setEnabled( true );
+}
+
+
+void QtGreet::UI::tryCustomLogin() {
+    QLineEdit *usr = cLogin->findChild<QLineEdit *>( "UserEdit" );
+    QLineEdit *pwd = cLogin->findChild<QLineEdit *>( "Password" );
+    QLineEdit *ssn = cLogin->findChild<QLineEdit *>( "SessionEdit" );
+
+    if ( (usr == nullptr) or (pwd == nullptr) or (ssn == nullptr) ) {
+        return;
+    }
+
+    showValidating();
+
+    setDisabled( true );
+
+    bool    auth    = login->authenticate( usr->text(), pwd->text() );
+    QString authMsg = login->errorMessage();
+    bool    sess    = false;
+    QString sessMsg;
+
+    if ( auth ) {
+        sess    = login->startSession( ssn->text(), "other" );
+        sessMsg = login->errorMessage();
+
+        if ( sess ) {
+            qDebug() << "Login successful";
+            qDebug() << "Saving the custom session details.";
+
+            users->setValue( "Custom/User",    usr->text() );
+            users->setValue( "Custom/Session", ssn->text() );
             users->sync();
 
             qApp->quit();

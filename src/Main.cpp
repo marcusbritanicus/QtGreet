@@ -47,6 +47,7 @@ QString xrcPath     = "/etc/X11/xinit/xserverrc";
 QString tmpPath     = "/tmp/";
 QString vtNum       = "1";
 QString logPath     = LOGPATH;
+QString themeName   = "";
 
 void setupWindow( QScreen *screen, WQt::WindowHandle *hndl ) {
     wl_output *output = WQt::Utils::wlOutputFromQScreen( screen );
@@ -104,6 +105,9 @@ int main( int argc, char **argv ) {
     /* Optional: Provide login.defs path */
     parser.addOption( { { "o", "log-path" }, "Path to store log files", "log-path" } );
 
+    /* Optional: Provide theme name */
+    parser.addOption( { { "m", "theme" }, "Theme to be loaded", "theme-name" } );
+
     /* Optional: Provide login.defs path */
     QCommandLineOption test( "test", "Test QtGreet without using Wayland Protocols" );
 
@@ -124,6 +128,7 @@ int main( int argc, char **argv ) {
     tmpPath     = (parser.isSet( "tmp-path" ) ? parser.value( "tmp-path" ) : tmpPath);
     vtNum       = (parser.isSet( "vt-number" ) ? parser.value( "vt-number" ) : vtNum);
     logPath     = (parser.isSet( "log-path" ) ? parser.value( "log-path" ) : logPath);
+    themeName   = (parser.isSet( "theme" ) ? parser.value( "theme" ) : themeName);
 
     /**
      * Notes: Log path
@@ -186,6 +191,7 @@ int main( int argc, char **argv ) {
         qInfo() << "System temp path:      " << tmpPath;
         qInfo() << "VT Number:             " << vtNum;
         qInfo() << "Session log path:      " << logPath;
+        qInfo() << "Theme name:            " << themeName;
     }
 
     if ( dynDataPath.isEmpty() and not parser.isSet( "data-path" ) ) {

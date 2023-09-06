@@ -35,15 +35,11 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
     QWidget *w = nullptr;
 
     if ( name == "QWidget" ) {
-        // qWarning() << "Creating QWidget";
-
         w = new QWidget();
         w->setObjectName( type );
     }
 
     else if ( name == "QLabel" ) {
-        // qWarning() << "Creating QLabel";
-
         w = new QLabel();
         w->setObjectName( "Label" );
     }
@@ -98,6 +94,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         if ( type == "LineEdit" ) {
             w = new QLineEdit();
             w->setObjectName( "UserEdit" );
+            qobject_cast<QLineEdit *>( w )->setPlaceholderText( "Username" );
         }
 
         else if ( type == "Label" ) {
@@ -152,6 +149,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
         w = new SessionEdit();
         w->setObjectName( "SessionEdit" );
+        qobject_cast<QLineEdit *>( w )->setPlaceholderText( "Session command" );
     }
 
     else if ( name == "SessionEditButton" ) {
@@ -174,6 +172,22 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
 
     else if ( (name == "UserNav") or (name == "SessionNav") ) {
         w = new NavButton( name, type );
+    }
+
+    else if ( (name == "Button") ) {
+        w = new QToolButton();
+
+        if ( type == "ToolButton" ) {
+            w->setObjectName( "ToolButton" );
+        }
+
+        else if ( type == "PushButton" ) {
+            w->setObjectName( "PushButton" );
+        }
+    }
+
+    else if ( (name == "PushButton") ) {
+        w = new QToolButton();
     }
 
     else if ( name == "Logo" ) {
@@ -251,6 +265,7 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
             }
         }
 
+        /** Height */
         else if ( key.contains( "Height" ) ) {
             int h = getHeight( properties[ stdKey ], size );
 
@@ -290,6 +305,10 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
             }
 
             else if ( type == "Label" ) {
+                qobject_cast<QLabel *>( widget )->setText( text );
+            }
+
+            else if ( name == "QLabel" ) {
                 qobject_cast<QLabel *>( widget )->setText( text );
             }
 
@@ -420,6 +439,10 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
             }
         }
 
+        else if ( key == "ObjectName" ) {
+            widget->setObjectName( properties[ stdKey ].to_string().c_str() );
+        }
+
         else if ( key == "TextAlign" ) {
             if ( name == "UserName" and type == "Label" ) {
                 if ( properties[ stdKey ].to_string() == "Center" ) {
@@ -435,6 +458,20 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
                 }
             }
 
+            else if ( name == "UserName" and type == "LineEdit" ) {
+                if ( properties[ stdKey ].to_string() == "Center" ) {
+                    qobject_cast<QLineEdit *>( widget )->setAlignment( Qt::AlignCenter );
+                }
+
+                else if ( properties[ stdKey ].to_string() == "Left" ) {
+                    qobject_cast<QLineEdit *>( widget )->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+                }
+
+                else if ( properties[ stdKey ].to_string() == "Right" ) {
+                    qobject_cast<QLineEdit *>( widget )->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+                }
+            }
+
             else if ( name == "SessionName" and type == "Label" ) {
                 if ( properties[ stdKey ].to_string() == "Center" ) {
                     qobject_cast<SessionLabel *>( widget )->setAlignment( Qt::AlignCenter );
@@ -446,6 +483,20 @@ void WidgetFactory::applyWidgetProperties( QWidget *widget, QString name, QStrin
 
                 else if ( properties[ stdKey ].to_string() == "Right" ) {
                     qobject_cast<SessionLabel *>( widget )->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+                }
+            }
+
+            else if ( name == "SessionEdit" ) {
+                if ( properties[ stdKey ].to_string() == "Center" ) {
+                    qobject_cast<QLineEdit *>( widget )->setAlignment( Qt::AlignCenter );
+                }
+
+                else if ( properties[ stdKey ].to_string() == "Left" ) {
+                    qobject_cast<QLineEdit *>( widget )->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+                }
+
+                else if ( properties[ stdKey ].to_string() == "Right" ) {
+                    qobject_cast<QLineEdit *>( widget )->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
                 }
             }
 

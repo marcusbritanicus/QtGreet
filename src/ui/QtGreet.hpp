@@ -59,6 +59,9 @@ class QtGreet::UI : public QMainWindow {
         /* Show the validating message */
         void showValidating();
 
+        /* Show the validating message */
+        void showCustomLogin();
+
         /* Show the power message */
         void showPowerMessage( bool reboot, bool done );
 
@@ -82,6 +85,7 @@ class QtGreet::UI : public QMainWindow {
 
         /* Validation message */
         QLabel *validating;
+        QWidget *cLogin = nullptr;
 
     protected:
         void paintEvent( QPaintEvent *pEvent );
@@ -90,6 +94,9 @@ class QtGreet::UI : public QMainWindow {
     private Q_SLOTS:
         // Try to login: If successful, store the username/userid and the session path.
         void tryLogin();
+
+        // Try to login using values from Custom Login widget.
+        void tryCustomLogin();
 
         // ComboBox
         void on_UserCombo_currentIndexChanged( int );

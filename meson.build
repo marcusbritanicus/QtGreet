@@ -29,7 +29,7 @@ add_global_arguments( '-DLOGPATH="@0@"'.format( get_option( 'logpath' ) ), langu
 # we'll switch to Qt5.
 if get_option('use_qt_version') == 'auto'
 	# Check if Qt6 is available
-	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ], required: false )
+	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Multimedia', 'MultimediaWidgets' ], required: false )
 	wayqt  = dependency( 'wayqt-qt6',      required: false )
 	DFApp  = dependency( 'df6application', required: false )
 	DFIpc  = dependency( 'df6ipc',         required: false )
@@ -42,7 +42,7 @@ if get_option('use_qt_version') == 'auto'
 		Qt = import( 'qt6' )
 
 	else
-		QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ], required: true )
+		QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Multimedia', 'MultimediaWidgets' ], required: true )
 		Qt     = import( 'qt5' )
 
 		wayqt  = dependency( 'wayqt',          required: true )
@@ -54,7 +54,7 @@ if get_option('use_qt_version') == 'auto'
 
 # User specifically wants to user Qt5
 elif get_option('use_qt_version') == 'qt5'
-	QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ], required: true )
+	QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Multimedia', 'MultimediaWidgets' ], required: true )
 	Qt     = import( 'qt5' )
 
 	wayqt  = dependency( 'wayqt',          required: true )
@@ -65,7 +65,7 @@ elif get_option('use_qt_version') == 'qt5'
 
 # User specifically wants to user Qt6
 elif get_option('use_qt_version') == 'qt6'
-	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ], required: false )
+	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Multimedia', 'MultimediaWidgets' ], required: false )
 	Qt     = import( 'qt6' )
 
 	wayqt  = dependency( 'wayqt-qt6',      required: true )

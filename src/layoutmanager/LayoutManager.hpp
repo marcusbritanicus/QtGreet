@@ -39,9 +39,6 @@ class QtGreet::LayoutManager {
         /** Screen size */
         QSize mScreenSize;
 
-        /** Original layout file URL */
-        QString mLytFile;
-
         /** Parsed layout file */
         Hjson::Value mLayout;
         Hjson::Value mProperties;
