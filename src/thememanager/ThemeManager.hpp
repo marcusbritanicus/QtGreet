@@ -44,6 +44,9 @@ class ThemeManager {
         /** Does the theme require video bg? */
         bool isVideoBG();
 
+        /** Does the theme require video bg? */
+        QString video();
+
         /** All the available themes */
         static QStringList availableThemes();
 
@@ -51,6 +54,7 @@ class ThemeManager {
         void readTheme( QString );
 
         QString imageBG;
+        QString videoBG;
         QString mLayout;
         QString mQSS;
         bool mIsVideoBG;

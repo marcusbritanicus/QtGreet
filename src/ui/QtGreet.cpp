@@ -29,12 +29,10 @@
 #include "power.hpp"
 #include "session.hpp"
 #include "user.hpp"
+#include "MpvWidget.hpp"
 
 #include <unistd.h>
 #include <QtDBus>
-
-#include <QMediaPlayer>
-#include <QVideoWidget>
 
 QtGreet::UI::UI() {
     login = new GreetdLogin();
@@ -52,12 +50,7 @@ QtGreet::UI::UI() {
 
     setStyleSheet( themeManager->getStyleSheet() );
 
-    if ( themeManager->isVideoBG() ) {
-        QStringList vbg = sett->value( "VideoBG" ).toString().split( "\\s+" );
-        QProcess::startDetached( vbg.takeFirst(), vbg );
-    }
-
-    else {
+    if ( not themeManager->isVideoBG() ) {
         QString bgStr( themeManager->background() );
         background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 
@@ -75,6 +68,7 @@ QtGreet::UI::UI() {
             background.fill( Qt::transparent );
             QPainter p( &background );
             scene->render( &p, rect(), rect() );
+            p.end();
         }
     }
 
@@ -106,28 +100,25 @@ void QtGreet::UI::createUI() {
 
     QtGreet::LayoutManager lytMgr;
 
-    QWidget    *w   = new QWidget( base );
-    QBoxLayout *lyt = lytMgr.generateLayout( themeManager->getLayout() );
+    QWidget *w = new QWidget( base );
+
+    /** The widget layout */
+    QBoxLayout *themeLyt = lytMgr.generateLayout( themeManager->getLayout() );
+
+    /** Base layout on which the themeLyt will be added */
+    QGridLayout *baseLyt = new QGridLayout();
+    baseLyt->setContentsMargins( QMargins() );
 
     if ( themeManager->isVideoBG() ) {
-        // QVideoWidget
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-        // s
-#else
-#endif
-        // MpvWidget *video = new MpvWidget( this );
-        QLabel *video = new QLabel();
-        video->setPixmap( QPixmap( "/usr/share/backgrounds/rhythm.jpg" ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation ) );
-        QGridLayout *baseLyt = new QGridLayout();
-        baseLyt->setContentsMargins( QMargins() );
+        setlocale( LC_NUMERIC, "C" );
+        MpvWidget *video = new MpvWidget( w );
+        video->command( QStringList() << "loadfile" << themeManager->video() );
+
         baseLyt->addWidget( video, 0, 0 );
-        baseLyt->addLayout( lyt, 0, 0 );
-        w->setLayout( baseLyt );
     }
 
-    else {
-        w->setLayout( lyt );
-    }
+    baseLyt->addLayout( themeLyt, 0, 0 );
+    w->setLayout( baseLyt );
 
     base->addWidget( w );
 
@@ -304,21 +295,24 @@ void QtGreet::UI::updateSession( uint uid ) {
 
 
 void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
-    QPainter painter( this );
+    /** We need to paint only if it's image background */
+    if ( not themeManager->isVideoBG() ) {
+        QPainter painter( this );
 
-    /* Base color */
-    painter.save();
-    painter.drawImage( QPointF( 0, 0 ), background );
-    painter.setOpacity( 1.0 );
-    painter.restore();
+        /* Base color */
+        painter.save();
+        painter.drawImage( QPointF( 0, 0 ), background );
+        painter.setOpacity( 1.0 );
+        painter.restore();
 
-    painter.save();
-    painter.setPen( Qt::NoPen );
-    painter.setBrush( QColor( 0, 0, 0, 150 ) );
-    painter.drawRect( rect() );
-    painter.restore();
+        painter.save();
+        painter.setPen( Qt::NoPen );
+        painter.setBrush( QColor( 0, 0, 0, 150 ) );
+        painter.drawRect( rect() );
+        painter.restore();
 
-    painter.end();
+        painter.end();
+    }
 
     QMainWindow::paintEvent( pEvent );
 }

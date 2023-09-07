@@ -67,6 +67,11 @@ bool ThemeManager::isVideoBG() {
 }
 
 
+QString ThemeManager::video() {
+    return videoBG;
+}
+
+
 QStringList ThemeManager::availableThemes() {
     QStringList themes;
 
@@ -113,6 +118,15 @@ void ThemeManager::readTheme( QString name ) {
 
     if ( background != "Theme" ) {
         imageBG = background;
+    }
+
+    /***/
+    if ( sett->value( "videobg/File" ).toString().length() ) {
+        videoBG = QDir( themePath ).filePath( sett->value( "videobg/File" ).toString() );
+    }
+
+    else {
+        videoBG = QDir( themePath ).filePath( sett->value( "videobg/Playlist" ).toString() );
     }
 
     QString baseColor = sett->value( "Overrides/BaseColor", "Theme" ).toString();

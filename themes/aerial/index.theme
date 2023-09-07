@@ -13,7 +13,7 @@ Type = Video
 
 [videobg]
 File =
-Playlist = 4k.m3u, all_sd.m3u, day.m3u, night.m3u
+Playlist = night.m3u
 
 [cache]
 Location = /var/tmp/qtgreet/aerial

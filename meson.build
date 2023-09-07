@@ -29,7 +29,7 @@ add_global_arguments( '-DLOGPATH="@0@"'.format( get_option( 'logpath' ) ), langu
 # we'll switch to Qt5.
 if get_option('use_qt_version') == 'auto'
 	# Check if Qt6 is available
-	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Multimedia', 'MultimediaWidgets' ], required: false )
+	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'OpenGLWidgets' ], required: false )
 	wayqt  = dependency( 'wayqt-qt6',      required: false )
 	DFApp  = dependency( 'df6application', required: false )
 	DFIpc  = dependency( 'df6ipc',         required: false )
@@ -42,7 +42,7 @@ if get_option('use_qt_version') == 'auto'
 		Qt = import( 'qt6' )
 
 	else
-		QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Multimedia', 'MultimediaWidgets' ], required: true )
+		QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'OpenGLWidgets' ], required: true )
 		Qt     = import( 'qt5' )
 
 		wayqt  = dependency( 'wayqt',          required: true )
@@ -54,7 +54,7 @@ if get_option('use_qt_version') == 'auto'
 
 # User specifically wants to user Qt5
 elif get_option('use_qt_version') == 'qt5'
-	QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Multimedia', 'MultimediaWidgets' ], required: true )
+	QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'OpenGLWidgets' ], required: true )
 	Qt     = import( 'qt5' )
 
 	wayqt  = dependency( 'wayqt',          required: true )
@@ -65,7 +65,7 @@ elif get_option('use_qt_version') == 'qt5'
 
 # User specifically wants to user Qt6
 elif get_option('use_qt_version') == 'qt6'
-	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'Multimedia', 'MultimediaWidgets' ], required: false )
+	QtDeps = dependency( 'qt6', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'OpenGLWidgets' ], required: false )
 	Qt     = import( 'qt6' )
 
 	wayqt  = dependency( 'wayqt-qt6',      required: true )
@@ -74,6 +74,9 @@ elif get_option('use_qt_version') == 'qt6'
 	DFUtl  = dependency( 'df6utils',       required: true )
 	DFLgn  = dependency( 'df6login1',      required: true )
 endif
+
+# MPV for video bg
+Mpv            = dependency( 'mpv' )
 
 # Required for greetwl
 wlr            = dependency( 'wlroots' )
@@ -100,6 +103,7 @@ Includes = [
 	'src/widgets/power',
 	'src/widgets/session',
 	'src/widgets/user',
+	'src/widgets/videobg',
 	'src/widgets/factory',
 ]
 
@@ -119,7 +123,9 @@ Headers = [
 	'src/widgets/labels/labels.hpp',
 	'src/widgets/power/power.hpp',
 	'src/widgets/session/session.hpp',
-	'src/widgets/user/user.hpp'
+	'src/widgets/user/user.hpp',
+	'src/widgets/videobg/MpvWidget.hpp',
+	'src/widgets/videobg/MpvHelper.hpp',
 ]
 
 Sources = [
@@ -141,7 +147,8 @@ Sources = [
 	'src/widgets/labels/labels.cpp',
 	'src/widgets/power/power.cpp',
 	'src/widgets/session/session.cpp',
-	'src/widgets/user/user.cpp'
+	'src/widgets/user/user.cpp',
+	'src/widgets/videobg/MpvWidget.cpp',
 ]
 
 Mocs = Qt.compile_moc(
@@ -156,7 +163,7 @@ Resources = Qt.compile_resources(
 
 qtgreet = executable(
     'qtgreet', [ Sources, Mocs, Resources ],
-    dependencies: [ QtDeps, wayqt, DFApp, DFIpc, DFUtl, DFLgn ],
+    dependencies: [ QtDeps, wayqt, DFApp, DFIpc, DFUtl, DFLgn, Mpv ],
 	include_directories: [ Includes ],
     install: true
 )
