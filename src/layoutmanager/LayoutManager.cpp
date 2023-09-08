@@ -32,6 +32,11 @@ QtGreet::LayoutManager::LayoutManager() {
 }
 
 
+void QtGreet::LayoutManager::setScreenSize( QSize size ) {
+    mScreenSize = size;
+}
+
+
 QBoxLayout * QtGreet::LayoutManager::generateLayout( QString lytFile ) {
     Hjson::Value layout;
 

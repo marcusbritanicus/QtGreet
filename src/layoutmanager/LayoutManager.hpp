@@ -33,6 +33,9 @@ namespace QtGreet {
 class QtGreet::LayoutManager {
     public:
         LayoutManager();
+
+        void setScreenSize( QSize );
+
         QBoxLayout * generateLayout( QString layoutFile );
 
     private:

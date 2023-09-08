@@ -22,6 +22,7 @@
 #include "LoginManager.hpp"
 #include "GreetdManager.hpp"
 
+#include "ThemeManager.hpp"
 #include "LayoutManager.hpp"
 
 #include "buttons.hpp"
@@ -43,15 +44,13 @@ QtGreet::UI::UI() {
      * The option passed as cli will take precedence.
      * Assume that the user knows the theme names.
      */
-    themeManager = new ThemeManager( themeName.length() ? themeName : sett->value( "Theme", "default" ).toString() );
+    themeMgr = new QtGreet::ThemeManager( themeName.length() ? themeName : sett->value( "Theme", "default" ).toString() );
 
     setFixedSize( qApp->primaryScreen()->size() );
     createUI();
 
-    setStyleSheet( themeManager->getStyleSheet() );
-
-    if ( not themeManager->isVideoBG() ) {
-        QString bgStr( themeManager->background() );
+    if ( not themeMgr->isVideoBG() ) {
+        QString bgStr( themeMgr->background() );
         background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 
         if ( sett->value( "BlurBackground", false ).toBool() ) {
@@ -98,21 +97,21 @@ void QtGreet::UI::createUI() {
     base = new QStackedWidget();
     setCentralWidget( base );
 
-    QtGreet::LayoutManager lytMgr;
+    lytMgr = new QtGreet::LayoutManager();
 
     QWidget *w = new QWidget( base );
 
     /** The widget layout */
-    QBoxLayout *themeLyt = lytMgr.generateLayout( themeManager->getLayout() );
+    QBoxLayout *themeLyt = lytMgr->generateLayout( themeMgr->getLayout() );
 
     /** Base layout on which the themeLyt will be added */
     QGridLayout *baseLyt = new QGridLayout();
     baseLyt->setContentsMargins( QMargins() );
 
-    if ( themeManager->isVideoBG() ) {
+    if ( themeMgr->isVideoBG() ) {
         setlocale( LC_NUMERIC, "C" );
         MpvWidget *video = new MpvWidget( w );
-        video->command( QStringList() << "loadfile" << themeManager->video() );
+        video->command( QStringList() << "loadfile" << themeMgr->video() );
 
         baseLyt->addWidget( video, 0, 0 );
     }
@@ -124,6 +123,8 @@ void QtGreet::UI::createUI() {
 
     setWindowFlags( Qt::FramelessWindowHint );
 
+    setStyleSheet( themeMgr->getStyleSheet() );
+
     QMetaObject::connectSlotsByName( this );
 
     validating = new QLabel();
@@ -132,7 +133,7 @@ void QtGreet::UI::createUI() {
     /** Create custom login widget */
     cLogin = new QWidget( this );
     cLogin->setObjectName( "OverLay" );
-    cLogin->setLayout( lytMgr.generateLayout( ":/customlogin.hjson" ) );
+    cLogin->setLayout( lytMgr->generateLayout( ":/customlogin.hjson" ) );
 
     /* Set the Custom login stylesheet */
     QFile qss( ":/customlogin.qss" );
@@ -296,7 +297,7 @@ void QtGreet::UI::updateSession( uint uid ) {
 
 void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
     /** We need to paint only if it's image background */
-    if ( not themeManager->isVideoBG() ) {
+    if ( not themeMgr->isVideoBG() ) {
         QPainter painter( this );
 
         /* Base color */

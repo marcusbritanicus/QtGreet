@@ -22,7 +22,11 @@
 
 #include "Global.hpp"
 
-class ThemeManager {
+namespace QtGreet {
+    class ThemeManager;
+}
+
+class QtGreet::ThemeManager {
     public:
         ThemeManager( QString themeName );
 

@@ -23,7 +23,7 @@
 
 static QStringList themePaths = QStandardPaths::locateAll( QStandardPaths::GenericDataLocation, "qtgreet/themes", QStandardPaths::LocateDirectory );
 
-ThemeManager::ThemeManager( QString themeName ) {
+QtGreet::ThemeManager::ThemeManager( QString themeName ) {
     /** Read the env variable: QTGREET_THEME_DIRS */
     for ( QString themeDir: qEnvironmentVariable( "QTGREET_THEME_DIRS" ).split( ":" ) ) {
         if ( not themePaths.contains( QDir( themeDir ).path() ) ) {
@@ -40,12 +40,12 @@ ThemeManager::ThemeManager( QString themeName ) {
 }
 
 
-QString ThemeManager::getLayout() {
+QString QtGreet::ThemeManager::getLayout() {
     return mLayout;
 }
 
 
-QString ThemeManager::getStyleSheet() {
+QString QtGreet::ThemeManager::getStyleSheet() {
     QFile qss( mQSS );
 
     qss.open( QFile::ReadOnly );
@@ -57,22 +57,22 @@ QString ThemeManager::getStyleSheet() {
 }
 
 
-QString ThemeManager::background() {
+QString QtGreet::ThemeManager::background() {
     return imageBG;
 }
 
 
-bool ThemeManager::isVideoBG() {
+bool QtGreet::ThemeManager::isVideoBG() {
     return mIsVideoBG;
 }
 
 
-QString ThemeManager::video() {
+QString QtGreet::ThemeManager::video() {
     return videoBG;
 }
 
 
-QStringList ThemeManager::availableThemes() {
+QStringList QtGreet::ThemeManager::availableThemes() {
     QStringList themes;
 
     for ( QString path: themePaths ) {
@@ -90,7 +90,7 @@ QStringList ThemeManager::availableThemes() {
 }
 
 
-void ThemeManager::readTheme( QString name ) {
+void QtGreet::ThemeManager::readTheme( QString name ) {
     QString themePath;
 
     for ( QString path: themePaths ) {

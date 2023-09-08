@@ -23,7 +23,6 @@
 #include "Global.hpp"
 #include "user.hpp"
 #include "session.hpp"
-#include "ThemeManager.hpp"
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 #include <DFL/DF5/Login1.hpp>
@@ -35,6 +34,8 @@ class LoginManager;
 
 namespace QtGreet {
     class UI;
+    class LayoutManager;
+    class ThemeManager;
 }
 
 class QtGreet::UI : public QMainWindow {
@@ -71,11 +72,12 @@ class QtGreet::UI : public QMainWindow {
         /* Background image */
         QImage background;
 
-        /* QtGreet theme manager */
-        ThemeManager *themeManager;
+        /* QtGreet theme manager, and layout manager */
+        QtGreet::ThemeManager *themeMgr;
+        QtGreet::LayoutManager *lytMgr;
 
         /* Base to show multiple widgets */
-        QStackedWidget *base;
+        QStackedWidget *base = nullptr;
 
         /* Login manager backend */
         LoginManager *login;
@@ -88,7 +90,10 @@ class QtGreet::UI : public QMainWindow {
         QWidget *cLogin = nullptr;
 
     protected:
+        /** Draw background image */
         void paintEvent( QPaintEvent *pEvent );
+
+        /** To detect Caps/Num lock */
         void keyPressEvent( QKeyEvent *kEvent );
 
     private Q_SLOTS:
