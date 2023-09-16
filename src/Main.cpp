@@ -151,17 +151,17 @@ int main( int argc, char **argv ) {
 
         /** Only qtgreet can write into this folder */
         if ( mkdir( greeter.toLocal8Bit().constData(), 01700 ) ) {
-            qDebug() << strerror( errno );
+            qWarning() << strerror( errno );
         }
 
         /** Any user can write into this folder */
         if ( mkdir( session.toLocal8Bit().constData(), 0700 ) ) {
-            qDebug() << strerror( errno );
+            qWarning() << strerror( errno );
         }
 
         else {
             if ( chmod( session.toLocal8Bit().constData(), (mode_t)01777 ) ) {
-                qDebug() << strerror( errno );
+                qWarning() << strerror( errno );
             }
         }
     }
@@ -216,9 +216,9 @@ int main( int argc, char **argv ) {
 
     wlRegistry->setup();
 
-    WQt::WindowManager *wm = wlRegistry->windowManager();
+    if ( wlRegistry->waitForInterface( WQt::Registry::WindowManagerInterface, 5000 ) ) {
+        WQt::WindowManager *wm = wlRegistry->windowManager();
 
-    if ( wm ) {
         QObject::connect(
             wm, &WQt::WindowManager::newTopLevelHandle, [ = ] ( WQt::WindowHandle *hndl ) mutable {
                 /** Wait for app ID to be set */
@@ -241,6 +241,13 @@ int main( int argc, char **argv ) {
                 setupWindow( scrn, hndl );
             }
         );
+
+        /** Inform WQt::WindowManager that we're ready to accept signals */
+        wm->setup();
+    }
+
+    else {
+        qCritical() << "Please ensure that your compositor supports the wlr-foreign-toplevel-management protocol.";
     }
 
     /** Open a window for every existing screen */
