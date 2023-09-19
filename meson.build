@@ -42,7 +42,7 @@ if get_option('use_qt_version') == 'auto'
 		Qt = import( 'qt6' )
 
 	else
-		QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'OpenGLWidgets' ], required: true )
+		QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ], required: true )
 		Qt     = import( 'qt5' )
 
 		wayqt  = dependency( 'wayqt',          required: true )
@@ -54,7 +54,7 @@ if get_option('use_qt_version') == 'auto'
 
 # User specifically wants to user Qt5
 elif get_option('use_qt_version') == 'qt5'
-	QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus', 'OpenGLWidgets' ], required: true )
+	QtDeps = dependency( 'qt5', modules: [ 'Core', 'Gui', 'Widgets', 'DBus' ], required: true )
 	Qt     = import( 'qt5' )
 
 	wayqt  = dependency( 'wayqt',          required: true )
