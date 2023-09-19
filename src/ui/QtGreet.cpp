@@ -35,9 +35,23 @@
 #include <unistd.h>
 #include <QtDBus>
 
-QtGreet::UI::UI() {
+QtGreet::UI::UI( QScreen *scrn ) {
+    /** We need this later on... */
+    mScreen = scrn;
+
+    /** Close this instance if the corresponding screen is removed */
+    connect(
+        qApp, &QApplication::screenRemoved, [ = ] ( QScreen *scrn ) {
+            if ( scrn == mScreen ) {
+                close();
+            }
+        }
+    );
+
+    /** Backend */
     login = new GreetdLogin();
 
+    /** To shutdown/reboot */
     login1 = new DFL::Login1( this );
 
     /**
@@ -46,7 +60,12 @@ QtGreet::UI::UI() {
      */
     themeMgr = new QtGreet::ThemeManager( themeName.length() ? themeName : sett->value( "Theme", "default" ).toString() );
 
-    setFixedSize( qApp->primaryScreen()->size() );
+    /** Fix the size of the window */
+    setFixedSize( scrn->size() );
+
+    /** Set the window title */
+    setWindowTitle( QString( "QtGreet-%1-%2x%3" ).arg( scrn->name() ).arg( scrn->size().width() ).arg( scrn->size().height() ) );
+
     createUI();
 
     if ( not themeMgr->isVideoBG() ) {
@@ -97,7 +116,7 @@ void QtGreet::UI::createUI() {
     base = new QStackedWidget();
     setCentralWidget( base );
 
-    lytMgr = new QtGreet::LayoutManager();
+    lytMgr = new QtGreet::LayoutManager( mScreen );
 
     QWidget *w = new QWidget( base );
 

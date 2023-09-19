@@ -21,6 +21,7 @@
 // Local Headers
 #include "Global.hpp"
 #include "QtGreet.hpp"
+#include "ScreenManager.hpp"
 #include "LayoutManager.hpp"
 
 #include <unistd.h>
@@ -54,8 +55,11 @@ QString vtNum       = "1";
 QString logPath     = LOGPATH;
 QString themeName   = "";
 
+
 void setupWindow( QScreen *screen, WQt::WindowHandle *hndl ) {
     wl_output *output = WQt::Utils::wlOutputFromQScreen( screen );
+
+    qInfo() << "==> Setting up QtGreet for" << screen->name();
 
     hndl->setFullScreen( output );
 }
@@ -66,8 +70,14 @@ int main( int argc, char **argv ) {
 
     app->setOrganizationName( "QtGreet" );
     app->setApplicationName( "QtGreet" );
-    app->setDesktopFileName( "qtgreet.desktop" );
+    app->setDesktopFileName( "qtgreet" );
     app->setApplicationVersion( PROJECT_VERSION );
+
+    /**
+     * All screens may close, but they can also be added later on.
+     * We can spawn a new window when a new screen is added.
+     */
+    app->setQuitOnLastWindowClosed( false );
 
     app->interceptSignal( SIGSEGV, true );
     app->interceptSignal( SIGINT,  true );
@@ -211,11 +221,7 @@ int main( int argc, char **argv ) {
     /** Set the icon theme name */
     QIcon::setThemeName( sett->value( "IconTheme", "hicolor" ).toString() );
 
-    QList<QScreen *> screens;
-
-    for ( QScreen *scrn: app->screens() ) {
-        screens << scrn;
-    }
+    QtGreet::ScreenManager *scrnMgr = new QtGreet::ScreenManager();
 
     WQt::Registry *wlRegistry = new WQt::Registry( WQt::Wayland::display() );
 
@@ -226,24 +232,27 @@ int main( int argc, char **argv ) {
 
         QObject::connect(
             wm, &WQt::WindowManager::newTopLevelHandle, [ = ] ( WQt::WindowHandle *hndl ) mutable {
-                /** Wait for app ID to be set */
-                while ( hndl->appId().isEmpty() ) {
+                /** Wait for app ID and title to be set */
+                while ( hndl->appId().isEmpty() or hndl->title().isEmpty() ) {
                     qApp->processEvents();
                     usleep( 10 * 1000 );
                 }
 
-                /** If we have used up all the screens, then this is probably a dialog */
-                if ( not screens.count() ) {
-                    return;
-                }
-
                 /** Ensure that this handle is indeed qtrgeet */
-                if ( not hndl->appId().contains( "qtgreet" ) ) {
+                if ( hndl->appId() != "qtgreet" ) {
                     return;
                 }
 
-                QScreen *scrn = screens.takeAt( 0 );
-                setupWindow( scrn, hndl );
+                QScreen *scrn = scrnMgr->screenForWindow( hndl->title() );
+
+                if ( scrn != nullptr ) {
+                    setupWindow( scrn, hndl );
+                }
+
+                else {
+                    qCritical() << "Closing useless handle" << hndl->appId() << hndl->title();
+                    hndl->close();
+                }
             }
         );
 
@@ -255,21 +264,39 @@ int main( int argc, char **argv ) {
         qCritical() << "Please ensure that your compositor supports the wlr-foreign-toplevel-management protocol.";
     }
 
-    /** Open a window for every existing screen */
-    for ( int i = 0; i < screens.count(); i++ ) {
-        QtGreet::UI *ui = new QtGreet::UI();
-        ui->showFullScreen();
-    }
+    scrnMgr->showInstacnes();
 
-    /** Now we can wait for new screens to be added */
-    QObject::connect(
-        app, &QApplication::screenAdded, [ = ] ( QScreen *scrn ) mutable {
-            screens << scrn;
-
-            QtGreet::UI *ui = new QtGreet::UI();
-            ui->show();
-        }
-    );
+    // screens = app->screens();
+    //
+    // /** Open a window for every existing screen */
+    // for ( QScreen *scrn: app->screens() ) {
+    //     /** Initialize the Window instance */
+    //     QtGreet::UI *ui = new QtGreet::UI( scrn );
+    //
+    //     /** Now create the window-screen mapping */
+    //     screens << scrn;
+    //     screenNames << ui->windowTitle();
+    //
+    //     /** Finally, show it */
+    //     ui->showFullScreen();
+    // }
+    //
+    // /** Now we can wait for new screens to be added */
+    // QObject::connect(
+    //     app, &QApplication::screenAdded, [ = ] ( QScreen *scrn ) mutable {
+    //         /** Initialize the Window instance */
+    //         QtGreet::UI *ui = new QtGreet::UI( scrn );
+    //
+    //         /** Now create the window-screen mapping */
+    //         screens << scrn;
+    //         screenNames << ui->windowTitle();
+    //
+    //         QCoreApplication::processEvents();
+    //
+    //         /** Finally, show it */
+    //         ui->showFullScreen();
+    //     }
+    // );
 
     return app->exec();
 }

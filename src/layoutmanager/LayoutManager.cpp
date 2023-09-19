@@ -26,14 +26,8 @@
 #include "Container.hpp"
 #include "LayoutUtils.hpp"
 
-QtGreet::LayoutManager::LayoutManager() {
-    /** TODO: Fix this bug before release!! */
-    mScreenSize = qApp->primaryScreen()->size();
-}
-
-
-void QtGreet::LayoutManager::setScreenSize( QSize size ) {
-    mScreenSize = size;
+QtGreet::LayoutManager::LayoutManager( QScreen *scrn ) {
+    mScreenSize = scrn->size();
 }
 
 

@@ -42,7 +42,7 @@ class QtGreet::UI : public QMainWindow {
     Q_OBJECT;
 
     public:
-        UI();
+        UI( QScreen *scrn );
 
     private:
         /* Create UI */
@@ -88,6 +88,9 @@ class QtGreet::UI : public QMainWindow {
         /* Validation message */
         QLabel *validating;
         QWidget *cLogin = nullptr;
+
+        /* The screen on which this will be shown */
+        QScreen *mScreen;
 
     protected:
         /** Draw background image */
