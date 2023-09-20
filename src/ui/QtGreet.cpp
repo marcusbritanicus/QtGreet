@@ -39,15 +39,6 @@ QtGreet::UI::UI( QScreen *scrn ) {
     /** We need this later on... */
     mScreen = scrn;
 
-    /** Close this instance if the corresponding screen is removed */
-    connect(
-        qApp, &QApplication::screenRemoved, [ = ] ( QScreen *scrn ) {
-            if ( scrn == mScreen ) {
-                close();
-            }
-        }
-    );
-
     /** Backend */
     login = new GreetdLogin();
 
@@ -68,7 +59,7 @@ QtGreet::UI::UI( QScreen *scrn ) {
 
     createUI();
 
-    if ( not themeMgr->isVideoBG() ) {
+    if ( themeMgr->isVideoBG() != true ) {
         QString bgStr( themeMgr->background() );
         background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 
@@ -109,6 +100,18 @@ QtGreet::UI::UI( QScreen *scrn ) {
     if ( pwd ) {
         pwd->setFocus();
     }
+}
+
+
+QtGreet::UI::~UI() {
+    delete themeMgr;
+    delete lytMgr;
+    delete base;
+    delete login;
+    delete login1;
+    delete validating;
+    delete cLogin;
+    delete mScreen;
 }
 
 

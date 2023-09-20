@@ -49,7 +49,7 @@ class QtGreet::ScreenManager : public QObject {
 
     private:
         /** List of greeters */
-        QList<QtGreet::UI *> greeters;
+        QMap<QScreen *, QtGreet::UI *> screenGreeterMap;
 
         /** Greeter <-> Screen map */
         QMap<QString, QScreen *> greeterScreenMap;

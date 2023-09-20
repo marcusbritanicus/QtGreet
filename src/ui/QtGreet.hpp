@@ -43,6 +43,7 @@ class QtGreet::UI : public QMainWindow {
 
     public:
         UI( QScreen *scrn );
+        ~UI();
 
     private:
         /* Create UI */

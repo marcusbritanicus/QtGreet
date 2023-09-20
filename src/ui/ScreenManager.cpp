@@ -31,8 +31,8 @@ QtGreet::ScreenManager::ScreenManager() {
     for ( QScreen *scrn: availScrns ) {
         QtGreet::UI *ui = new QtGreet::UI( scrn );
 
-        /** Store the isntance */
-        greeters << ui;
+        /** Map the screento the greeter */
+        screenGreeterMap[ scrn ] = ui;
 
         /** Map the UI to the screen */
         greeterScreenMap[ ui->windowTitle() ] = scrn;
@@ -43,11 +43,11 @@ QtGreet::ScreenManager::ScreenManager() {
         qApp, &QApplication::screenAdded, [ = ] ( QScreen *scrn ) mutable {
             QtGreet::UI *ui = new QtGreet::UI( scrn );
 
-            /** Store the isntance */
-            greeters << ui;
+            /** Map the screento the greeter */
+            screenGreeterMap[ scrn ] = ui;
 
             /** Map the UI to the screen */
-            greeterScreenMap[ ui->windowTitle() ] == scrn;
+            greeterScreenMap[ ui->windowTitle() ] = scrn;
 
             /**  Show the greeter */
             ui->showFullScreen();
@@ -65,15 +65,11 @@ QtGreet::ScreenManager::ScreenManager() {
         qApp, &QApplication::screenRemoved, [ = ] ( QScreen *scrn ) mutable {
             QString instance = QString( "QtGreet-%1-%2x%3" ).arg( scrn->name() ).arg( scrn->size().width() ).arg( scrn->size().height() );
 
-            if ( greeterScreenMap.contains( instance ) ) {
-                greeterScreenMap.remove( instance );
-            }
+            greeterScreenMap.remove( instance );
+            QtGreet::UI *ui = screenGreeterMap.take( scrn );
+            ui->close();
 
-            for ( QtGreet::UI *ui: greeters ) {
-                if ( ui->windowTitle() == instance ) {
-                    greeters.removeAll( ui );
-                }
-            }
+            delete ui;
         }
     );
 }
@@ -81,7 +77,7 @@ QtGreet::ScreenManager::ScreenManager() {
 
 void QtGreet::ScreenManager::showInstacnes() {
     /** Show each of the greeters, force Qt to process the event queue, sleep of 10 ms */
-    for ( QtGreet::UI *ui: greeters ) {
+    for ( QtGreet::UI *ui: screenGreeterMap.values() ) {
         /**  Show the greeter */
         ui->showFullScreen();
 
