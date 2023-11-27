@@ -78,15 +78,6 @@ endif
 # MPV for video bg
 Mpv            = dependency( 'mpv' )
 
-# Required for greetwl
-wlr            = dependency( 'wlroots', version: '>= 0.17.0' )
-wayland_server = dependency( 'wayland-server' )
-wayland_client = dependency( 'wayland-client' )
-xkbcommon      = dependency( 'xkbcommon' )
-rt             = meson.get_compiler( 'cpp' ).find_library( 'rt' )
-
-subdir( 'src/protocols' )
-
 Includes = [
 	'src',
 	'src/backends',
@@ -170,12 +161,23 @@ qtgreet = executable(
     install: true
 )
 
-greetwl = executable(
-    'greetwl', [ 'src/compositor/main.cpp', 'src/compositor/tinywl.c' ],
-    dependencies: [ QtDeps, wlr, wayland_server, wayland_client, xkbcommon, rt, protos ],
-	include_directories: [ 'src/compositor' ],
-    install: true
-)
+if ( get_option( 'build_greetwl' ) == true )
+	# Required for greetwl
+	wlr            = dependency( 'wlroots', version: '>= 0.17.0' )
+	wayland_server = dependency( 'wayland-server' )
+	wayland_client = dependency( 'wayland-client' )
+	xkbcommon      = dependency( 'xkbcommon' )
+	rt             = meson.get_compiler( 'cpp' ).find_library( 'rt' )
+
+	subdir( 'src/protocols' )
+
+	greetwl = executable(
+	    'greetwl', [ 'src/compositor/main.cpp', 'src/compositor/tinywl.c' ],
+	    dependencies: [ QtDeps, wlr, wayland_server, wayland_client, xkbcommon, rt, protos ],
+		include_directories: [ 'src/compositor' ],
+	    install: true
+	)
+endif
 
 # Backgrounds
 install_subdir(
