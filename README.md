@@ -6,18 +6,18 @@ Qt based greeter for [greetd](https://git.sr.ht/~kennylevinsen/greetd), to be ru
 
 Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.org) (#qtgreet:matrix.org)
 
-<img src="screenshots/Greeter.jpg" width="800" /><br /><br />
-<img src="screenshots/Sessions.jpg" width="800" /><br /><br />
-<img src="screenshots/Users.jpg" width="800" />
+<img src="screenshots/1.jpg" width="800" /><br /><br />
+<img src="screenshots/3.jpg" width="800" /><br /><br />
+<img src="screenshots/5.jpg" width="800" />
 
 ### Dependencies:
-- Qt5 (duh...)
+- Qt5 or Qt6 (duh...)
 - WayQt (https://gitlab.com/desktop-frameworks/wayqt.git)
 - DFL::Applications (https://gitlab.com/desktop-frameworks/applications.git)
 - DFL::IPC (https://gitlab.com/desktop-frameworks/ipc.git)
 - DFL::Utils (https://gitlab.com/desktop-frameworks/utils.git)
 - DFL::Login1 (https://gitlab.com/desktop-frameworks/login1.git)
-- A wayland based compositor (wayfire, sway, cage etc..) - Optional
+- A wayland based compositor (wayfire, sway, labwc etc..) - Optional
 - Meson (to build this project)
 - Ninja (to compile this project)
 
@@ -49,8 +49,14 @@ You can either use the *inbuilt* `greeetwl` compositor (a fork of `tinywl`), or 
   * Open `/etc/greetd/config.toml` for editing with your favorite editor.
   * Under `[default_session]`, set `command = "sway --config /etc/qtgreet/sway.cfg"`
 
+- For labwc,
+  * Open `/etc/greetd/config.toml` for editing with your favorite editor.
+  * Under `[default_session]`, set `command = "labwc -s 'qtgreet && wayland-logout'"`
+
 Most compositors print debug messages to the terminal. You can hide them by redirecting the debug output. Add ` > /dev/null 2>&1` at the end of
 each command (ex. `command = "greetwl > /dev/null 2>&1"`).
+
+Custom login prompt can be activated by pressing `[Ctrl] - [Alt] - [X]` key combination.
 
 ### CLI Options
 Following command-line options are available:
