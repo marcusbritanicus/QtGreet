@@ -27,13 +27,8 @@
 #include <unistd.h>
 #include <signal.h>
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-#include <DFL/DF5/Application.hpp>
-#include <DFL/DF5/Utils.hpp>
-#else
-#include <DFL/DF6/Application.hpp>
-#include <DFL/DF6/Utils.hpp>
-#endif
+#include <DFApplication.hpp>
+#include <DFUtils.hpp>
 
 #include <wayqt/WayQtUtils.hpp>
 #include <wayqt/Registry.hpp>

@@ -31,8 +31,9 @@ enum tinywl_cursor_mode {
 };
 
 typedef struct tinywl_server {
-    struct wl_display          *wl_display;
+    struct wl_display          *display;
     struct wlr_backend         *backend;
+    struct wlr_session         *session;
     struct wlr_renderer        *renderer;
     struct wlr_allocator       *allocator;
     struct wlr_scene           *scene;
@@ -54,7 +55,7 @@ typedef struct tinywl_server {
     struct wl_listener         request_cursor;
     struct wl_listener         request_set_selection;
     struct wl_list             keyboards;
-    enum tinywl_cursor_mode    cursor_mode;
+    enum tinywl_cursor_mode cursor_mode;
     struct tinywl_view         *grabbed_view;
     double                     grab_x, grab_y;
     struct wlr_box             grab_geobox;

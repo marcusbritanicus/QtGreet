@@ -483,41 +483,41 @@ namespace Hjson {
 
 
 #define RET_VAL( _T, _O )                       \
-    Value operator _O( _T a, const Value& b ) { \
-        return Value( a ) _O b;                 \
-    }                                           \
-    Value operator _O( const Value& a, _T b ) { \
-        return a _O Value( b );                 \
-    }
+        Value operator _O( _T a, const Value& b ) { \
+            return Value( a ) _O b;                 \
+        }                                           \
+        Value operator _O( const Value& a, _T b ) { \
+            return a _O Value( b );                 \
+        }
 
 
 #define RET_BOOL( _T, _O )                     \
-    bool operator _O( _T a, const Value& b ) { \
-        return Value( a ) _O b;                \
-    }                                          \
-    bool operator _O( const Value& a, _T b ) { \
-        return a _O Value( b );                \
-    }
+        bool operator _O( _T a, const Value& b ) { \
+            return Value( a ) _O b;                \
+        }                                          \
+        bool operator _O( const Value& a, _T b ) { \
+            return a _O Value( b );                \
+        }
 
 
 #define HJSON_OP_IMPL_A( _T ) \
-    RET_BOOL( _T, < )         \
-    RET_BOOL( _T, > )         \
-    RET_BOOL( _T, <= )        \
-    RET_BOOL( _T, >= )        \
-    RET_BOOL( _T, == )        \
-    RET_BOOL( _T, != )
+        RET_BOOL( _T, < )         \
+        RET_BOOL( _T, > )         \
+        RET_BOOL( _T, <= )        \
+        RET_BOOL( _T, >= )        \
+        RET_BOOL( _T, == )        \
+        RET_BOOL( _T, != )
 
 #define HJSON_OP_IMPL_B( _T ) \
-    HJSON_OP_IMPL_A( _T )     \
-    RET_VAL( _T, + )          \
-    RET_VAL( _T, - )          \
-    RET_VAL( _T, * )          \
-    RET_VAL( _T, / )
+        HJSON_OP_IMPL_A( _T )     \
+        RET_VAL( _T, + )          \
+        RET_VAL( _T, - )          \
+        RET_VAL( _T, * )          \
+        RET_VAL( _T, / )
 
 #define HJSON_OP_IMPL_C( _T ) \
-    HJSON_OP_IMPL_B( _T )     \
-    RET_VAL( _T, % )
+        HJSON_OP_IMPL_B( _T )     \
+        RET_VAL( _T, % )
 
     HJSON_OP_IMPL_A( const char * )
     HJSON_OP_IMPL_A( const std::string& )
@@ -880,20 +880,20 @@ namespace Hjson {
 
 
 #define OP_ASS( _O, _T )                  \
-    Value& Value::operator _O( _T b ) {   \
-        return operator _O( Value( b ) ); \
-    }
+        Value& Value::operator _O( _T b ) {   \
+            return operator _O( Value( b ) ); \
+        }
 
 
 #define HJSON_ASS_IMPL_A( _T ) \
-    OP_ASS( +=, _T )           \
-    OP_ASS( -=, _T )           \
-    OP_ASS( *=, _T )           \
-    OP_ASS( /=, _T )
+        OP_ASS( +=, _T )           \
+        OP_ASS( -=, _T )           \
+        OP_ASS( *=, _T )           \
+        OP_ASS( /=, _T )
 
 #define HJSON_ASS_IMPL_B( _T ) \
-    HJSON_ASS_IMPL_A( _T )     \
-    OP_ASS( %=, _T )
+        HJSON_ASS_IMPL_A( _T )     \
+        OP_ASS( %=, _T )
 
     HJSON_ASS_IMPL_A( float )
     HJSON_ASS_IMPL_A( double )
@@ -1242,9 +1242,9 @@ namespace Hjson {
 
 
 #define HJSON_CONV_INT_IMPL( _T )                      \
-    Value::operator _T() const {                       \
-        return static_cast<_T>(operator long long() ); \
-    }
+        Value::operator _T() const {                       \
+            return static_cast<_T>(operator long long() ); \
+        }
 
 
     HJSON_CONV_INT_IMPL( char )

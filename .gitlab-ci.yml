@@ -1,0 +1,59 @@
+debian_sid_amd64:
+    stage: build
+    image: debian:sid
+    before_script:
+        - apt-get update -yq
+        - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
+        - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
+
+    script:
+        - dpkg-buildpackage -rfakeroot -uc -us
+        - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_sid_amd64.deb
+        - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_sid_amd64.deb
+        - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_sid_amd64.deb
+
+    artifacts:
+        paths:
+            - archiver_2.0.8_sid_amd64.deb
+            - libarchiveqt_2.0.8_sid_amd64.deb
+            - libarchiveqt-dev_2.0.8_sid_amd64.deb
+
+debian_testing_amd64:
+    stage: build
+    image: debian:testing
+    before_script:
+        - apt-get update -yq
+        - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
+        - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
+
+    script:
+        - dpkg-buildpackage -rfakeroot -uc -us
+        - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_testing_amd64.deb
+        - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_testing_amd64.deb
+        - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_testing_amd64.deb
+
+    artifacts:
+        paths:
+            - archiver_2.0.8_testing_amd64.deb
+            - libarchiveqt_2.0.8_testing_amd64.deb
+            - libarchiveqt-dev_2.0.8_testing_amd64.deb
+
+debian_stable_amd64:
+    stage: build
+    image: debian:stable
+    before_script:
+        - apt-get update -yq
+        - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
+        - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
+
+    script:
+        - dpkg-buildpackage -rfakeroot -uc -us
+        - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_stable_amd64.deb
+        - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_stable_amd64.deb
+        - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_stable_amd64.deb
+
+    artifacts:
+        paths:
+            - archiver_2.0.8_stable_amd64.deb
+            - libarchiveqt_2.0.8_stable_amd64.deb
+            - libarchiveqt-dev_2.0.8_stable_amd64.deb

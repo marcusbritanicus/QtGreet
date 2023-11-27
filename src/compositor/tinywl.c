@@ -55,10 +55,11 @@ static void focus_view( struct tinywl_view *view, struct wlr_surface *surface ) 
          * it no longer has focus and the client will repaint accordingly, e.g.
          * stop displaying a caret.
          */
-        struct wlr_xdg_surface *previous = wlr_xdg_surface_from_wlr_surface(
-            seat->keyboard_state.focused_surface );
-        assert( previous->role == WLR_XDG_SURFACE_ROLE_TOPLEVEL );
-        wlr_xdg_toplevel_set_activated( previous->toplevel, false );
+        struct wlr_xdg_toplevel *previous = wlr_xdg_toplevel_try_from_wlr_surface( prev_surface );
+
+        if ( previous != NULL ) {
+            wlr_xdg_toplevel_set_activated( previous, false );
+        }
     }
 
     struct wlr_keyboard *keyboard = wlr_seat_get_keyboard( seat );
@@ -100,7 +101,7 @@ static void keyboard_handle_modifiers( struct wl_listener *listener, void * ) {
 }
 
 
-static bool checkKeyBinding( struct wlr_session *session, uint32_t key, uint32_t mods ) {
+static bool checkKeyBinding( uint32_t key, uint32_t mods ) {
     if ( mods ^ (WLR_MODIFIER_ALT | WLR_MODIFIER_CTRL) ) {
         return false;
     }
@@ -112,7 +113,7 @@ static bool checkKeyBinding( struct wlr_session *session, uint32_t key, uint32_t
 
     else if ( (key >= KEY_F1) || (key <= KEY_F12) ) {
         int target_vt = key - KEY_F1 + 1;
-        wlr_session_change_vt( session, target_vt );
+        wlr_session_change_vt( server->session, target_vt );
 
         return true;
     }
@@ -134,11 +135,10 @@ static void keyboard_handle_key( struct wl_listener *listener, void *data ) {
 
     /** If some key was pressed: check if we're trying to change the tty */
     if ( event->state == WL_KEYBOARD_KEY_STATE_PRESSED ) {
-        uint32_t           modifiers = wlr_keyboard_get_modifiers( keyboard->wlr_keyboard );
-        struct wlr_session *session  = wlr_backend_get_session( server->backend );
+        uint32_t modifiers = wlr_keyboard_get_modifiers( keyboard->wlr_keyboard );
 
-        if ( session ) {
-            handled = checkKeyBinding( session, keycode, modifiers );
+        if ( server->session ) {
+            handled = checkKeyBinding( keycode, modifiers );
         }
     }
 
@@ -288,7 +288,7 @@ static struct tinywl_view *desktop_view_at( struct tinywl_server *server, double
     }
 
     struct wlr_scene_buffer  *scene_buffer  = wlr_scene_buffer_from_node( node );
-    struct wlr_scene_surface *scene_surface = wlr_scene_surface_from_buffer( scene_buffer );
+    struct wlr_scene_surface *scene_surface = wlr_scene_surface_try_from_buffer( scene_buffer );
 
     if ( !scene_surface ) {
         return NULL;
@@ -409,8 +409,7 @@ static void process_cursor_motion( struct tinywl_server *server, uint32_t time )
         /** If there's no view under the cursor, set the cursor image to a
          * default. This is what makes the cursor image appear when you move it
          * around the screen, not over any views. */
-        wlr_xcursor_manager_set_cursor_image(
-            server->cursor_mgr, "left_ptr", server->cursor );
+        wlr_cursor_set_xcursor( server->cursor, server->cursor_mgr, "default" );
     }
 
     if ( surface ) {
@@ -527,7 +526,7 @@ static void output_frame( struct wl_listener *listener, void * ) {
         scene, output->wlr_output );
 
     /** Render the scene if needed and commit the output */
-    wlr_scene_output_commit( scene_output );
+    wlr_scene_output_commit( scene_output, NULL );
 
     struct timespec now;
 
@@ -701,21 +700,45 @@ static void xdg_toplevel_request_resize( struct wl_listener *listener, void *dat
 }
 
 
+static void xdg_toplevel_request_maximize( struct wl_listener *listener, void * ) {
+    /* This event is raised when a client would like to maximize itself,
+     * typically because the user clicked on the maximize button on
+     * client-side decorations. tinywl doesn't support maximization, but
+     * to conform to xdg-shell protocol we still must send a configure.
+     * wlr_xdg_surface_schedule_configure() is used to send an empty reply. */
+    struct tinywl_view *toplevel = wl_container_of( listener, toplevel, request_maximize );
+
+    wlr_xdg_surface_schedule_configure( toplevel->xdg_toplevel->base );
+}
+
+
+static void xdg_toplevel_request_fullscreen( struct wl_listener *listener, void * ) {
+    /* Just as with request_maximize, we must send a configure here. */
+    struct tinywl_view *toplevel = wl_container_of( listener, toplevel, request_fullscreen );
+
+    wlr_xdg_surface_schedule_configure( toplevel->xdg_toplevel->base );
+}
+
+
 static void server_new_xdg_surface( struct wl_listener *listener, void *data ) {
-    /** This event is raised when wlr_xdg_shell receives a new xdg surface from a
-     * client, either a toplevel (application window) or popup. */
-    struct tinywl_server *server =
-        wl_container_of( listener, server, new_xdg_surface );
+    /**
+     * This event is raised when wlr_xdg_shell receives a new xdg surface from a
+     * client, either a toplevel (application window) or popup.
+     */
+    struct tinywl_server   *server      = wl_container_of( listener, server, new_xdg_surface );
     struct wlr_xdg_surface *xdg_surface = data;
 
-    /** We must add xdg popups to the scene graph so they get rendered. The
+    /**
+     * We must add xdg popups to the scene graph so they get rendered. The
      * wlroots scene graph provides a helper for this, but to use it we must
      * provide the proper parent scene node of the xdg popup. To enable this,
      * we always set the user data field of xdg_surfaces to the corresponding
-     * scene node. */
+     * scene node.
+     */
     if ( xdg_surface->role == WLR_XDG_SURFACE_ROLE_POPUP ) {
-        struct wlr_xdg_surface *parent      = wlr_xdg_surface_from_wlr_surface( xdg_surface->popup->parent );
-        struct wlr_scene_tree  *parent_tree = parent->data;
+        struct wlr_xdg_surface *parent = wlr_xdg_surface_try_from_wlr_surface( xdg_surface->popup->parent );
+        assert( parent != NULL );
+        struct wlr_scene_tree *parent_tree = parent->data;
         xdg_surface->data = wlr_scene_xdg_surface_create( parent_tree, xdg_surface );
         return;
     }
@@ -734,19 +757,23 @@ static void server_new_xdg_surface( struct wl_listener *listener, void *data ) {
 
     /** Listen to the various events it can emit */
     view->map.notify = xdg_toplevel_map;
-    wl_signal_add( &xdg_surface->events.map,     &view->map );
+    wl_signal_add( &xdg_surface->surface->events.map,     &view->map );
     view->unmap.notify = xdg_toplevel_unmap;
-    wl_signal_add( &xdg_surface->events.unmap,   &view->unmap );
+    wl_signal_add( &xdg_surface->surface->events.unmap,   &view->unmap );
     view->destroy.notify = xdg_toplevel_destroy;
-    wl_signal_add( &xdg_surface->events.destroy, &view->destroy );
+    wl_signal_add( &xdg_surface->surface->events.destroy, &view->destroy );
 
     /** cotd */
     struct wlr_xdg_toplevel *toplevel = xdg_surface->toplevel;
 
     view->request_move.notify = xdg_toplevel_request_move;
-    wl_signal_add( &toplevel->events.request_move,   &view->request_move );
+    wl_signal_add( &toplevel->events.request_move,       &view->request_move );
     view->request_resize.notify = xdg_toplevel_request_resize;
-    wl_signal_add( &toplevel->events.request_resize, &view->request_resize );
+    wl_signal_add( &toplevel->events.request_resize,     &view->request_resize );
+    view->request_maximize.notify = xdg_toplevel_request_maximize;
+    wl_signal_add( &toplevel->events.request_maximize,   &view->request_maximize );
+    view->request_fullscreen.notify = xdg_toplevel_request_fullscreen;
+    wl_signal_add( &toplevel->events.request_fullscreen, &view->request_fullscreen );
 }
 
 
@@ -755,20 +782,20 @@ int startCompositor() {
 
     /** The Wayland display is managed by libwayland. It handles accepting
      * clients from the Unix socket, managing Wayland globals, and so on. */
-    server->wl_display = wl_display_create();
+    server->display = wl_display_create();
 
     /** The backend is a wlroots feature which abstracts the underlying input and
      * output hardware. The auto-create option will choose the most suitable
      * backend based on the current environment, such as opening an X11 window
      * if an X11 server is running. */
-    server->backend = wlr_backend_autocreate( server->wl_display );
+    server->backend = wlr_backend_autocreate( server->display, &server->session );
 
     /** Auto-creates a renderer, either Pixman, GLES2 or Vulkan for us. The user
      * can also specify a renderer using the WLR_RENDERER env var.
      * The renderer is responsible for defining the various pixel formats it
      * supports for shared memory, this configures that for clients. */
     server->renderer = wlr_renderer_autocreate( server->backend );
-    wlr_renderer_init_wl_display( server->renderer, server->wl_display );
+    wlr_renderer_init_wl_display( server->renderer, server->display );
 
     /** Auto-creates an allocator for us.
      * The allocator is the bridge between the renderer and the backend. It
@@ -782,8 +809,8 @@ int startCompositor() {
      * to dig your fingers in and play with their behavior if you want. Note that
      * the clients cannot set the selection directly without compositor approval,
      * see the handling of the request_set_selection event below.*/
-    wlr_compositor_create( server->wl_display, server->renderer );
-    wlr_data_device_manager_create( server->wl_display );
+    wlr_compositor_create( server->display, 5, server->renderer );
+    wlr_data_device_manager_create( server->display );
 
     /** Creates an output layout, which a wlroots utility for working with an
      * arrangement of screens in a physical layout. */
@@ -810,7 +837,7 @@ int startCompositor() {
      * https://drewdevault.com/2018/07/29/Wayland-shells.html
      */
     wl_list_init( &server->views );
-    server->xdg_shell = wlr_xdg_shell_create( server->wl_display, 3 );
+    server->xdg_shell = wlr_xdg_shell_create( server->display, 3 );
     server->new_xdg_surface.notify = server_new_xdg_surface;
     wl_signal_add( &server->xdg_shell->events.new_surface, &server->new_xdg_surface );
 
@@ -860,14 +887,14 @@ int startCompositor() {
     wl_list_init( &server->keyboards );
     server->new_input.notify = server_new_input;
     wl_signal_add( &server->backend->events.new_input,          &server->new_input );
-    server->seat = wlr_seat_create( server->wl_display, "seat0" );
+    server->seat = wlr_seat_create( server->display, "seat0" );
     server->request_cursor.notify = seat_request_cursor;
     wl_signal_add( &server->seat->events.request_set_cursor,    &server->request_cursor );
     server->request_set_selection.notify = seat_request_set_selection;
     wl_signal_add( &server->seat->events.request_set_selection, &server->request_set_selection );
 
     /** Add a Unix socket to the Wayland display. */
-    const char *socket = wl_display_add_socket_auto( server->wl_display );
+    const char *socket = wl_display_add_socket_auto( server->display );
 
     if ( !socket ) {
         wlr_backend_destroy( server->backend );
@@ -878,7 +905,7 @@ int startCompositor() {
      * master, etc */
     if ( !wlr_backend_start( server->backend ) ) {
         wlr_backend_destroy( server->backend );
-        wl_display_destroy( server->wl_display );
+        wl_display_destroy( server->display );
         return 0;
     }
 
@@ -896,19 +923,19 @@ void runWlEventLoop() {
      * compositor. Starting the backend rigged up all of the necessary event
      * loop configuration to listen to libinput events, DRM events, generate
      * frame events at the refresh rate, and so on. */
-    wl_display_run( server->wl_display );
+    wl_display_run( server->display );
 }
 
 
 void haltWlEventLoop() {
-    wl_display_terminate( server->wl_display );
+    wl_display_terminate( server->display );
 }
 
 
 void closeCompositor() {
     /** Once wl_display_run returns, we shut down the server-> */
-    wl_display_destroy_clients( server->wl_display );
-    wl_display_destroy( server->wl_display );
+    wl_display_destroy_clients( server->display );
+    wl_display_destroy( server->display );
 }
 
 

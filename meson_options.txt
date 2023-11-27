@@ -7,6 +7,13 @@ option(
 )
 
 option(
+    'build_greetwl',
+    type: 'boolean',
+    value: true,
+    description: 'Build greetwl compositor'
+)
+
+option(
     'dynpath',
     type: 'string',
     value: '/var/lib/qtgreet',

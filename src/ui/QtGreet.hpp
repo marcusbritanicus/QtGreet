@@ -24,11 +24,7 @@
 #include "user.hpp"
 #include "session.hpp"
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-#include <DFL/DF5/Login1.hpp>
-#else
-#include <DFL/DF6/Login1.hpp>
-#endif
+#include <DFLogin1.hpp>
 
 class LoginManager;
 
