@@ -17,9 +17,13 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 - DFL::IPC (https://gitlab.com/desktop-frameworks/ipc.git)
 - DFL::Utils (https://gitlab.com/desktop-frameworks/utils.git)
 - DFL::Login1 (https://gitlab.com/desktop-frameworks/login1.git)
+- wlroots (https://gitlab.freedesktop.org/wlroots/wlroots.git)
 - A wayland based compositor (wayfire, sway, labwc etc..) - Optional
 - Meson (to build this project)
 - Ninja (to compile this project)
+
+**Note:** wlroots is needed only if you are compiling `greetwl`. If you want to skip the compilation of `greetwl`,
+pass `-Dbuild_greetwl=false` to `meson`
 
 ### Compiling and installing
 
