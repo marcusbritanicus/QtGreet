@@ -1,16 +1,21 @@
 <!DOCTYPE RCC><RCC version="1.0">
 	<qresource>
-		<file>StyleSheet.qss</file>
-	</qresource>
-
-	<qresource>
+		<file>icons/arrow-down.png</file>
 		<file>icons/arrow-left.png</file>
 		<file>icons/arrow-right.png</file>
 		<file>icons/session.png</file>
 		<file>icons/user.png</file>
+		<file>icons/edit.png</file>
 		<file>icons/battery.png</file>
 		<file>icons/acpower.png</file>
 		<file>icons/shutdown.png</file>
 		<file>icons/reboot.png</file>
+		<file>icons/suspend.png</file>
+		<file>icons/hibernate.png</file>
+		<file>icons/logout.png</file>
+		<file>icons/qtgreet1.png</file>
+
+		<file alias="customlogin.hjson">customlogin/customlogin.hjson</file>
+		<file alias="customlogin.qss">customlogin/customlogin.qss</file>
 	</qresource>
 </RCC>

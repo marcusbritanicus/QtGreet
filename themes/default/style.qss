@@ -1,0 +1,135 @@
+QWidget {
+    color: #ffffff;
+}
+
+QPushButton:hover {
+    background-color: rgba(255, 255, 255, 30);
+    border: 1px solid cornflowerblue;
+}
+
+QPushButton:pressed {
+    background-color: rgba(255, 255, 255, 10);
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QPushButton:focus {
+    border: 2px solid cornflowerblue;
+}
+
+QToolButton:focus {
+    border: 2px solid cornflowerblue;
+}
+
+QToolButton:hover {
+    background-color: rgba(255, 255, 255, 30);
+}
+
+QToolButton:pressed {
+    background-color: rgba(255, 255, 255, 10);
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
+#LoginButton {
+    border: 1px solid gray;
+    border-radius: 18px;
+}
+
+#LoginButton:focus {
+    border: 1px solid cornflowerblue;
+    border-radius: 18px;
+}
+
+#UserLabel, #SessionLabel {
+    border: 1px solid gray;
+    border-radius: 18px;
+}
+
+#UserNavRight, #UserNavLeft {
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+#BackButton {
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+#SessionNavRight, #SessionNavLeft {
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+#UserNavRight:focus, #UserNavLeft:focus {
+    border: 1px solid cornflowerblue;
+}
+
+#SessionNavRight:focus, #SessionNavLeft:focus {
+    border: 1px solid cornflowerblue;
+}
+
+QToolButton#Halt {
+    border: 1px solid gray;
+    border-radius: 0px;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QToolButton#Reboot {
+    border: 1px solid gray;
+    border-radius: 0px;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QLineEdit {
+    background-color: transparent;
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+QLineEdit:focus {
+    border: 2px solid cornflowerblue;
+}
+
+QLineEdit:edit-focus {
+    border: 2px solid cornflowerblue;
+}
+
+QListWidget {
+    background-color: transparent;
+    border: none;
+}
+
+QWidget#widget {
+    border: 2px solid gray;
+    border-radius: 5px;
+}
+
+QWidget#OverLay {
+    background-color: rgba(0, 0, 0, 230);
+}
+
+QLabel#UserIcon {
+    border: 2px solid gray;
+    border-radius: 6px;
+}
+
+QMessageBox {
+    background-color: rgba(0, 0, 0, 230);
+    border: 2px solid gray;
+    border-radius: 5px;
+}

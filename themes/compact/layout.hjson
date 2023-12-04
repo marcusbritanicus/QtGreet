@@ -1,0 +1,152 @@
+{
+	Layout: {
+		Direction: Vertical
+		Keys: [ "R1" ]
+		R1: [ "C1", "C2" ]
+		C1: [ "Logo", "Stretch", "UserName-1", "Stretch", "Stretch", "R2" ]
+		C2: [ "R3", "Stretch", "R4", "R5", "R6", "R7", "Stretch", "Stretch", "R8" ]
+		R2: [ "Stretch", "PowerButton-1", "PowerButton-2", "PowerButton-3", "PowerButton-4", "Stretch" ]
+		R3: [ "Battery", "Stretch", "Clock-1", "Stretch", "NumLock", "CapsLock" ]
+		R4: [ "Stretch", "UserIcon", "Stretch" ]
+		R5: [ "Stretch", "UserName-2", "Stretch" ]
+		R6: [ "Stretch", "SessionName", "Stretch" ]
+		R7: [ "Stretch", "Password", "LoginButton", "Stretch" ]
+		R8: [ "Stretch", "Clock-2", "Stretch" ]
+		Margins: 0.25
+		Spacing: 0
+	}
+
+	Properties: {
+		R1: {
+			Height: 0.5
+			Width: 0.5
+		}
+		C1: {
+			Wdith: 0.15
+			BGColor: {
+				Red:0.29
+				Green: 0.16
+				Blue: 0.16
+				Alpha: 0.72
+			}
+			Margins: [ 0, 0, 3, 3 ]
+		}
+		C2: {
+			Width: 0.35
+			BGColor: {
+				Red:0.4
+				Green: 0.81
+				Blue: 0.99
+				Alpha: 0.72
+			}
+			Spacing: 10
+			Margins: 3
+		}
+		R3: {
+			Height: 24
+		}
+		R4: {
+			Alignment: MM
+		}
+		R5: {
+			Alignment: MM
+		}
+		R7: {
+			Alignment: MM
+			Spacing: 5
+		}
+		Logo: {
+			Type: Label
+			FixedWidth: 0.15
+			FixedHeight: 0.1
+			IconSize: 72
+		}
+		UserName-1: {
+			Type: List
+			Width: 0.15
+			Height: 0.25
+			IconSize: 24
+		},
+		Battery: {
+			Width: 	22
+			Height: 22
+		},
+		Clock-1: {
+			Type: Time
+			Format: hh:mm:ss AP
+			Font: Quicksand, 10, Bold, Normal
+		},
+		Clock-2: {
+			Type: Date
+			Format: dddd, MMM dd, yyyy
+			FixedHeight: 27
+			Font: Quicksand, 10, Bold, Normal
+		},
+		NumLock: {
+			Font: monospace, 11, Normal, Normal
+			Width: 15
+			Height: 36
+			ToolTip: NumLock status
+		},
+		CapsLock: {
+			Font: monospace, 11, Normal, Normal
+			Width: 15
+			Height: 36
+			ToolTip: CapsLock status
+		},
+		UserIcon: {
+			Type: Label
+			Height: 72
+			Width: 72
+			Alignment: Center
+		},
+		UserName-2: {
+			Type: Label
+			Width: 0.18
+			Height: 36
+			FixedHeight: 27
+			Font: DejaVu Sans, 12, Bold, Italic
+			TextAlign: Center
+			ShowNav: false
+		},
+		Password: {
+			Width: 0.18
+			Height: 36
+		},
+		LoginButton: {
+			Width: 36
+			Height: 36
+			Type: ToolButton
+			TextAlign: Center
+			IconSize: 16
+		},
+		SessionName: {
+			Type: Combo
+			Width: 0.12
+			Height: 27
+			TextAlign: Center
+			IconSize: 24
+		},
+		PowerButton-1: {
+			Type: Suspend
+			FixedWidth: 32
+			FixedHeight: 32
+			IconSize: 36
+		},
+		PowerButton-2: {
+			Type: Hibernate
+			FixedWidth: 32
+			FixedHeight: 32
+		},
+		PowerButton-3: {
+			Type: Halt
+			FixedWidth: 32
+			FixedHeight: 32
+		},
+		PowerButton-4: {
+			Type: Reboot
+			FixedWidth: 32
+			FixedHeight: 32
+		}
+	}
+}

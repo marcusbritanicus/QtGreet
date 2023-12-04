@@ -1,0 +1,108 @@
+QWidget {
+    color: white;
+}
+
+QWidget#OverLay {
+    background-color: rgba(0, 0, 0, 230);
+}
+
+QToolButton {
+    border: none;
+    border-radius: 3px;
+}
+
+QToolButton:hover {
+    background-color: rgba(60, 60, 60, 90);
+    border: none;
+    border-radius: 3px;
+}
+
+QToolButton:focus {
+    background-color: rgba(60, 60, 60, 120);
+    border-radius: 3px;
+    border-left: 2px solid palette(Highlight);
+}
+
+QToolButton:pressed {
+    background-color: rgba(60, 60, 60, 120);
+    border-radius: 3px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QToolButton#SessionName {
+    background-color: rgba(60, 60, 60, 60);
+}
+
+QToolButton#LoginButton {
+    background-color: rgba(60, 60, 60, 60);
+}
+
+QToolButton#SessionName:pressed {
+    background-color: rgba(60, 60, 60, 120);
+}
+
+QToolButton#LoginButton:pressed {
+    background-color: rgba(60, 60, 60, 120);
+}
+
+#Password {
+    background-color: rgba(60, 60, 60, 60);
+    border-radius: 3px;
+}
+
+#Password:focus {
+    background-color: rgba(60, 60, 60, 90);
+    border-radius: 3px;
+    border-left: 2px solid palette(Highlight);
+}
+
+#UserList {
+    background-color: transparent;
+    border: none;
+    font-size: 10pt;
+}
+
+#UserList::item:focus {
+    border-right: 2px solid palette(Highlight);
+    font-weight: bold;
+}
+
+#UserList::item:selected {
+    background-color: #904A0404;
+    color: yellow;
+}
+
+QComboBox {
+    border: none;
+    background-color: rgba(60, 60, 60, 60);
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 27px;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/arrow-down.png);
+    width: 18px;
+    height: 18px;
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: rgba(0, 0, 0, 60);
+}
+
+QMessageBox {
+    background-color: rgba(0, 0, 0, 230);
+    border: 2px solid gray;
+    border-radius: 5px;
+}

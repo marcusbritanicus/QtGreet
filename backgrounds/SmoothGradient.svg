@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="visual" width="1920" height="1080" version="1.1" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+ <defs id="defs811">
+  <filter id="blur1" x="-.53975" y="-.53975" width="2.0795" height="2.0795">
+   <feFlood id="feFlood804" flood-opacity="0" result="BackgroundImageFix"/>
+   <feBlend id="feBlend806" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+   <feGaussianBlur id="feGaussianBlur808" result="effect1_foregroundBlur" stdDeviation="327"/>
+  </filter>
+ </defs>
+ <g id="g1736">
+  <path id="rect813" d="m0 0h1920v1080h-1920z" fill="#fcaf3c"/>
+  <path id="circle815" d="m1305 285a727 727 0 0 1-727 727 727 727 0 0 1-727-727 727 727 0 0 1 727-727 727 727 0 0 1 727 727z" fill="#f06" filter="url(#blur1)"/>
+  <path id="circle817" d="m973 910a727 727 0 0 1-727 727 727 727 0 0 1-727-727 727 727 0 0 1 727-727 727 727 0 0 1 727 727z" fill="#fcaf3c" filter="url(#blur1)"/>
+  <path id="circle819" d="m1676 1009a727 727 0 0 1-727 727 727 727 0 0 1-727-727 727 727 0 0 1 727-727 727 727 0 0 1 727 727z" fill="#f06" filter="url(#blur1)"/>
+  <path id="circle821" d="m2030 915a727 727 0 0 1-727 727 727 727 0 0 1-727-727 727 727 0 0 1 727-727 727 727 0 0 1 727 727z" fill="#f06" filter="url(#blur1)"/>
+  <path id="circle823" d="m917 39a727 727 0 0 1-727 727 727 727 0 0 1-727-727 727 727 0 0 1 727-727 727 727 0 0 1 727 727z" fill="#fcaf3c" filter="url(#blur1)"/>
+  <path id="circle825" d="m2294-90a727 727 0 0 1-727 727 727 727 0 0 1-727-727 727 727 0 0 1 727-727 727 727 0 0 1 727 727z" fill="#f06" filter="url(#blur1)"/>
+  <g id="g6" transform="translate(2060.4 38.593)" opacity=".76018">
+   <path id="path4" d="m575.7-893.1c252 41.5 594.2 30.8 670.8 170.9 76.6 140.2-112.5 431.2-101.8 728.4 10.7 297.1 221.1 600.5 165.5 777s-377.1 226.2-639.8 324.9-466.6 246.3-651.1 212.9c-184.6-33.3-350-247.6-535.6-390.8-185.6-143.1-391.5-215.2-618.2-358.4-226.6-143.1-474.1-357.5-465.6-566.9 8.6-209.4 273-413.9 424.9-686.7 151.8-272.8 191-613.9 368.1-698.6 177.1-84.8 492.1 86.8 730.5 219.5 238.4 132.6 400.3 226.3 652.3 267.8" fill="#012"/>
+  </g>
+ </g>
+</svg>

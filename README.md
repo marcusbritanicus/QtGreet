@@ -1,20 +1,29 @@
 # QtGreet
+
+#### Note: Github is a read-only mirror. You can open PRs and issues at [GitLab](https://gitlab.com/marcusbritanicus/QtGreet.git).
+
 Qt based greeter for [greetd](https://git.sr.ht/~kennylevinsen/greetd), to be run under wayfire or similar wlr-based compositors.
 
 Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.org) (#qtgreet:matrix.org)
 
-![image](Screenshots/Greeter.jpg)
+<img src="screenshots/1.jpg" width="800" /><br /><br />
+<img src="screenshots/3.jpg" width="800" /><br /><br />
+<img src="screenshots/5.jpg" width="800" />
 
 ### Dependencies:
-- Qt5 (duh...)
-- Qt5Wayland
-- wlroots
-- WLR based compositor (wayfire, sway etc..)
-- CMake (to build this project)
-- ECM (Extra CMake Modules)
-- Make (to compile this project)
-- Cargo (to build greetd)
-- Rust (to compile greetd)
+- Qt5 or Qt6 (duh...)
+- WayQt (https://gitlab.com/desktop-frameworks/wayqt.git)
+- DFL::Applications (https://gitlab.com/desktop-frameworks/applications.git)
+- DFL::IPC (https://gitlab.com/desktop-frameworks/ipc.git)
+- DFL::Utils (https://gitlab.com/desktop-frameworks/utils.git)
+- DFL::Login1 (https://gitlab.com/desktop-frameworks/login1.git)
+- wlroots (https://gitlab.freedesktop.org/wlroots/wlroots.git)
+- A wayland based compositor (wayfire, sway, labwc etc..) - Optional
+- Meson (to build this project)
+- Ninja (to compile this project)
+
+**Note:** wlroots is needed only if you are compiling `greetwl`. If you want to skip the compilation of `greetwl`,
+pass `-Dbuild_greetwl=false` to `meson`
 
 ### Compiling and installing
 
@@ -22,48 +31,62 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
   * Git: `git clone https://gitlab.com/marcusbritanicus/QtGreet.git`
 - Enter the `QtGreet` folder
   * `cd QtGreet`
-- Now you can simply type to update and build QtGreet and greetd
-  * `./setup.py prepare && ./setup.py build`
-  * In case you want to disable `greetd`, use the `--no-greetd` switch,
-    - `./setup.py prepare --no-greetd && ./setup.py build --no-greetd`
-- Install the project (again, use `--no-greetd` to avoid greetd installation)
-  * `sudo ./setup.py install`
-- Run the post-installation script to finish the installation - this creates the
-  user `greeter` and sets appropriate permissions on the directories and files
-  * `sudo sh ./scripts/postinst`
+- Configure the project - we use meson for project management
+  * `meson .build --prefix=/usr --buildtype=release`
+- Compile and install - we use ninja
+  * `ninja -C .build -k 0 -j $(nproc) && sudo ninja -C .build install`
 
-### Configure greetd to run QtGreet using wayfire
+### Configure greetd to run QtGreet
 
-In case greetd was not installed as a part of QtGreet, then you will have to configure it to use QtGreet.
-You can skip this if greetd was installed as a part of QtGreet installation.
-To use wayfire, you'll have to set the command `greetd` should run as `wayfire --config /etc/qtgreet/wayfire.ini`
-* Open `/etc/greetd/config.toml` for editing with your favorite editor.
-* Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
+If you wish to make use of greetd, then you will have to configure it to use QtGreet.
+You can either use the *inbuilt* `greeetwl` compositor (a fork of `tinywl`), or use a full-fledged compositor like wayfire or sway.
 
-### Configuration of QtGreet
+- To use `greetwl` compositor,
+  * Open `/etc/greetd/config.toml` for editing with your favorite editor.
+  * Under `[default_session]`, set `command = "greetwl"`
 
-- We first paint a base color over the entire screen over which the wallpaper is drawn with 50% opacity. This helps to improve the legibility of
-the text. Currently, three configuration options are available: `Background`, `BaseColor`, and `TextColor`
-- You can set these in `/etc/qtgreet/config.ini` file.
-- `BaseColor` key defines the base color to be painted. It takes ARGB hex values as single continuous string.
-  * Ex: ffffffff (white, alpha = 100%), AAFF0000 (red, alpha = 66.6%), 00008080 (teal, alpha = 0), and so on.
-  * The default value is white (ffffffff).
-- `Background` key defines the background image. All image formats supported by Qt on your system are supported by QtGreet. Typically
-jpg/png/svg files should be fine. Some default background files can be found in /usr/share/qtgreet/backgrounds. The path should be absolute.
-- If you wish not to use a background image, you may set `Background = none`, in which case only the base color will be painted on the screen.
-- `TextColor` key defines the color of the text. The default value is white. It takes RGB hex values as single continuous string similar to
-`BaseColor`.
-  * The default value is white (ffffff).
+- To use wayfire,
+  * Open `/etc/greetd/config.toml` for editing with your favorite editor.
+  * Under `[default_session]`, set `command = "wayfire --config /etc/qtgreet/wayfire.ini"`
 
-### Tips and tricks
+- Similarly for sway,
+  * Open `/etc/greetd/config.toml` for editing with your favorite editor.
+  * Under `[default_session]`, set `command = "sway --config /etc/qtgreet/sway.cfg"`
 
-- The users are automatically divined from `/etc/passwd`, UID_MIN and UID_MAX are read from `/etc/login.defs`.
-- The users are sorted alphabetically.
-- You may select the user by pressing the left/right buttons available on either side of the user name.
-- Alternatively, the user can click on the username (it's a button) - and select the user from the dialog.
-- The sessions are read from `/usr/share/wayland-sessions` first, then from `/usr/share/xsessions`
-- You may select the sessions by pressing the left/right buttons available on either side of the session name.
-- Alternatively, the user can click on the session name (it's a button) - and select the session from the dialog.
-- An option to enter custom command is available at the end.
-- The field below the session name shows the command that will be run. If you select the session as "Custom",
-  you'll be able to enter the command.
+- For labwc,
+  * Open `/etc/greetd/config.toml` for editing with your favorite editor.
+  * Under `[default_session]`, set `command = "labwc -s 'qtgreet && wayland-logout'"`
+
+Most compositors print debug messages to the terminal. You can hide them by redirecting the debug output. Add ` > /dev/null 2>&1` at the end of
+each command (ex. `command = "greetwl > /dev/null 2>&1"`).
+
+Custom login prompt can be activated by pressing `[Ctrl] - [Alt] - [X]` key combination.
+
+### CLI Options
+Following command-line options are available:
+```
+  -h, --help                               Displays help on commandline options.
+  -v, --version                            Displays version information.
+  -c, --config <cfgfile>                   Configuration file (Default: /etc/qtgreet/config.ini)
+  -d, --data-path <datafile>               Path to store dynamic data (Default: /var/lib/qtgreet/)
+  -w, --wl-session-path <path1;path2;...>  Path(s) containing wayland session desktops  (Default: /usr/share/wayland-sessions)
+  -x, --x-session-path <path1;path2;...>   Path(s) containing x11 session desktops  (Default: /usr/share/xsessions)
+  -p, --passwd-path <passwd>               Path to passwd  (Default: /etc/passwd)
+  -l, --login-defs-path <login>            Path to login.defs  (Default: /etc/login.defs)
+  -r, --xserver-path <xrc-path>            Path to xserverrc  (Default: /etc/X11/xinit/xserverrc)
+  -t, --tmp-path <tmp>                     System temp folder (Default: /tmp)
+  -n, --vt-number <vtnr>                   VT number where the session is started (Default: 1; applicable for X11 only)
+  -o, --log-path <log-path>                Path to store log files (Default: /var/tmp/qtgreet)
+```
+
+If you're using `greetwl` as the compositor, you can pass these options to `greetwl` which will forward them to `qtgreet`.
+
+### Configuring the keyboard layout for wayfire
+Sometimes, it would be easier if the keyboard layout was not the default `us`. For wayfire, simply add the following line at the end of
+`/etc/qtgreet/wayfire.ini` file:
+
+```ini
+[input]
+xkb_layout = us
+```
+``

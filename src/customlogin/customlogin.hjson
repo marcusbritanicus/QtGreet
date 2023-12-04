@@ -1,0 +1,115 @@
+{
+	Layout: {
+		Direction: Vertical
+		Keys: [ "C1" ]
+		C1: [ "C2" ]
+		C2: [ "R1", "R2", "R3", "R4", "Stretch", "R5" ]
+		R1: [ "QLabel-1", "UserName" ]
+		R2: [ "QLabel-2", "Password" ]
+		R3: [ "QLabel-3" ]
+		R4: [ "QLabel-4", "SessionEdit" ]
+		R5: [ "Stretch", "Button", "LoginButton" ]
+		Margins: 0.25
+		Spacing: 10
+	}
+
+	Properties: {
+		C1: {
+			Height: 1.0
+			Width: 1.0
+			BGColor: {
+				Red: 0.0
+				Green: 0.0
+				Blue: 0.0
+				Alpha: 0.25
+			}
+		}
+
+		C2: {
+			Height: 0.15
+			Width: 0.3
+			Margins: 0.05
+			Spacing: 10
+			BGColor: {
+				Red: 0.0
+				Green: 0.0
+				Blue: 0.0
+				Alpha: 0.72
+			}
+		}
+
+		R1: {
+			Height: 36
+		}
+
+		R2: {
+			Height: 36
+		}
+
+		R3: {
+			Height: 36
+		}
+
+		R4: {
+			Height: 36
+		}
+
+		R5: {
+			Height: 36
+			Spacing: 10
+		}
+
+		QLabel-1: {
+			Text: "Username:"
+		}
+
+		QLabel-2: {
+			Text: "Password:"
+		}
+
+		QLabel-3: {
+			Text: <hr/>
+		}
+
+		QLabel-4: {
+			Text: "Session:"
+		}
+
+		UserName: {
+			Type: LineEdit
+			Width: 0.18
+			Height: 36
+			TextAlign: Center
+		},
+
+		Password: {
+			Width: 0.18
+			Height: 36
+		},
+
+		Button: {
+			Width: 36
+			Height: 36
+			Type: ToolButton
+			ObjectName: BackButton
+			TextAlign: Center
+			IconSize: 24
+			ThemeIcon: arrow-left
+		},
+
+		LoginButton: {
+			Width: 150
+			Height: 36
+			Type: PushButton
+			ObjectName: CustomLogin
+			TextAlign: Center
+			IconSize: 16
+		},
+
+		SessionEdit: {
+			Width: 0.18
+			Height: 36
+			TextAlign: Center
+		},
+	}
+}

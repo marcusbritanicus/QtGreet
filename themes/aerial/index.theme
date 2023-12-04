@@ -1,0 +1,19 @@
+[General]
+Name = Aerial
+
+[Files]
+Layout = layout.hjson
+StyleSheet = style.qss
+
+[Theme]
+Background = videobg
+BaseColor = ffffffff
+TextColor = ffffff
+Type = Video
+
+[videobg]
+File =
+Playlist = night.m3u
+
+[cache]
+Location = /var/tmp/qtgreet/aerial

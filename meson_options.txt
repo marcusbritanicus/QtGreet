@@ -1,0 +1,42 @@
+option(
+    'use_qt_version',
+    type: 'combo',
+    choices: ['auto', 'qt5', 'qt6'],
+    value: 'auto',
+    description: 'Select the Qt version to use'
+)
+
+option(
+    'build_greetwl',
+    type: 'boolean',
+    value: true,
+    description: 'Build greetwl compositor'
+)
+
+option(
+    'dynpath',
+    type: 'string',
+    value: '/var/lib/qtgreet',
+    description: 'Location where dynamic data can be stored',
+)
+
+option(
+    'username',
+    type: 'string',
+    value: 'greeter',
+    description: 'Set the username',
+)
+
+option(
+    'nodynpath',
+    type: 'boolean',
+    value: false,
+    description: 'Don\'t create the dynpath directory',
+)
+
+option(
+    'logpath',
+    type: 'string',
+    value: '/var/tmp/qtgreet',
+    description: 'Location where user session logs can be stored',
+)

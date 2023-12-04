@@ -1,0 +1,76 @@
+QWidget {
+    color: #ffffff;
+}
+
+#CustomLogin {
+    border: 1px solid gray;
+    border-radius: 18px;
+}
+
+#CustomLogin:hover {
+    background-color: rgba(255, 255, 255, 30);
+    border: 1px solid cornflowerblue;
+    border-radius: 18px;
+}
+
+#CustomLogin:pressed {
+    background-color: rgba(255, 255, 255, 10);
+    padding-top: 1px;
+    padding-left: 1px;
+    border: 2px solid cornflowerblue;
+    border-radius: 18px;
+}
+
+#CustomLogin:focus {
+    border: 2px solid cornflowerblue;
+    border-radius: 18px;
+}
+
+#BackButton:focus {
+    border: 2px solid cornflowerblue;
+    border-radius: 18px;
+}
+
+#BackButton:hover {
+    background-color: rgba(255, 255, 255, 30);
+    border-radius: 18px;
+}
+
+#BackButton:pressed {
+    background-color: rgba(255, 255, 255, 10);
+    padding-top: 2px;
+    padding-left: 2px;
+    border-radius: 18px;
+}
+
+#CustomLogin:focus {
+    border: 1px solid cornflowerblue;
+    border-radius: 18px;
+}
+
+#BackButton {
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-top: 1px;
+    padding-left: 1px;
+}
+
+QLineEdit {
+    background-color: transparent;
+    border: 1px solid gray;
+    border-radius: 18px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+QLineEdit:focus {
+    border: 2px solid cornflowerblue;
+}
+
+QLineEdit:edit-focus {
+    border: 2px solid cornflowerblue;
+}
+
+#OverLay {
+    background-color: rgba(10, 10, 10, 250);
+}

@@ -1,0 +1,12 @@
+[General]
+Name = Sidebar
+
+[Files]
+Layout = layout.hjson
+StyleSheet = style.qss
+
+[Theme]
+Background = ../../backgrounds/Sailboats.svg
+BaseColor = ffffffff
+TextColor = ffffff
+Type = Image

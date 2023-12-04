@@ -1,0 +1,117 @@
+{
+	Layout: {
+		Direction: Vertical
+		Keys: [ "C1" ]
+		C1: [ "R1", "Stretch", "R2", "Stretch", "R3", "R4", "Stretch", "R5", "Stretch", "R6", "R7", "Stretch", "R8" ]
+		R1: [ "Battery", "Stretch", "Clock", "Stretch", "NumLock", "CapsLock" ]
+		R2: [ "UserIcon" ]
+		R3: [ "UserName" ]
+		R4: [ "Password" ]
+		R5: [ "LoginButton" ]
+		R6: [ "SessionName" ]
+		R7: [ "SessionEdit" ]
+		R8: [ "VirtualKeyboard", "Stretch", "PowerButton" ]
+	}
+
+	Properties: {
+		C1: {
+			Spacing: 10
+		}
+		R1: {
+			BGColor: {
+				Red: 0.0
+				Green: 0.0
+				Blue: 0.0
+				Alpha: 0.09
+			}
+			Height: 36
+		}
+		R2: {
+			Alignment: MM
+		}
+		R3: {
+			Alignment: MM
+			Spacing: 10
+		}
+		R4: {
+			Alignment: MM
+		}
+		R5: {
+			Alignment: MM
+		}
+		R6: {
+			Alignment: MM
+			Spacing: 10
+		}
+		Battery: {
+			Width: 	36
+			Height: 36
+		},
+		Clock: {
+			Type: 	Time
+			Format: hh:mm:ss AP
+			Width: 	75
+			Height: 36
+			Alignment: Center
+		},
+		NumLock: {
+			Font: monospace, 11, Normal, Normal
+			Width: 15
+			Height: 36
+			ToolTip: NumLock status
+		},
+		CapsLock: {
+			Font: monospace, 11, Normal, Normal
+			Width: 15
+			Height: 36
+			ToolTip: CapsLock status
+		},
+		UserIcon: {
+			Type: Label
+			Height: 72
+			Width: 72
+			TextAlign: Center
+		},
+		UserName: {
+			Type: Label
+			Width: 352
+			Height: 36
+			TextAlign: Center
+			Font: DejaVu Sans, 11, Bold, Normal
+			NavButtons: true
+		},
+		Password: {
+			Width: 270
+			Height: 36
+		},
+		LoginButton: {
+			Width: 100
+			Height: 36
+			Type: PushButton
+			TextAlign: Center
+		},
+		SessionName: {
+			Type: Label
+			Width: 352
+			Height: 36
+			TextAlign: Center
+			NavButtons: true
+		},
+		SessionEdit: {
+			Width: 270
+			Height: 36
+			TextAlign: Center
+		},
+		VirtualKeyboard: {
+			Width: 36
+			Height: 36
+			TextAlign: Center
+		},
+		PowerButton: {
+			Width: 36
+			Height: 36
+			TextAlign: Right
+			Type: Menu
+		},
+	}
+}

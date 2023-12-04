@@ -1,0 +1,90 @@
+{
+	Layout: {
+		Direction: Vertical
+		Keys: [ "R1", "R2" ]
+		R1: [ "SessionName", "QLabel-1", "Stretch", "NumLock", "CapsLock" ]
+		R2: [ "C1" ]
+		C1: [ "Stretch", "Clock-1", "Clock-2", "QLabel-2", "R3", "R4" ]
+		R3: [ "QLabel-3", "UserName", "Stretch" ]
+		R4: [ "QLabel-4", "Password", "LoginButton", "Stretch" ]
+	}
+
+	Properties: {
+		R1: {
+			Height: 24
+		}
+		C1: {
+			Spacing: 10
+			Margins: 100
+			Alignment: BL
+		}
+		R3: {
+			Spacing: 0
+		}
+		R4: {
+			Spacing: 0
+		}
+		SessionName: {
+			Height: 24
+			Type: Combo
+			MaximumWidth: 270
+			Font: Dejavu Sans, 12, Normal, Normal
+		}
+		QLabel-1: {
+			Text: en_us
+			Width: 80
+			TextAlign: Right
+		}
+		NumLock: {
+			Font: Monospace, 12, Normal, Normal
+			Width: 15
+			Height: 24
+			ToolTip: NumLock status
+		}
+		CapsLock: {
+			Font: Monospace, 12, Normal, Normal
+			Width: 15
+			Height: 24
+			ToolTip: CapsLock status
+		}
+		Clock-1: {
+			Type: Time
+			Font: Quicksand, 40, Normal, Normal
+			Format: "HH : mm"
+			Width: 300
+		}
+		Clock-2: {
+			Type: Date
+			Font: Quicksand, 14, Normal, Normal
+			Format: dddd, MMMM dd, yyyy
+			Width: 300
+		}
+		QLabel-2: {
+			Text: " "
+			Width: 75
+		}
+		QLabel-3: {
+			Text: "Username"
+			Width: 75
+		}
+		QLabel-4: {
+			Text: "Password"
+			Width: 75
+			Height: 25
+		}
+		UserName: {
+			Type: LineEdit
+			Width: 225
+			Height: 25
+		}
+		Password: {
+			Width: 200
+			Height: 25
+		}
+		LoginButton: {
+			Type: ToolButton
+			Width: 25
+			Height: 25
+		}
+	}
+}

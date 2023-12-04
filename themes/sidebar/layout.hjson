@@ -1,0 +1,90 @@
+{
+	Layout: {
+		Direction: Vertical
+		Keys: [ "R1", "R2" ]
+		R1: [ "Battery", "Stretch", "PowerButton" ]
+		R2: [ "C1", "C2" ]
+		C1: [ "Stretch", "UserIcon", "QLabel-1", "UserName", "Password", "QLabel-1", "LoginButton", "Stretch", "Stretch", "SessionName" ]
+		C2: [ "Stretch", "Clock-1", "Clock-2" ]
+	}
+
+	Properties: {
+		R1: {
+			Height: 27
+			BGColor: {
+				Red: 0.0
+				Green: 0.0
+				Blue: 0.0
+				Alpha: 0.18
+			}
+		}
+		C1: {
+			Margins: 20
+			Width: 0.2
+			Alignment: MM
+			BGColor: {
+				Red: 0.0
+				Green: 0.0
+				Blue: 0.0
+				Alpha: 0.09
+			}
+			Spacing: 5
+		}
+		C2: {
+			Width: 0.8
+			Alignment: BR
+			Margins: 0.05
+		}
+		Battery: {
+			Type: Label
+		}
+		PowerButton: {
+			Type: Menu
+		}
+		UserIcon: {
+			Type: Icon
+			Width: 72
+			Height: 72
+		}
+		QLabel-1: {
+			Text: " "
+			Width: 0.1
+			Height: 27
+		}
+		UserName: {
+			Type: Label
+			Height: 27
+			Width: 0.18
+			TextAlign: Center
+			NavButtons: true
+		}
+		Password: {
+			Type: LineEdit
+			Height: 27
+			Width: 0.18
+		}
+		LoginButton: {
+			Type: PushButton
+			Height: 27
+			Width: 75
+			IconSize: 16
+		}
+		Clock-1: {
+			Type: Time
+			Format: hh:mm AP
+			FontSize: 3.0
+		}
+		Clock-2: {
+			Type: Date
+			Format: dddd, MMMM dd, yyyy
+			FontSize: 1.4
+		}
+		SessionName: {
+			Type: Label
+			Height: 27
+			Width: 0.18
+			TextAlign: Center
+			NavButtons: true
+		}
+	}
+}

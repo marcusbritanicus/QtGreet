@@ -1,0 +1,54 @@
++==============================================================+=======================+========================+
+|        Widget                                                |      Name             |           Type         |
++--------------------------------------------------------------+-----------------------+------------------------+
+|                                                              |                       |                        |
+|    buttons - All generic buttons                             |                       |                        |
+|        1. Okay button                                        |  OkayButton           |  OkayButton            |
+|        2. Cancel button                                      |  CancelButton         |  CancelButton          |
+|        3. Session Edit Button                                |  SessionEditButton    |  SessionEditButton     |
+|        4. User nav buttons                                   |  UserNav              |  Left|Right            |
+|        5. Session nav buttons                                |  SessionNav           |  Left|Right            |
+|        6. Login button                                       |  LoginButton          |  Tool|Push Button      |
++--------------------------------------------------------------+-----------------------+------------------------+
+|                                                              |                       |                        |
+|    clock - various clock widgets                             |                       |                        |
+|        1. Analog Clock                                       |  Clock                |  AnalogClock           |
+|        2. Digital Clock                                      |  Clock                |  DigitalClock          |
+|        3. Simple Clock                                       |  Clock                |  Time|Date|Simple      |
++--------------------------------------------------------------+-----------------------+------------------------+
+|                                                              |                       |                        |
+|    labels - simple labels                                    |                       |                        |
+|        1. Caps lock                                          |  CapsLock             |  CapsLock              |
+|        2. Num lock                                           |  NumLock              |  NumLock               |
+|        3. User Icon                                          |  UserIcon             |  UserIcon              |
+|        4. Logo                                               |  Logo                 |  Logo                  |
++--------------------------------------------------------------+-----------------------+------------------------+
+|                                                              |                       |                        |
+|    power - power related buttons                             |                       |                        |
+|        1. Power menu button                                  |  PowerButton          |  Menu                  |
+|        2. Halt button                                        |  PowerButton          |  Halt                  |
+|        3. Reboot button                                      |  PowerButton          |  Reboot                |
+|        4. Suspend button                                     |  PowerButton          |  Suspend               |
+|        5. Hibernate button                                   |  PowerButton          |  Hibernate             |
+|        6. Logout button                                      |  PowerButton          |  Logout                |
++--------------------------------------------------------------+-----------------------+------------------------+
+|                                                              |                       |                        |
+|    password - Password entry                                 |                       |                        |
+|        1. Password edit                                      |  Password             |  LineEdit              |
++--------------------------------------------------------------+-----------------------+------------------------+
+|                                                              |                       |                        |
+|    session - Session name                                    |                       |                        |
+|        1. Session combo                                      |  SessionName          |  Combo                 |
+|        2. Session list                                       |  SessionName          |  List                  |
+|        3. Session button                                     |  SessionName          |  PushButton            |
+|        4. Session label                                      |  SessionName          |  Label                 |
+|        5. Session edit                                       |  SessionName          |  LineEdit              |
++--------------------------------------------------------------+-----------------------+------------------------+
+|                                                              |                       |                        |
+|    user - User name                                          |                       |                        |
+|        1. User combo                                         |  UserName             |  Combo                 |
+|        2. User list                                          |  UserName             |  List                  |
+|        3. User edit                                          |  UserName             |  LineEdit              |
+|        4. User label                                         |  UserName             |  Label                 |
+|        5. User button                                        |  UserName             |  PushButton            |
++==============================================================+=======================+========================+

@@ -1,5 +1,12 @@
-Version 1.0
+Version 2.0
+- Deprecate the use of layer-shell: not all compositors support it, and we do not require it either.
+- Show all windows as full-screens, and place them on various screens using the wlr-foreign-toplevel protocol.
+- You can customize the appearance of the greeter to your heart's content using themes.
+- Some instructions and config files are provided (see the folder configs) to run QtGreet on wayfire and sway.
+- Introducing greetwl - a single screen compositor to display QtGreet.
+- Inbuilt support for Suspend, Hibernate, Shutdown and Reboot via (e)logind, using DFL::Login1.
 
+Version 1.0
 - Wayland sessions run smoothly, Custom sessions can be easily started.
 - We still do not have a way to start a new session when an existing session is running.
 - We cannot launch an X11 Session.
