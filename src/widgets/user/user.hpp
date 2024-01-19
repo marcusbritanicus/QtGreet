@@ -40,27 +40,40 @@ class UserName {
     public:
         UserName();
 
-        void switchToNextUser();
-        void switchToPreviousUser();
-
         Users users();
         User currentUser();
+
+        virtual void switchToNextUser();
+        virtual void switchToPreviousUser();
 
         /**
          * Set the current user based on the struct user_t.
          * Here we compare the username and user id.
          */
-        bool setCurrentUser( User usr );
+        virtual bool setCurrentUser( User usr );
 
         /**
          * Set the current user based on the user id.
          * Here we compare only the user id.
          */
-        bool setCurrentUser( uint uid );
+        virtual bool setCurrentUser( uint uid );
 
     protected:
         Users mUserList;
         int curUser = -1;
+};
+
+class UserEdit : public QLineEdit, public UserName {
+    Q_OBJECT;
+
+    public:
+        UserEdit();
+
+        void switchToNextUser();
+        void switchToPreviousUser();
+
+        bool setCurrentUser( User usr );
+        bool setCurrentUser( uint uid );
 };
 
 class UserCombo : public QComboBox, public UserName {
@@ -71,6 +84,9 @@ class UserCombo : public QComboBox, public UserName {
 
         void switchToNextUser();
         void switchToPreviousUser();
+
+        bool setCurrentUser( User usr );
+        bool setCurrentUser( uint uid );
 };
 
 class UserList : public QListWidget, public UserName {
@@ -81,6 +97,9 @@ class UserList : public QListWidget, public UserName {
 
         void switchToNextUser();
         void switchToPreviousUser();
+
+        bool setCurrentUser( User usr );
+        bool setCurrentUser( uint uid );
 };
 
 class UserLabel : public QWidget, public UserName {
@@ -95,6 +114,9 @@ class UserLabel : public QWidget, public UserName {
 
         void switchToNextUser();
         void switchToPreviousUser();
+
+        bool setCurrentUser( User usr );
+        bool setCurrentUser( uint uid );
 
         void setShowNavButtons( bool show );
         void setIconSize( QSize );

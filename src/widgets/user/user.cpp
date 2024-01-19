@@ -137,6 +137,10 @@ Users UserName::users() {
 
 
 User UserName::currentUser() {
+    if ( curUser == -1 ) {
+        return User();
+    }
+
     return mUserList.at( curUser );
 }
 
@@ -171,11 +175,78 @@ bool UserName::setCurrentUser( uint uid ) {
 }
 
 
+/* User LineEdit */
+UserEdit::UserEdit() : QLineEdit(), UserName() {
+    setObjectName( "UserEdit" );
+    setPlaceholderText( "Username" );
+
+    QStringList userList;
+    for ( User usr: mUserList ) {
+        userList << usr.username;
+    }
+
+    QCompleter *completer = new QCompleter( userList, this );
+
+    completer->setCaseSensitivity( Qt::CaseInsensitive );
+    completer->setCompletionMode( QCompleter::InlineCompletion );
+    setCompleter( completer );
+
+    connect(
+        this, &QLineEdit::textEdited, [ = ] ( QString text ) {
+            for ( User user: mUserList ) {
+                if ( user.username == text ) {
+                    setCurrentUser( user );
+                    return;
+                }
+            }
+
+            /** Otherwise, we will reset the current user to -1 */
+            curUser = -1;
+        }
+    );
+}
+
+
+void UserEdit::switchToNextUser() {
+    UserName::switchToNextUser();
+
+    setText( mUserList[ curUser ].username );
+}
+
+
+void UserEdit::switchToPreviousUser() {
+    UserName::switchToPreviousUser();
+
+    setText( mUserList[ curUser ].username );
+}
+
+
+bool UserEdit::setCurrentUser( User usr ) {
+    bool ok = UserName::setCurrentUser( usr );
+
+    if ( ok == true ) {
+        setText( mUserList[ curUser ].username );
+    }
+
+    return ok;
+}
+
+
+bool UserEdit::setCurrentUser( uint uid ) {
+    bool ok = UserName::setCurrentUser( uid );
+
+    if ( ok == true ) {
+        setText( mUserList[ curUser ].username );
+    }
+
+    return ok;
+}
+
+
 /* User ComboBox */
 
 UserCombo::UserCombo() : QComboBox(), UserName() {
     setObjectName( "UserCombo" );
-    mUserList = getUsers();
 
     for ( User usr: mUserList ) {
         addItem( QIcon( usr.icon ), usr.username );
@@ -196,6 +267,28 @@ void UserCombo::switchToPreviousUser() {
 
     setCurrentIndex( curUser );
     setToolTip( mUserList.at( curUser ).username );
+}
+
+
+bool UserCombo::setCurrentUser( User usr ) {
+    bool ok = UserName::setCurrentUser( usr );
+
+    if ( ok == true ) {
+        setCurrentIndex( curUser );
+    }
+
+    return ok;
+}
+
+
+bool UserCombo::setCurrentUser( uint uid ) {
+    bool ok = UserName::setCurrentUser( uid );
+
+    if ( ok == true ) {
+        setCurrentIndex( curUser );
+    }
+
+    return ok;
 }
 
 
@@ -229,6 +322,28 @@ void UserList::switchToPreviousUser() {
 
     setCurrentRow( curUser );
     setToolTip( mUserList.at( curUser ).username );
+}
+
+
+bool UserList::setCurrentUser( User usr ) {
+    bool ok = UserName::setCurrentUser( usr );
+
+    if ( ok == true ) {
+        setCurrentRow( curUser );
+    }
+
+    return ok;
+}
+
+
+bool UserList::setCurrentUser( uint uid ) {
+    bool ok = UserName::setCurrentUser( uid );
+
+    if ( ok == true ) {
+        setCurrentRow( curUser );
+    }
+
+    return ok;
 }
 
 
@@ -279,7 +394,9 @@ void UserLabel::setAlignment( Qt::Alignment a ) {
 void UserLabel::switchToNextUser() {
     UserName::switchToNextUser();
 
-    lbl->setText( mUserList.at( curUser ).name );
+    User usr = mUserList.at( curUser );
+
+    lbl->setText( QString( "%1 (%2)" ).arg( usr.name ).arg( usr.username ) );
     setToolTip( mUserList.at( curUser ).username );
 }
 
@@ -287,8 +404,36 @@ void UserLabel::switchToNextUser() {
 void UserLabel::switchToPreviousUser() {
     UserName::switchToPreviousUser();
 
-    lbl->setText( mUserList.at( curUser ).name );
+    User usr = mUserList.at( curUser );
+
+    lbl->setText( QString( "%1 (%2)" ).arg( usr.name ).arg( usr.username ) );
     setToolTip( mUserList.at( curUser ).username );
+}
+
+
+bool UserLabel::setCurrentUser( User usr ) {
+    bool ok = UserName::setCurrentUser( usr );
+
+    if ( ok == true ) {
+        User usr = mUserList.at( curUser );
+
+        lbl->setText( QString( "%1 (%2)" ).arg( usr.name ).arg( usr.username ) );
+    }
+
+    return ok;
+}
+
+
+bool UserLabel::setCurrentUser( uint uid ) {
+    bool ok = UserName::setCurrentUser( uid );
+
+    if ( ok == true ) {
+        User usr = mUserList.at( curUser );
+
+        lbl->setText( QString( "%1 (%2)" ).arg( usr.name ).arg( usr.username ) );
+    }
+
+    return ok;
 }
 
 

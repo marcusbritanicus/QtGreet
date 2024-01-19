@@ -104,6 +104,9 @@ class QtGreet::UI : public QMainWindow {
         void tryCustomLogin();
 
         // ComboBox
+        void on_UserEdit_textEdited( QString );
+
+        // ComboBox
         void on_UserCombo_currentIndexChanged( int );
 
         // ListWidget
