@@ -106,26 +106,36 @@ void QtGreet::ThemeManager::readTheme( QString name ) {
     mLayout    = themePath + theme.value( "Files/Layout" ).toString();
     mQSS       = themePath + theme.value( "Files/StyleSheet" ).toString();
 
-    if ( not mIsVideoBG ) {
+    if ( mIsVideoBG == false ) {
         imageBG = QDir( themePath ).filePath( theme.value( "Theme/Background" ).toString() );
+    }
+
+    else {
+        if ( theme.value( "videobg/File" ).toString().length() ) {
+            videoBG = QDir( themePath ).filePath( theme.value( "videobg/File" ).toString() );
+        }
+
+        else if ( theme.value( "videobg/Playlist" ).toString().length() ) {
+            videoBG = QDir( themePath ).filePath( theme.value( "videobg/Playlist" ).toString() );
+        }
     }
 
     mBaseColor = QColor( QString( "#%1" ).arg( theme.value( "Theme/BaseColor" ).toString() ) );
     mTextColor = QColor( QString( "#%1" ).arg( theme.value( "Theme/TextColor" ).toString() ) );
 
-    /** Overrides */
+    /** Overrides: image */
     QString background = sett->value( "Overrides/Background", "Theme" ).toString();
 
     if ( background != "Theme" ) {
         imageBG = background;
     }
 
-    /***/
+    /** Overrides: video */
     if ( sett->value( "videobg/File" ).toString().length() ) {
         videoBG = QDir( themePath ).filePath( sett->value( "videobg/File" ).toString() );
     }
 
-    else {
+    else if ( sett->value( "videobg/Playlist" ).toString().length() ) {
         videoBG = QDir( themePath ).filePath( sett->value( "videobg/Playlist" ).toString() );
     }
 
@@ -140,4 +150,6 @@ void QtGreet::ThemeManager::readTheme( QString name ) {
     if ( textColor != "Theme" ) {
         mTextColor = QColor( QString( "#%1" ).arg( textColor ) );
     }
+
+    qDebug() << videoBG;
 }

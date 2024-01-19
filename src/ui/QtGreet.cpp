@@ -59,7 +59,7 @@ QtGreet::UI::UI( QScreen *scrn ) {
 
     createUI();
 
-    if ( themeMgr->isVideoBG() != true ) {
+    if ( themeMgr->isVideoBG() == false ) {
         QString bgStr( themeMgr->background() );
         background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 
@@ -326,7 +326,7 @@ void QtGreet::UI::updateSession( uint uid ) {
 
 void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
     /** We need to paint only if it's image background */
-    if ( not themeMgr->isVideoBG() ) {
+    if ( themeMgr->isVideoBG() == false ) {
         QPainter painter( this );
 
         /* Base color */
