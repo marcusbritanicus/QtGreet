@@ -39,7 +39,7 @@ pass `-Dbuild_greetwl=false` to `meson`
 ### Configure greetd to run QtGreet
 
 If you wish to make use of greetd, then you will have to configure it to use QtGreet.
-You can either use the *inbuilt* `greeetwl` compositor (a fork of `tinywl`), or use a full-fledged compositor like wayfire or sway.
+You can either use the *inbuilt* `greetwl` compositor (a fork of `tinywl`), or use a full-fledged compositor like wayfire or sway.
 
 - To use `greetwl` compositor,
   * Open `/etc/greetd/config.toml` for editing with your favorite editor.
