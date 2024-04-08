@@ -59,7 +59,7 @@ QtGreet::UI::UI( QScreen *scrn ) {
 
     createUI();
 
-    if ( themeMgr->isVideoBG() != true ) {
+    if ( themeMgr->isVideoBG() == false ) {
         QString bgStr( themeMgr->background() );
         background = QImage( bgStr ).scaled( size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation );
 
@@ -223,18 +223,25 @@ void QtGreet::UI::prepareUIforUse() {
         updateUser( usr );
         updateSession( usr.uid );
     }
+
+    UserEdit *une = findChild<UserEdit *>( "UserEdit" );
+
+    if ( une ) {
+        /** Update the widget with the last used user id */
+        if ( lastUsedId != -1 ) {
+            une->setCurrentUser( (uint)lastUsedId );
+        }
+
+        /** Get the updated User */
+        User usr( une->currentUser() );
+        updateUser( usr );
+        updateSession( usr.uid );
+    }
 }
 
 
 void QtGreet::UI::updateUser( User usr ) {
     mCurUser = usr;
-
-    /* Update the 'UserLabel' */
-    UserLabel *un = findChild<UserLabel *>( "UserLabel" );
-
-    if ( un ) {
-        un->setText( QString( "%1 (%2)" ).arg( usr.name ).arg( usr.username ) );
-    }
 
     /* Update the 'UserIcon' */
     UserIcon *ui = findChild<UserIcon *>( "UserIcon" );
@@ -319,7 +326,7 @@ void QtGreet::UI::updateSession( uint uid ) {
 
 void QtGreet::UI::paintEvent( QPaintEvent *pEvent ) {
     /** We need to paint only if it's image background */
-    if ( not themeMgr->isVideoBG() ) {
+    if ( themeMgr->isVideoBG() == false ) {
         QPainter painter( this );
 
         /* Base color */
@@ -586,7 +593,13 @@ void QtGreet::UI::showPowerMessage( bool reboot, bool done ) {
 void QtGreet::UI::tryLogin() {
     QLineEdit *pwd = findChild<QLineEdit *>( "Password" );
 
-    if ( not pwd ) {
+    /** If we could not get the password widget, do nothing. */
+    if ( pwd == nullptr ) {
+        return;
+    }
+
+    /** If the current user name is invalid, do nothing */
+    if ( mCurUser.username.length() == 0 ) {
         return;
     }
 
@@ -846,13 +859,21 @@ void QtGreet::UI::on_SessionList_currentItemChanged( QListWidgetItem *cur, QList
 
 
 void QtGreet::UI::on_UserCombo_currentIndexChanged( int idx ) {
-    // Reset the password and change the login session
     UserCombo *ulc = findChild<UserCombo *>( "UserCombo" );
 
     if ( ulc ) {
         User usr( ulc->users().at( idx ) );
 
         updateUser( usr );
+    }
+}
+
+
+void QtGreet::UI::on_UserEdit_textEdited( QString ) {
+    UserEdit *ulc = findChild<UserEdit *>( "UserEdit" );
+
+    if ( ulc ) {
+        updateUser( ulc->currentUser() );
     }
 }
 

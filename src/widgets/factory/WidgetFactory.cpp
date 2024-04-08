@@ -92,9 +92,7 @@ QWidget *WidgetFactory::createWidget( QString name, QString type, Hjson::Value p
         // qWarning() << "User Name";
 
         if ( type == "LineEdit" ) {
-            w = new QLineEdit();
-            w->setObjectName( "UserEdit" );
-            qobject_cast<QLineEdit *>( w )->setPlaceholderText( "Username" );
+            w = new UserEdit();
         }
 
         else if ( type == "Label" ) {
