@@ -145,7 +145,7 @@ void UserIcon::paintEvent( QPaintEvent *pEvent ) {
 Logo::Logo() : QWidget() {
     setObjectName( "Logo" );
     setFixedSize( 40, 40 );
-    mIcon = ":/icons/qtgreet1.png";
+    mIcon = ":/icons/QtGreet.png";
 }
 
 

@@ -203,6 +203,17 @@ install_data(
 	install_dir : join_paths( get_option( 'sysconfdir' ), 'qtgreet' )
 )
 
+# Icons
+install_data(
+	'src/icons/QtGreet.svg',
+	install_dir : join_paths(get_option('prefix'), 'share', 'icons', 'hicolor', 'scalable', 'apps'),
+)
+
+install_data(
+	'src/icons/QtGreet.png',
+	install_dir : join_paths(get_option('prefix'), 'share', 'icons', 'hicolor', '512x512', 'apps'),
+)
+
 # Configuration file path: create it only if it's not disabled
 if get_option( 'nodynpath' ) == false
 	install_emptydir(

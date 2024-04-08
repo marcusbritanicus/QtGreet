@@ -13,7 +13,7 @@
 		<file>icons/suspend.png</file>
 		<file>icons/hibernate.png</file>
 		<file>icons/logout.png</file>
-		<file>icons/qtgreet1.png</file>
+		<file>icons/QtGreet.png</file>
 
 		<file alias="customlogin.hjson">customlogin/customlogin.hjson</file>
 		<file alias="customlogin.qss">customlogin/customlogin.qss</file>
