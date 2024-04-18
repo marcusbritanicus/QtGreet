@@ -849,12 +849,14 @@ void QtGreet::UI::on_SessionEdit_returnPressed() {
 }
 
 
-void QtGreet::UI::on_SessionCombo_currentIndexChanged( int ) {
+void QtGreet::UI::on_SessionCombo_currentIndexChanged( int idx ) {
+    SessionCombo *sess = findChild<SessionCombo *>( "SessionCombo" );
+    mCurSession = sess->sessions().at( idx );
 }
 
 
 void QtGreet::UI::on_SessionList_currentItemChanged( QListWidgetItem *cur, QListWidgetItem * ) {
-    Session sess( cur->data( Qt::UserRole + 1 ).value<Session>() );
+    mCurSession = cur->data( Qt::UserRole + 1 ).value<Session>();
 }
 
 
