@@ -105,6 +105,19 @@ Sessions getSessions( bool custom ) {
         xSessPaths = xSessPath.split( ";", Qt::SkipEmptyParts );
     }
 
+    /** Support for launching session defined in ~/.xinitrc. */
+    if ( IsExec( "startx" ) ) {
+        Session defaultX11 = Session {
+            "Default X11 Session",
+            ":/icons/session.png",
+            "X11",
+            "startx",
+            "/usr/share/xsessions/startx.desktop"
+        };
+
+        mSessions << defaultX11;
+    }
+
     for ( QString xSessDir: xSessPaths ) {
         for ( QFileInfo sess: QDir( xSessDir ).entryInfoList( { "*.desktop" } ) ) {
             QSettings session( sess.absoluteFilePath(), QSettings::IniFormat );

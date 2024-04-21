@@ -300,6 +300,15 @@ QString GreetdLogin::errorMessage() {
 
 
 QString GreetdLogin::getX11Session( QString base ) {
+    /**
+     * This is the "Default X11 Session".
+     * We're simply going to launch `startx` and sit back,
+     * hoping that the user has ~/.xinitrc setup properly.
+     */
+    if ( base == "startx" ) {
+        return base;
+    }
+
     QString xinit( "xinit %1 -- %2 :%3 vt%4 -keeptty -noreset -novtswitch -auth %5/Xauth.%6" );
 
     /* Arg2: Get the display */

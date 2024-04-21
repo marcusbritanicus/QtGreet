@@ -17,13 +17,16 @@ Connect with us via [Matrix/IRC](https://app.element.io/#/room/#qtgreet:matrix.o
 - DFL::IPC (https://gitlab.com/desktop-frameworks/ipc.git)
 - DFL::Utils (https://gitlab.com/desktop-frameworks/utils.git)
 - DFL::Login1 (https://gitlab.com/desktop-frameworks/login1.git)
-- wlroots (https://gitlab.freedesktop.org/wlroots/wlroots.git)
+- wlroots (https://gitlab.freedesktop.org/wlroots/wlroots.git) - Optional
 - A wayland based compositor (wayfire, sway, labwc etc..) - Optional
 - Meson (to build this project)
 - Ninja (to compile this project)
 
-**Note:** wlroots is needed only if you are compiling `greetwl`. If you want to skip the compilation of `greetwl`,
-pass `-Dbuild_greetwl=false` to `meson`
+**Notes:**
+1. wlroots is needed only if you are compiling `greetwl`. If you want to skip the compilation of `greetwl`, pass `-Dbuild_greetwl=false` to
+`meson`. `greetwl` is an extremely simple compositor that will run QtGreet on a single output. It is forked from tinywl,
+2. If you intend to skip the compilation of `greetwl`, then ensure that you have at least one of the wayland compositors are installed.
+Otherwise, you will not be able start the greeter.,+
 
 ### Compiling and installing
 
@@ -31,8 +34,8 @@ pass `-Dbuild_greetwl=false` to `meson`
   * Git: `git clone https://gitlab.com/marcusbritanicus/QtGreet.git`
 - Enter the `QtGreet` folder
   * `cd QtGreet`
-- Configure the project - we use meson for project management
-  * `meson .build --prefix=/usr --buildtype=release`
+- Configure the project - we use meson for project management (add `-Dbuild_greetwl=false` to skip building `greetwl`)
+  * `meson setup .build --prefix=/usr --buildtype=release`
 - Compile and install - we use ninja
   * `ninja -C .build -k 0 -j $(nproc) && sudo ninja -C .build install`
 
@@ -61,6 +64,14 @@ Most compositors print debug messages to the terminal. You can hide them by redi
 each command (ex. `command = "greetwl > /dev/null 2>&1"`).
 
 Custom login prompt can be activated by pressing `[Ctrl] - [Alt] - [X]` key combination.
+
+### Note on launching X11 Sessions
+While QtGreet launches sessions listed in `/usr/share/xsessions`, users may want to use `startx` to start a custom session defined in
+`~/.xinitrc`. QtGreet has support for this kind of a setup by default. If the executable `startx` exists in your `$PATH` you'll find an entry
+"Default X11 Session" in the list of sessions, which will simply execute `startx`, and start your session. Note that it is not possible for
+QtGreet to check if this file is valid or not, and that responsibility solely rests with the user. [RaZ0rr
+Ray](https://www.reddit.com/user/RayZ0rr_/) has drawn up some [detailed
+instructions](https://www.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/) to setup your session this way.
 
 ### CLI Options
 Following command-line options are available:

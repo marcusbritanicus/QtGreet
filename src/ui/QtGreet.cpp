@@ -851,6 +851,7 @@ void QtGreet::UI::on_SessionEdit_returnPressed() {
 
 void QtGreet::UI::on_SessionCombo_currentIndexChanged( int idx ) {
     SessionCombo *sess = findChild<SessionCombo *>( "SessionCombo" );
+
     mCurSession = sess->sessions().at( idx );
 }
 
