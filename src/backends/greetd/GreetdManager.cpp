@@ -497,7 +497,7 @@ QByteArray GreetdLogin::roundtrip( QByteArray payload ) {
         return QByteArray();
     }
 
-    char message[ retLen + 1 ] = { '\0' };
+    char message[ retLen + 1 ];
 
     memset( message, '\0', retLen + 1 );
 
