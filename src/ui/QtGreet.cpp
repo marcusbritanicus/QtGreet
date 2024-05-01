@@ -144,6 +144,7 @@ void QtGreet::UI::createUI() {
     base->addWidget( w );
 
     setWindowFlags( Qt::FramelessWindowHint );
+    setAttribute( Qt::WA_TranslucentBackground );
 
     setStyleSheet( themeMgr->getStyleSheet() );
 
