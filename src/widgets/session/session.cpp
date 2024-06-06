@@ -126,8 +126,9 @@ Sessions getSessions( bool custom ) {
             isAvailable |= IsExec( session.value( "Desktop Entry/Exec" ).toString() );
 
             if ( isAvailable ) {
+                QString name = session.value( "Desktop Entry/Name" ).toString();
                 Session s = Session{
-                    session.value( "Desktop Entry/Name" ).toString() + " (X11)",
+                    name + ( name.toLower().contains( "x11" ) ? "" : " (X11)"),
                     session.value( "Desktop Entry/Icon", ":/icons/session.png" ).toString(),
                     "X11",
                     session.value( "Desktop Entry/Exec" ).toString(),
