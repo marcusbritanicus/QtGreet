@@ -32,7 +32,7 @@
 
 #include <wayqt/WayQtUtils.hpp>
 #include <wayqt/Registry.hpp>
-#include <wayqt/WindowManager.hpp>
+#include <wayqt/ForeignToplevel.hpp>
 
 QSettings *sett;
 QSettings *users;
@@ -51,7 +51,7 @@ QString logPath     = LOGPATH;
 QString themeName   = "";
 
 
-void setupWindow( QScreen *screen, WQt::WindowHandle *hndl ) {
+void setupWindow( QScreen *screen, WQt::ForeignToplevelHandle *hndl ) {
     wl_output *output = WQt::Utils::wlOutputFromQScreen( screen );
 
     qInfo() << "==> Setting up QtGreet for" << screen->name();
@@ -222,11 +222,11 @@ int main( int argc, char **argv ) {
 
     wlRegistry->setup();
 
-    if ( wlRegistry->waitForInterface( WQt::Registry::WindowManagerInterface, 5000 ) ) {
-        WQt::WindowManager *wm = wlRegistry->windowManager();
+    if ( wlRegistry->waitForInterface( WQt::Registry::ForeignToplevelManagerInterface, 5000 ) ) {
+        WQt::ForeignToplevelManager *wm = wlRegistry->foreignToplevelManager();
 
         QObject::connect(
-            wm, &WQt::WindowManager::newTopLevelHandle, [ = ] ( WQt::WindowHandle *hndl ) mutable {
+            wm, &WQt::ForeignToplevelManager::newTopLevelHandle, [ = ] ( WQt::ForeignToplevelHandle *hndl ) mutable {
                 /** Wait for app ID and title to be set */
                 while ( hndl->appId().isEmpty() or hndl->title().isEmpty() ) {
                     qApp->processEvents();
