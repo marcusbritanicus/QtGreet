@@ -478,7 +478,7 @@ static void server_cursor_button( struct wl_listener *listener, void *data ) {
     struct wlr_surface *surface = NULL;
     struct tinywl_view *view    = desktop_view_at( server, server->cursor->x, server->cursor->y, &surface, &sx, &sy );
 
-    if ( event->state == WLR_BUTTON_RELEASED ) {
+    if ( event->state == WL_POINTER_BUTTON_STATE_RELEASED ) {
         /* If you released any buttons, we exit interactive move/resize mode. */
         reset_cursor_mode( server );
     }
@@ -499,7 +499,7 @@ static void server_cursor_axis( struct wl_listener *listener, void *data ) {
     /** Notify the client with pointer focus of the axis event. */
     wlr_seat_pointer_notify_axis( server->seat,
                                   event->time_msec, event->orientation, event->delta,
-                                  event->delta_discrete, event->source );
+                                  event->delta_discrete, event->source, event->relative_direction );
 }
 
 
@@ -535,6 +535,17 @@ static void output_frame( struct wl_listener *listener, void * ) {
 }
 
 
+static void output_request_state( struct wl_listener *listener, void *data ) {
+    /* This function is called when the backend requests a new state for
+     * the output. For example, Wayland and X11 backends request a new mode
+     * when the output window is resized. */
+    struct tinywl_output *output = wl_container_of( listener, output, request_state );
+    const struct wlr_output_event_request_state *event = data;
+
+    wlr_output_commit_state( output->wlr_output, event->state );
+}
+
+
 static void output_destroy( struct wl_listener *listener, void * ) {
     struct tinywl_output *output = wl_container_of( listener, output, destroy );
 
@@ -546,48 +557,55 @@ static void output_destroy( struct wl_listener *listener, void * ) {
 
 
 static void server_new_output( struct wl_listener *listener, void *data ) {
-    /** This event is raised by the backend when a new output (aka a display or
+    /* This event is raised by the backend when a new output (aka a display or
      * monitor) becomes available. */
-    struct tinywl_server *server =
-        wl_container_of( listener, server, new_output );
-    struct wlr_output *wlr_output = data;
+    struct tinywl_server *server     = wl_container_of( listener, server, new_output );
+    struct wlr_output    *wlr_output = data;
 
-    /** Configures the output created by the backend to use our allocator
-    * and our renderer. Must be done once, before commiting the output */
+    /* Configures the output created by the backend to use our allocator
+     * and our renderer. Must be done once, before commiting the output */
     wlr_output_init_render( wlr_output, server->allocator, server->renderer );
 
-    /** Some backends don't have modes. DRM+KMS does, and we need to set a mode
+    /* The output may be disabled, switch it on. */
+    struct wlr_output_state state;
+    wlr_output_state_init( &state );
+    wlr_output_state_set_enabled( &state, true );
+
+    /* Some backends don't have modes. DRM+KMS does, and we need to set a mode
      * before we can use the output. The mode is a tuple of (width, height,
      * refresh rate), and each monitor supports only a specific set of modes. We
      * just pick the monitor's preferred mode, a more sophisticated compositor
      * would let the user configure it. */
-    if ( !wl_list_empty( &wlr_output->modes ) ) {
-        struct wlr_output_mode *mode = wlr_output_preferred_mode( wlr_output );
-        wlr_output_set_mode( wlr_output, mode );
-        wlr_output_enable( wlr_output, true );
+    struct wlr_output_mode *mode = wlr_output_preferred_mode( wlr_output );
 
-        if ( !wlr_output_commit( wlr_output ) ) {
-            return;
-        }
+    if ( mode != NULL ) {
+        wlr_output_state_set_mode( &state, mode );
     }
 
-    /** Allocates and configures our state for this output */
-    struct tinywl_output *output =
-        calloc( 1, sizeof(struct tinywl_output) );
+    /* Atomically applies the new output state. */
+    wlr_output_commit_state( wlr_output, &state );
+    wlr_output_state_finish( &state );
 
+    /* Allocates and configures our state for this output */
+    struct tinywl_output *output = calloc( 1, sizeof(*output) );
     output->wlr_output = wlr_output;
     output->server     = server;
-    /** Sets up a listener for the frame notify event. */
+
+    /* Sets up a listener for the frame event. */
     output->frame.notify = output_frame;
     wl_signal_add( &wlr_output->events.frame, &output->frame );
 
-    /* Sets up a listener for the destroy notify event. */
+    /* Sets up a listener for the state request event. */
+    output->request_state.notify = output_request_state;
+    wl_signal_add( &wlr_output->events.request_state, &output->request_state );
+
+    /* Sets up a listener for the destroy event. */
     output->destroy.notify = output_destroy;
     wl_signal_add( &wlr_output->events.destroy, &output->destroy );
 
     wl_list_insert( &server->outputs, &output->link );
 
-    /** Adds this to the output layout. The add_auto function arranges outputs
+    /* Adds this to the output layout. The add_auto function arranges outputs
      * from left-to-right in the order they appear. A more sophisticated
      * compositor would let the user configure the arrangement of outputs in the
      * layout.
@@ -596,7 +614,9 @@ static void server_new_output( struct wl_listener *listener, void *data ) {
      * display, which Wayland clients can see to find out information about the
      * output (such as DPI, scale factor, manufacturer, etc).
      */
-    wlr_output_layout_add_auto( server->output_layout, wlr_output );
+    struct wlr_output_layout_output *l_output     = wlr_output_layout_add_auto( server->output_layout, wlr_output );
+    struct wlr_scene_output         *scene_output = wlr_scene_output_create( server->scene, wlr_output );
+    wlr_scene_output_layout_add_output( server->scene_layout, l_output, scene_output );
 }
 
 
@@ -788,7 +808,7 @@ int startCompositor() {
      * output hardware. The auto-create option will choose the most suitable
      * backend based on the current environment, such as opening an X11 window
      * if an X11 server is running. */
-    server->backend = wlr_backend_autocreate( server->display, &server->session );
+    server->backend = wlr_backend_autocreate( wl_display_get_event_loop( server->display ), &server->session );
 
     /** Auto-creates a renderer, either Pixman, GLES2 or Vulkan for us. The user
      * can also specify a renderer using the WLR_RENDERER env var.
@@ -814,7 +834,7 @@ int startCompositor() {
 
     /** Creates an output layout, which a wlroots utility for working with an
      * arrangement of screens in a physical layout. */
-    server->output_layout = wlr_output_layout_create();
+    server->output_layout = wlr_output_layout_create( server->display );
 
     /** Configure a listener to be notified when new outputs are available on the
      * backend. */

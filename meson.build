@@ -163,7 +163,7 @@ qtgreet = executable(
 
 if ( get_option( 'build_greetwl' ) == true )
 	# Required for greetwl
-	wlr            = dependency( 'wlroots', version: '>= 0.17.0' )
+	wlr            = dependency( 'wlroots-0.18' )
 	wayland_server = dependency( 'wayland-server' )
 	wayland_client = dependency( 'wayland-client' )
 	xkbcommon      = dependency( 'xkbcommon' )
