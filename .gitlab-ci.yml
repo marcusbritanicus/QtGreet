@@ -1,59 +1,123 @@
-debian_sid_amd64:
+# debian_sid_amd64:
+# stage: build
+# image: debian:sid
+# before_script:
+# - apt-get update -yq
+# - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
+# - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
+#
+# script:
+# - dpkg-buildpackage -rfakeroot -uc -us
+# - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_sid_amd64.deb
+# - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_sid_amd64.deb
+# - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_sid_amd64.deb
+#
+# artifacts:
+# paths:
+# - archiver_2.0.8_sid_amd64.deb
+# - libarchiveqt_2.0.8_sid_amd64.deb
+# - libarchiveqt-dev_2.0.8_sid_amd64.deb
+#
+# debian_testing_amd64:
+# stage: build
+# image: debian:testing
+# before_script:
+# - apt-get update -yq
+# - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
+# - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
+#
+# script:
+# - dpkg-buildpackage -rfakeroot -uc -us
+# - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_testing_amd64.deb
+# - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_testing_amd64.deb
+# - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_testing_amd64.deb
+#
+# artifacts:
+# paths:
+# - archiver_2.0.8_testing_amd64.deb
+# - libarchiveqt_2.0.8_testing_amd64.deb
+# - libarchiveqt-dev_2.0.8_testing_amd64.deb
+#
+# debian_stable_amd64:
+# stage: build
+# image: debian:stable
+# before_script:
+# - apt-get update -yq
+# - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
+# - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
+#
+# script:
+# - dpkg-buildpackage -rfakeroot -uc -us
+# - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_stable_amd64.deb
+# - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_stable_amd64.deb
+# - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_stable_amd64.deb
+#
+# artifacts:
+# paths:
+# - archiver_2.0.8_stable_amd64.deb
+# - libarchiveqt_2.0.8_stable_amd64.deb
+# - libarchiveqt-dev_2.0.8_stable_amd64.deb
+
+stages:
+    - build
+
+variables:
+    DFL_DEPENDENCIES: ipc applications login1 utils WayQt # order matters
+
+archlinux_deps:
     stage: build
-    image: debian:sid
-    before_script:
-        - apt-get update -yq
-        - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
-        - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
-
+    image: archlinux
+    cache:
+        key: pacman-cache
+        paths:
+            - _pacman
     script:
-        - dpkg-buildpackage -rfakeroot -uc -us
-        - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_sid_amd64.deb
-        - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_sid_amd64.deb
-        - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_sid_amd64.deb
-
+        - pacman -Syu --needed --noconfirm --downloadonly --cachedir _pacman cmake clang gcc meson mpv ninja pkgconf qt5-base qt6-base qt5-wayland qt6-wayland wayland-protocols wlroots nlohmann-json
+        - pacman -Syu --needed --noconfirm git
+        - for dep in ${DFL_DEPENDENCIES}; do
+          git clone --depth=1 https://gitlab.com/desktop-frameworks/${dep} _dependencies/${dep};
+          done
     artifacts:
         paths:
-            - archiver_2.0.8_sid_amd64.deb
-            - libarchiveqt_2.0.8_sid_amd64.deb
-            - libarchiveqt-dev_2.0.8_sid_amd64.deb
+            - _dependencies
+            - _pacman # reuse downloaded files in dependant jobs
 
-debian_testing_amd64:
+archlinux:
     stage: build
-    image: debian:testing
+    image: archlinux
+    needs: ["archlinux_deps"]
+    parallel:
+        matrix:
+            - COMPILER: [clang, gcc]
+              QT_VERSION: [5, 6]
+              ARCH: [amd64]
     before_script:
-        - apt-get update -yq
-        - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
-        - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
-
+        - pacman -Syu --needed --noconfirm --cachedir _pacman ${COMPILER} cmake git meson ninja pkgconf qt${QT_VERSION}-base qt${QT_VERSION}-wayland mpv wayland-protocols wlroots nlohmann-json
+        - export PATH="${CI_PROJECT_DIR}/_install/bin:$PATH"
+        - export PKG_CONFIG_PATH="${CI_PROJECT_DIR}/_install/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+        - export LD_LIBRARY_PATH="${CI_PROJECT_DIR}/_install/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+        - case ${COMPILER} in
+          clang)
+          export CC="clang";
+          export CXX="clang++";
+          ;;
+          gcc)
+          export CC="gcc";
+          export CXX="g++";
+          ;;
+          esac
     script:
-        - dpkg-buildpackage -rfakeroot -uc -us
-        - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_testing_amd64.deb
-        - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_testing_amd64.deb
-        - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_testing_amd64.deb
-
-    artifacts:
-        paths:
-            - archiver_2.0.8_testing_amd64.deb
-            - libarchiveqt_2.0.8_testing_amd64.deb
-            - libarchiveqt-dev_2.0.8_testing_amd64.deb
-
-debian_stable_amd64:
-    stage: build
-    image: debian:stable
-    before_script:
-        - apt-get update -yq
-        - apt-get install -y g++ git ca-certificates make cmake ninja-build build-essential fakeroot debhelper-compat meson pkg-config
-        - apt-get install -y cmake qttools5-dev g++ make libarchive-dev liblzma-dev libbz2-dev zlib1g-dev liblz-dev
-
-    script:
-        - dpkg-buildpackage -rfakeroot -uc -us
-        - mv ../archiver_2.0.8_amd64.deb ./archiver_2.0.8_stable_amd64.deb
-        - mv ../libarchiveqt_2.0.8_amd64.deb ./libarchiveqt_2.0.8_stable_amd64.deb
-        - mv ../libarchiveqt-dev_2.0.8_amd64.deb ./libarchiveqt-dev_2.0.8_stable_amd64.deb
-
-    artifacts:
-        paths:
-            - archiver_2.0.8_stable_amd64.deb
-            - libarchiveqt_2.0.8_stable_amd64.deb
-            - libarchiveqt-dev_2.0.8_stable_amd64.deb
+        - for dep in ${DFL_DEPENDENCIES}; do
+          mkdir -p "${CI_PROJECT_DIR}/_dependencies/${dep}/_build";
+          cd "${CI_PROJECT_DIR}/_dependencies/${dep}/_build";
+          meson setup "${CI_PROJECT_DIR}/_dependencies/${dep}/" -Dprefix="${CI_PROJECT_DIR}/_install" -Duse_qt_version=qt${QT_VERSION};
+          ninja;
+          ninja install;
+          done
+        - mkdir "${CI_PROJECT_DIR}/_build"
+        - cd "${CI_PROJECT_DIR}/_build"
+        - meson setup "${CI_PROJECT_DIR}" -Duse_qt_version=qt${QT_VERSION}
+        - ninja
+        - if [[ "${COMPILER}" == "gcc" ]] && [[ "${QT_VERSION}" == "6" ]] && [[ "${ARCH}" == "amd64" ]]; then
+          ninja dist;
+          fi
