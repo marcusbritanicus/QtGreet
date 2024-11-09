@@ -179,14 +179,14 @@ int main( int argc, char **argv ) {
     QString dt( QDateTime::currentDateTime().toString( "yyyyMMddThhmmss" ) );
     QString logFile = QString( "%1/greeter/%2.log" ).arg( logPath ).arg( dt );
 
+    DFL::log = fopen( logFile.toLocal8Bit().data(), "w" );
+    qInstallMessageHandler( DFL::Logger );
+
     if ( DFL::log == NULL ) {
         /** Unable to open the logPath, we'll try system tmpPath */
         QString altLogFile = QString( "%1/%2.log" ).arg( tmpPath ).arg( dt );
         DFL::log = fopen( altLogFile.toLocal8Bit().data(), "w" );
     }
-
-    DFL::log = fopen( logFile.toLocal8Bit().data(), "w" );
-    qInstallMessageHandler( DFL::Logger );
 
     qInfo() << "Starting QtGreet";
 

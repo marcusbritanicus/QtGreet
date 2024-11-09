@@ -9,7 +9,7 @@ option(
 option(
     'build_greetwl',
     type: 'boolean',
-    value: true,
+    value: false,
     description: 'Build greetwl compositor'
 )
 

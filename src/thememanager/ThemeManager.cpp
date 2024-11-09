@@ -132,11 +132,13 @@ void QtGreet::ThemeManager::readTheme( QString name ) {
 
     /** Overrides: video */
     if ( sett->value( "videobg/File" ).toString().length() ) {
-        videoBG = QDir( themePath ).filePath( sett->value( "videobg/File" ).toString() );
+        videoBG    = QDir( themePath ).filePath( sett->value( "videobg/File" ).toString() );
+        mIsVideoBG = true;
     }
 
     else if ( sett->value( "videobg/Playlist" ).toString().length() ) {
-        videoBG = QDir( themePath ).filePath( sett->value( "videobg/Playlist" ).toString() );
+        videoBG    = QDir( themePath ).filePath( sett->value( "videobg/Playlist" ).toString() );
+        mIsVideoBG = true;
     }
 
     QString baseColor = sett->value( "Overrides/BaseColor", "Theme" ).toString();
