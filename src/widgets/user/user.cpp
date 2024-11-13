@@ -26,12 +26,17 @@
 
 static inline QString getIcon( QString name ) {
     QString iconPath = QString( "/home/%1/.face" ).arg( name );
-
-    QPixmap pix( QString( "/home/%1/.face" ).arg( name ) );
+    
+    QPixmap pix( iconPath );
 
     if ( pix.isNull() ) {
-        pix      = QPixmap( QString( "/home/%1/.face.icon" ).arg( name ) );
         iconPath = QString( "/home/%1/.face.icon" ).arg( name );
+        pix      = QPixmap( iconPath );
+    }
+
+    if ( pix.isNull() ) {
+        iconPath = QString( "/var/lib/AccountsService/icons/%1" ).arg( name );
+        pix      = QPixmap( iconPath );
     }
 
     if ( pix.isNull() ) {
