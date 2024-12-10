@@ -210,7 +210,7 @@ int main( int argc, char **argv ) {
     }
 
     /** Emit a wraning if the users.conf file is not writable */
-    if ( QFileInfo( dynDataPath + "/users.conf" ).isWritable() == false ) {
+    if ( (QFileInfo( dynDataPath + "/users.conf" ).isWritable() == false) || (QFileInfo( dynDataPath ).isWritable() == false) ) {
         qWarning() << "The path" << dynDataPath + "/users.conf" << "is not writable. The last logged in user info will not be stored.";
     }
 
