@@ -204,9 +204,14 @@ int main( int argc, char **argv ) {
         qInfo() << "Theme name:            " << themeName;
     }
 
-    if ( dynDataPath.isEmpty() and not parser.isSet( "data-path" ) ) {
+    if ( dynDataPath.isEmpty() && (parser.isSet( "data-path" ) == false) ) {
         qCritical() << "Please use --data-path option to specify where QtGreet can store its dynamic data.";
         parser.showHelp( EXIT_FAILURE );       // Exit with an error
+    }
+
+    /** Emit a wraning if the users.conf file is not writable */
+    if ( QFileInfo( dynDataPath + "/users.conf" ).isWritable() == false ) {
+        qWarning() << "The path" << dynDataPath + "/users.conf" << "is not writable. The last logged in user info will not be stored.";
     }
 
     /** Settings Objects */
@@ -233,7 +238,7 @@ int main( int argc, char **argv ) {
                     usleep( 10 * 1000 );
                 }
 
-                /** Ensure that this handle is indeed qtrgeet */
+                /** Ensure that this handle is indeed qtgreet */
                 if ( hndl->appId() != "qtgreet" ) {
                     return;
                 }

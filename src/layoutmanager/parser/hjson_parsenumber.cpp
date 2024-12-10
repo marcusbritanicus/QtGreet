@@ -1,12 +1,12 @@
 #include "hjson.h"
 #include <cmath>
 #if HJSON_USE_CHARCONV
-# include <charconv>
+    # include <charconv>
 #elif HJSON_USE_STRTOD
-# include <cstdlib>
-# include <cerrno>
+    # include <cstdlib>
+    # include <cerrno>
 #else
-# include <sstream>
+    # include <sstream>
 #endif
 
 
@@ -20,59 +20,59 @@ namespace Hjson {
 
 
     static bool _parseFloat( double *pNumber, const char *pCh, size_t nCh ) {
-#if HJSON_USE_CHARCONV
-        auto res = std::from_chars( pCh, pCh + nCh, *pNumber );
+        #if HJSON_USE_CHARCONV
+            auto res = std::from_chars( pCh, pCh + nCh, *pNumber );
 
-        return res.ptr == pCh + nCh && res.ec != std::errc::result_out_of_range &&
-               !std::isinf( *pNumber ) && !std::isnan( *pNumber );
+            return res.ptr == pCh + nCh && res.ec != std::errc::result_out_of_range &&
+                   !std::isinf( *pNumber ) && !std::isnan( *pNumber );
 
-#elif HJSON_USE_STRTOD
-        char *endptr;
-        errno    = 0;
-        *pNumber = std::strtod( pCh, &endptr );
+        #elif HJSON_USE_STRTOD
+            char *endptr;
+            errno    = 0;
+            *pNumber = std::strtod( pCh, &endptr );
 
-        return !errno && endptr - pCh == nCh && !std::isinf( *pNumber ) && !std::isnan( *pNumber );
+            return !errno && endptr - pCh == nCh && !std::isinf( *pNumber ) && !std::isnan( *pNumber );
 
-#else
-        std::string       str( pCh, nCh );
-        std::stringstream ss( str );
+        #else
+            std::string       str( pCh, nCh );
+            std::stringstream ss( str );
 
-        // Make sure we expect dot (not comma) as decimal point.
-        ss.imbue( std::locale::classic() );
+            // Make sure we expect dot (not comma) as decimal point.
+            ss.imbue( std::locale::classic() );
 
-        ss >> *pNumber;
+            ss >> *pNumber;
 
-        return ss.eof() && !ss.fail() && !std::isinf( *pNumber ) && !std::isnan( *pNumber );
+            return ss.eof() && !ss.fail() && !std::isinf( *pNumber ) && !std::isnan( *pNumber );
 
-#endif
+        #endif
     }
 
 
     static bool _parseInt( std::int64_t *pNumber, const char *pCh, size_t nCh ) {
-#if HJSON_USE_CHARCONV
-        auto res = std::from_chars( pCh, pCh + nCh, *pNumber );
+        #if HJSON_USE_CHARCONV
+            auto res = std::from_chars( pCh, pCh + nCh, *pNumber );
 
-        return res.ptr == pCh + nCh && res.ec != std::errc::result_out_of_range;
+            return res.ptr == pCh + nCh && res.ec != std::errc::result_out_of_range;
 
-#elif HJSON_USE_STRTOD
-        char *endptr;
-        errno    = 0;
-        *pNumber = std::strtoll( pCh, &endptr, 0 );
+        #elif HJSON_USE_STRTOD
+            char *endptr;
+            errno    = 0;
+            *pNumber = std::strtoll( pCh, &endptr, 0 );
 
-        return !errno && endptr - pCh == nCh;
+            return !errno && endptr - pCh == nCh;
 
-#else
-        std::string       str( pCh, nCh );
-        std::stringstream ss( str );
+        #else
+            std::string       str( pCh, nCh );
+            std::stringstream ss( str );
 
-        // Avoid localization surprises.
-        ss.imbue( std::locale::classic() );
+            // Avoid localization surprises.
+            ss.imbue( std::locale::classic() );
 
-        ss >> *pNumber;
+            ss >> *pNumber;
 
-        return ss.eof() && !ss.fail();
+            return ss.eof() && !ss.fail();
 
-#endif
+        #endif
     }
 
 

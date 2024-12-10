@@ -185,6 +185,8 @@ UserEdit::UserEdit() : QLineEdit(), UserName() {
     setObjectName( "UserEdit" );
     setPlaceholderText( "Username" );
 
+    setCurrentUser( currentUser() );
+
     QStringList userList;
     for ( User usr: mUserList ) {
         userList << usr.username;
@@ -256,6 +258,8 @@ UserCombo::UserCombo() : QComboBox(), UserName() {
     for ( User usr: mUserList ) {
         addItem( QIcon( usr.icon ), usr.username );
     }
+
+    setCurrentUser( currentUser() );
 }
 
 
@@ -311,6 +315,8 @@ UserList::UserList() : QListWidget(), UserName() {
         item->setData( Qt::UserRole + 1, QVariant::fromValue( usr ) );
         addItem( item );
     }
+
+    setCurrentUser( currentUser() );
 }
 
 
@@ -383,6 +389,8 @@ UserLabel::UserLabel() : QWidget(), UserName() {
     prevBtn->hide();
 
     setFixedHeight( 27 );
+
+    setCurrentUser( currentUser() );
 }
 
 

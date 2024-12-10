@@ -131,13 +131,13 @@ err:
                 }
 
                 bool test_type( const QVariant& v, QMetaType::Type t ) {
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-                    return static_cast<int>( (QMetaType::Type)v.typeId() ) == static_cast<int>(t);
+                    #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+                        return static_cast<int>( (QMetaType::Type)v.typeId() ) == static_cast<int>(t);
 
-#else
-                    return static_cast<int>( (QMetaType::Type)v.type() ) == static_cast<int>(t);
+                    #else
+                        return static_cast<int>( (QMetaType::Type)v.type() ) == static_cast<int>(t);
 
-#endif
+                    #endif
                 }
 
                 void set( mpv_node *dst, const QVariant& src ) {
